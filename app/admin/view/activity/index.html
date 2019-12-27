@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+  <style>
+
+    .tips{
+      color:#aaa;
+    }
+
+    .wrap-coupon{
+      width: 300px;
+      float:left;
+    }
+
+    .per-recom-coupon{
+      height:42px;
+    }
+
+    .btn-del-recom-coupon{
+      float:left;
+      margin:8px 0 0 10px;
+    }
+
+    .per-type2{
+      margin-top:10px;
+    }
+
+    .per-rtn-coupon{
+      margin-top:6px;
+    }
+
+    .wrap-per-pros{
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    .per-diy-pro{
+      width: 1400px !important;
+      margin-top:10px;
+    }
+
+    .per-diy-pro:after{
+      clear:both;content:'';display:block;width:0;height:0;visibility:hidden;
+    }
+    .per-store-pro:after{
+      clear:both;content:'';display:block;width:0;height:0;visibility:hidden;
+    }
+
+    .wrap-per-pros{
+      width:900px !important;
+      margin-left:20px;
+      min-height:16px;
+    }
+
+    .per-pro{
+      margin-left:0 !important;
+      margin-bottom:3px;
+      cursor:auto;
+    }
+
+    .wrap-store-pro .layui-form-checkbox{
+      margin-top:4px;
+    }
+
+    .per-store-pro{
+      margin-left:110px;
+      margin-top:10px;
+    }
+
+  </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+  <div style="margin-top: 20px;">
+  </div>
+  <form class="layui-form" id="admin" method="post" action="{:url('Activity/updateActivity')}">
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">活动名称：</label>
+      <div class="layui-input-block" style="max-width:600px;">
+        <input name="title" autocomplete="off" placeholder="给活动起一个名称" class="layui-input" type="text" value="{$info.title}">
+      </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+      <label class="layui-form-label">说明：</label>
+      <div class="layui-input-block" style="max-width:600px;">
+        <textarea name="desc" placeholder="请输入活动的说明。（仅作为后台查看该的备注）" class="layui-textarea">{$info.desc}</textarea>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">用户筛选：</label>
+      <div class="layui-input-block">
+        <input type="radio" name="user_type" value="1" title="全部用户" checked>
+        <input type="radio" name="user_type" value="0" title="部分用户" disabled>
+        <p class="tips">选择参与活动的用户</p>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">活动平台：</label>
+      <div class="layui-input-block">
+        <input type="radio" name="client" value="1" title="App" {if condition="$info['client'] eq 1 || !$info['client']"}checked{/if} />
+        <input type="radio" name="client" value="2" title="小程序" {if condition="$info['client'] eq 2"}checked{/if} />
+        <input type="radio" name="client" value="3" title="App&小程序" {if condition="$info['client'] eq 3"}checked{/if} />
+        <p class="tips">显示活动展示的平台</p>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">显示规则说明：</label>
+      <div class="layui-input-block" style="max-width:600px;">
+        <input type="checkbox" value="on" {if condition="$info['is_show_rule'] eq 1 || !$info['is_show_rule']"}checked{/if} name="is_show_rule" lay-skin="switch" lay-filter="switchShowRule" lay-text="ON|OFF">
+        <textarea style="margin-top:10px;{if condition='$info[is_show_rule] eq 2'}display:none;{/if}" name="rule" placeholder="活动规则说明会显示到活动主页。" class="layui-textarea textarea-rule">{$info.rule}</textarea>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">活动封面：</label>
+      <div class="layui-upload-drag" id="cover" style="float:left;">
+        <i class="layui-icon"></i>
+        <p>点击上传，或将文件拖拽到此处</p>
+      </div>
+      <div style="float:left;margin-left:10px;position:relative;display:{if condition='$info[cover]'}block{else /}none{/if};">
+        <input name="cover" type="hidden" value="{$info.cover}" />
+        <img class="img-cover" style="max-width:300px;max-height:135px;" src="{$info.cover}" />
+        <i style="cursor:pointer;position:absolute;right:0;top:0;padding:3px;" class="layui-icon del-cover">&#xe640;</i>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">banner及链接：</label>
+      <div class="layui-input-block" style="max-width:600px;">
+        <table class="layui-table wrap-banner">
+          <colgroup>
+            <col width="200">
+            <col width="50">
+            <col width="100">
+            <col width="150">
+          </colgroup>
+          <thead>
+          <tr>
+            <th>banner</th>
+            <th>跳转类型</th>
+            <th>商品ID/店铺ID</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody id="banner_list">
+<!--          <tr>-->
+<!--            <input type="hidden" name="banner[]" />-->
+<!--            <td>-->
+<!--              <img style="max-width: 150px;max-height:100px;" src="\uploads\admin\admin_thumb\20190917\7d50073a96cb835b3ce585f84d5d0653.png" />-->
+<!--            </td>-->
+<!--            <td>商品</td>-->
+<!--            <td>1008611</td>-->
+<!--            <td>-->
+<!--              <button type="button" class="layui-btn layui-btn-xs layui-btn-normal">编辑</button>-->
+<!--              <button type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>-->
+<!--            </td>-->
+<!--          </tr>-->
+          </tbody>
+        </table>
+        <button type="button" class="layui-btn layui-btn-primary btn-add-banner">添加</button>
+        <p class="tips tips-banner"></p>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">推荐优惠券：</label>
+      <div class="layui-input-block" style="max-width:600px;">
+        <div class="wrap-recom-coupon">
+          {foreach name="info['recom_coupon_ids']" item="vo"}
+          <div class="per-recom-coupon">
+            <div class="wrap-coupon">
+              <select lay-filter="chooseRecomCoupon" name="" lay-verify="required" lay-search="">
+                <option value="0">直接选择或搜索选择</option>
+                {foreach name="coupon_can_use" item="it"}
+                <option value="{$it.id}" {if condition="$vo eq $it['id']"}selected{/if}>{$it.coupon_name}</option>
+                {/foreach}
+              </select>
+            </div>
+            <input name="recom_coupon_ids[]" class="recom_coupon_ids" type="hidden" value="0" />
+            <button onclick="delRecomCoupon.call(this)" type="button" class="layui-btn layui-btn-xs layui-btn-normal btn-del-recom-coupon">删除</button>
+          </div>
+          {/foreach}
+        </div>
+        <button type="button" class="layui-btn layui-btn-primary btn-add-recom-coupon">添加</button>
+        <p class="tips tips-recom-coupon">还可添加5张优惠券</p>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">优惠成本承担方：</label>
+      <div class="layui-input-block">
+        <input type="radio" name="preferential_type" value="1" title="平台" {if condition="$info.preferential_type eq 1 || !$info.preferential_type"}checked{/if} />
+        <input type="radio" name="preferential_type" value="2" title="商户" {if condition="$info.preferential_type eq 2"}checked{/if} />
+        <p class="tips">承担方会决定优惠的成本由谁承担（影响到财务结算）。是由平台方补贴，还是商户方补贴。</p>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">推送内容：</label>
+      <div class="layui-input-block">
+        <input type="radio" name="message_type" value="1" title="短信" checked>
+        <input type="radio" name="message_type" value="2" title="推送消息" disabled />
+        <input type="radio" name="message_type" value="3" title="应用内消息" disabled />
+        <input type="radio" name="message_type" value="4" title="弹窗" disabled />
+      </div>
+      <div class="wrap-coupon">
+        <select name="message_model_id" lay-verify="required" lay-search="">
+          {foreach name="message_list" key="k" item="vo"}
+          <option value="{$k}" {if condition="$k eq $info.message_model_id"}selected{/if}>{$vo.title}</option>
+          {/foreach}
+        </select>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">促销方式：</label>
+      <div class="layui-input-block">
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="1" title="无优惠" {if condition="$info.activity_type eq 1 || !$info.activity_type"}checked{/if} />
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="2" title="抵扣" {if condition="$info.activity_type eq 2"}checked{/if} />
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="3" title="满减" {if condition="$info.activity_type eq 3"}checked{/if} />
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="4" title="打折" {if condition="$info.activity_type eq 4"}checked{/if} />
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="5" title="返现" {if condition="$info.activity_type eq 5"}checked{/if} />
+        <input lay-filter="changeActivityType" type="radio" name="activity_type" value="6" title="返优惠券" {if condition="$info.activity_type eq 6"}checked{/if} />
+        <p class="tips tips-activity-type">仅作为将商品纳入活动板块，但不选择优惠形式的促销活动使用。</p>
+
+        <!-- 活动方式 -->
+
+        <div class="wrap-type wrap-type1" style="margin-top:10px;display:{if condition='$info.activity_type eq 2'}{else /}none{/if};">
+          <label>抵扣</label>
+          <input style="width:150px;" type="text" name="deduction_money" placeholder="请输入" autocomplete="off" class="layui-input" value="{$info.deduction_money}" />
+          <label>元</label>
+        </div>
+
+        <div class="wrap-type wrap-type2" style="margin-top:10px;display:{if condition='$info.activity_type eq 3'}{else /}none{/if};">
+            <div class="wrap-satisfy">
+              {foreach name="enough_rule" item="vo"}
+              <div class="per-type2">
+                <label>满</label>
+                <input style="width:150px;" onchange="changeEnoughRule.call(this)" data-type="1" type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input" value="{$vo.satisfy_money}" />
+                <label>元</label>
+                <label>减</label>
+                <input style="width:150px;" onchange="changeEnoughRule.call(this)" data-type="2" type="text" name="" placeholder="请输入" autocomplete="off" class="layui-input" value="{$vo.discount_money}" />
+                <label>元</label>
+                <button onclick="delSatisfy.call(this)" style="margin-left:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>
+              </div>
+              {/foreach}
+            </div>
+            <button style="margin-top:10px;" type="button" class="layui-btn layui-btn-primary btn-add-satisfy">添加</button>
+            <p class="tips tips-activity-type2">还能添加1档满减优惠</p>
+        </div>
+
+        <div class="wrap-type wrap-type3" style="margin-top:10px;display:{if condition='$info.activity_type eq 4'}{else /}none{/if};">
+          <label>打</label>
+          <input style="width:150px;" value="{$info.discount}" type="text" name="discount" placeholder="0.98" autocomplete="off" class="layui-input">
+          <label>折</label>
+          <label>最高折扣金额</label>
+          <input style="width:150px;" type="text" value="{$info.discount_max}" name="discount_max" placeholder="请输入" autocomplete="off" class="layui-input">
+          <label>元</label>
+        </div>
+
+        <div class="wrap-type wrap-type4" style="margin-top:10px;display:{if condition='$info.activity_type eq 5'}{else /}none{/if};">
+          <label>返现比例</label>
+          <input style="width:150px;" type="text" name="return_prop" placeholder="请输入" autocomplete="off" class="layui-input" value="{$info.return_prop}" />
+          <label>%</label>
+          <label>最高返现金额</label>
+          <input style="width:150px;" type="text" name="return_max" placeholder="请输入" autocomplete="off" class="layui-input" value="{$info.return_max}" />
+          <label>元</label>
+        </div>
+
+        <div class="wrap-type wrap-type5" style="margin-top:10px;display:{if condition='$info.activity_type eq 6'}{else /}none{/if};">
+          <div class="wrap-return-coupon">
+            {foreach name="return_coupon" item="vo"}
+            <div class="per-rtn-coupon">
+              <label>满</label>
+              <input style="width:150px;" onchange="changeEnoughCouponMoney.call(this)" type="text" placeholder="请输入" autocomplete="off" class="layui-input" value="{$vo.satisfy_money}" />
+              <label>元</label>
+              <label>返</label>
+              <div style="width:300px;display:inline-block;">
+                <select lay-verify="required" lay-filter="changeEnoughCoupon" lay-search="">
+                  <option value="0">选择或搜索优惠券</option>
+                  {foreach name="coupon_can_rtn" item="it"}
+                  <option value="{$it.id}" {if condition="$it.id eq $vo.coupon_id"}selected{/if}>{$it.coupon_name}</option>
+                  {/foreach}
+                </select>
+              </div>
+              <button onclick="delRtnCoupon.call(this)" style="margin-left:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>
+            </div>
+            {/foreach}
+          </div>
+          <button style="margin-top:10px;" type="button" class="layui-btn layui-btn-primary btn-add-rtn-coupon">添加</button>
+          <p class="tips tips-activity-type5">还能添加4档返优惠券优惠</p>
+        </div>
+
+        <!-- 活动限时 -->
+        <div class="wrap-limit" style="margin-top:20px;display:{if condition='$info[activity_type] eq 2 || $info[activity_type] eq 4'}block{else /}none{/if};">
+
+          <div class="layui-form-item" style="margin-bottom: 4px;">
+            <label class="layui-form-label" style="padding-left:0;padding-right:0;text-align: left;">活动限时：</label>
+            <div class="layui-input-block">
+              <input type="checkbox" {if condition="$info[is_limit_time] eq 0"}{else }checked{/if} name="is_limit_time" value="on" lay-skin="switch" lay-filter="switchLimitTime" lay-text="开|关">
+            </div>
+          </div>
+          <p class="tips tips-limit">打开时，活动时段内每周指定日期的特定时间段开启活动。<br />
+            非指定时段内「立即抢购」按钮将会变为「提醒我」。<br />
+            注意：时段之间不可以重叠。</p>
+          <div class="wrap-limit-time" {if condition="$info[is_limit_time] eq 0"}style="display:none;"{/if}>
+            <div style="height:55px;">
+              <div class="layui-input-inline" style="margin-top:10px;">
+                <input type="text" name="limit_time" id="date" value="{$info.limit_time}" placeholder="请选择时间段" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-input-block" style="margin-left:0;">
+              <input class="week" value="0" type="checkbox" name="week[]" lay-skin="primary" title="周日" {if condition="in_array(0,$info['week'])"}checked{/if} />
+              <input class="week" value="1" type="checkbox" name="week[]" lay-skin="primary" title="周一" {if condition="in_array(1,$info['week'])"}checked{/if} />
+              <input class="week" value="2" type="checkbox" name="week[]" lay-skin="primary" title="周二" {if condition="in_array(2,$info['week'])"}checked{/if} />
+              <input class="week" value="3" type="checkbox" name="week[]" lay-skin="primary" title="周三" {if condition="in_array(3,$info['week'])"}checked{/if} />
+              <input class="week" value="4" type="checkbox" name="week[]" lay-skin="primary" title="周四" {if condition="in_array(4,$info['week'])"}checked{/if} />
+              <input class="week" value="5" type="checkbox" name="week[]" lay-skin="primary" title="周五" {if condition="in_array(5,$info['week'])"}checked{/if} />
+              <input class="week" value="6" type="checkbox" name="week[]" lay-skin="primary" title="周六" {if condition="in_array(6,$info['week'])"}checked{/if} />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 活动商品选择方式 -->
+    <div class="layui-form-item">
+      <label class="layui-form-label">活动商品选择方式：</label>
+      <div>
+        <div class="layui-input-block">
+          <input type="radio" name="activity_pro_type" value="1" title="全平台" disabled />
+          <input type="radio" name="activity_pro_type" value="2" title="品牌" disabled />
+          <input type="radio" name="activity_pro_type" value="3" title="类别" disabled />
+          <input lay-filter="changeProType" type="radio" name="activity_pro_type" value="4" title="店铺" {if condition="$info.activity_pro_type eq 4 || !$info.activity_pro_type"}checked{/if} />
+          <input lay-filter="changeProType" type="radio" name="activity_pro_type" value="5" title="自定义" {if condition="$info.activity_pro_type eq 5"}checked{/if} />
+        </div>
+        <div class="diy-wrap" style="margin-top:20px;display:{if condition='$info[activity_pro_type] eq 5'}block{else /}none{/if};">
+          <div class="diy-pro-wrap" style="margin-left:110px;">
+            <div class="per-diy-pro">
+              <div class="layui-input-inline">
+                <input type="text" name="pros[0][type_name]" onchange="changeTypeName.call(this)" placeholder="请输入类别名称" autocomplete="off" class="layui-input">
+              </div>
+              <label style="float:left;margin-top:8px;">商品范围</label>
+              <div class="wrap-per-pros layui-input-inline">
+                <button onclick="showAddPro.call(this)" type="button" data-type="5" data-type-id="1" class="layui-btn layui-btn-primary layui-btn-sm">添加</button>
+              </div>
+              <button onclick="delPerDiyPro.call(this)" style="margin-left:10px;margin-top:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>
+            </div>
+          </div>
+          <div style="margin-left:110px;">
+            <button style="margin-top:10px;" type="button" class="layui-btn layui-btn-primary btn-add-diy-per">添加</button>
+            <p class="tips tips-diy-pro">还能添加14个自定义类别，类别名称请控制在4个字以内.</p>
+          </div>
+        </div>
+
+        <div class="store-wrap" style="margin-top:20px;display:{if condition='$info[activity_pro_type] eq 5'}none{else /}block{/if}">
+          <div class="store-pro-wrap">
+            <div class="per-store-pro">
+              <div class="layui-input-inline">
+                <input type="text" value="测试店铺" disabled class="layui-input">
+              </div>
+              <label style="float:left;margin-top:8px;">商品范围</label>
+              <div class="wrap-per-pros layui-input-inline">
+                <button onclick="showAddPro.call(this)" type="button" data-type="4" class="layui-btn layui-btn-primary layui-btn-sm">添加</button>
+              </div>
+              <button onclick="delPerStorePro.call(this)" style="margin-left:10px;margin-top:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>
+            </div>
+
+          </div>
+          <div style="margin-left:110px;">
+            <input type="hidden" value="" id="hide_store_id" />
+            <input type="hidden" value="" id="hide_store_name" />
+            <div id="add_store_sure"></div>
+            <button style="margin-top:10px;" type="button" class="layui-btn layui-btn-primary btn-add-store-per">添加店铺</button>
+            <!--              <p class="tips tips-diy-pro">还能添加14个自定义类别，类别名称请控制在4个字以内.</p>-->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 上线时间 -->
+    <div class="layui-form-item">
+      <label class="layui-form-label">上线时间：</label>
+      <div class="layui-input-block">
+        <input lay-filter="changeLineType" type="radio" name="line_type" value="1" title="立即上线" {if condition="$info.is_clock eq 2 || !$info.is_clock"}checked{/if} />
+        <input lay-filter="changeLineType" type="radio" name="line_type" value="2" title="定时上线" {if condition="$info.is_clock eq 1"}checked{/if} />
+      </div>
+      <div class="layui-inline wrap-line-time" style="display:{if condition='$info.is_clock eq 1'}inline-block{else /}none{/if};">
+        <input type="text" class="layui-input" id="line_time" name="start_time" value="{$info.clock_time}" placeholder="请选择">
+      </div>
+    </div>
+
+    <!-- 活动时长 -->
+    <div class="layui-form-item">
+      <label class="layui-form-label">活动时长：</label>
+      <div class="layui-input-inline" style="max-width:100px;">
+        <input name="activity_long" autocomplete="off" placeholder="持续天数" class="layui-input" type="text" value="{$info.activity_long}">
+
+      </div>
+      <span style="display: inline-block;line-height:40px;">天</span>
+    </div>
+
+    <input name="id" type="hidden" value="{$info.id}" />
+
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="admin" data-status="2">提交</button>
+        <button class="layui-btn layui-btn-primary" lay-submit lay-filter="admin" data-status="1">存为草稿</button>
+      </div>
+    </div>
+  </form>
+  <script src="__PUBLIC__/layui/layui.js"></script>
+  <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+
+  <script>
+      layui.use(['layer', 'form', 'upload', 'laydate'], function() {
+          var layer = layui.layer,
+              $ = layui.jquery,
+              form = layui.form,
+              upload = layui.upload,
+              laydate = layui.laydate;
+        //日期
+        laydate.render({
+          elem: '#date',
+          type: 'time',
+          range: true,
+        });
+
+        laydate.render({
+          elem: '#line_time',
+          type: 'datetime',
+        });
+
+
+          $(window).on('load', function() {
+              form.on('submit(admin)', function(data) {
+                let status = $(this).data('status');
+                let field = data.field;
+                let [title,desc,user_type,client,is_show_rule,rule,cover,preferential_type,message_type,message_model_id,activity_type,activity_pro_type,line_type,activity_long] = [field.title,field.desc,field.user_type,field.client,field.is_show_rule,field.rule,field.cover,field.preferential_type,field.message_type,field.message_model_id,field.activity_type,field.activity_pro_type,field.line_type,field.activity_long]
+                let deduction_money = 0;
+                let [discount,discount_max] = [1,0];
+                let [return_prop,return_max] = [0,0];
+                let is_limit_time = 'off';
+                let limit_time = '';
+                let week = [];
+                let start_time = "";
+
+                        //验证
+                if(!title){
+                  layer.msg('请输入活动名称');
+                  return false;
+                }
+                if(is_show_rule == 'on' && !rule){
+                  layer.msg('请输入规则说明');
+                  return false;
+                }
+                if(!cover){
+                  layer.msg('请上传封面');
+                  return false;
+                }
+                if(banner.length <= 0){
+                  layer.msg('请上传banner');
+                  return false;
+                }
+                if(!message_model_id){
+                  layer.msg('请选择短信模板');
+                  return false;
+                }
+                if(activity_type == 2){
+                  deduction_money = field.deduction_money;
+                }
+                if(activity_type == 3){
+                  if(enough_rule.length == 0){
+                    layer.msg('请添加满减规则')
+                    return false;
+                  }
+                }
+                if(activity_type == 4){
+                  discount = field.discount;
+                  discount_max = field.discount_max;
+                }
+                if(activity_type == 5){
+                  return_prop = field.return_prop;
+                  return_max = field.return_max;
+                }
+                if(activity_type == 6){
+                  if(enough_coupon_rule.length==0){
+                    layer.msg('请添返优惠券规则')
+                    return false;
+                  }
+                }
+                if(activity_type == 2 || activity_type == 4){
+                  is_limit_time = field.is_limit_time
+                  limit_time = field.limit_time
+                  if(is_limit_time == 'on'){
+                    if(!limit_time){
+                      layer.msg('请选择活动限时时间段')
+                      return false;
+                    }
+                    $('input.week:checked').each(function(k,v){
+                      week.push($(v).val())
+                    })
+                    if(week.length == 0){
+                      layer.msg('请选择活动限时时间')
+                      return false;
+                    }
+                  }
+                }
+
+                if(activity_pro_type == 4 && pro_data_type_store.length==0){
+                  layer.msg('请添加活动商品')
+                  return false;
+                }
+
+                if(activity_pro_type == 5 && pro_data_type_diy.length==0){
+                  layer.msg('请添加活动商品')
+                  return false;
+                }
+
+                if(line_type == 2){
+                  start_time = field.start_time
+                  if(!start_time){
+                    layer.msg('请选择上线时间')
+                    return false;
+                  }
+                }
+
+                if(!activity_long){
+                  layer.msg('请输入活动时长')
+                  return false;
+                }
+
+                let id = parseInt($('input[name=id]').val());
+
+                let form_data = {title,desc,user_type,client,is_show_rule,rule,cover,preferential_type,message_type,message_model_id,activity_type,activity_pro_type,line_type,activity_long,deduction_money,recom_coupon_ids,banner,discount,discount_max,enough_rule,return_prop,return_max,week,is_limit_time,limit_time,enough_coupon_rule,pro_data_type_store,pro_data_type_diy,start_time,status,id};
+
+
+                  // console.log(form_data);return false;
+                  $.ajax({
+                      url:"{:url('Activity/updateActivity')}",
+                      data:form_data,
+                      type:'post',
+                      async: false,
+                      success:function(res) {
+                          if(res.code == 1) {
+                              layer.alert(res.msg, function(index){
+                                  layer.close(index)
+                                  location.href="{:url('Activity/lists')}"
+                              })
+                          } else {
+                              layer.msg(res.msg);
+                          }
+                      }
+                  })
+                  return false;
+              });
+          });
+
+        form.on('switch(switchShowRule)', function(data){
+          let val = data.elem.checked;
+          if(val){
+            $(".textarea-rule").show()
+          }else{
+            $(".textarea-rule").hide()
+          }
+        });
+
+        form.on('switch(switchLimitTime)', function(data){
+          let val = data.elem.checked;
+          if(val){
+            $('.wrap-limit-time').show();
+            let html_ = '打开时，活动时段内每周指定日期的特定时间段开启活动。<br />\n' +
+                    '            非指定时段内「立即抢购」按钮将会变为「提醒我」。<br />\n' +
+                    '            注意：时段之间不可以重叠。';
+            $('.tips-limit').html(html_);
+          }else{
+            $('.wrap-limit-time').hide();
+            $('.tips-limit').html('不进行每日限时开启优惠活动');
+          }
+        })
+
+        form.on('radio(changeLineType)', function(data){
+          let line_type = data.value;
+          if(line_type == 1){
+            $('.wrap-line-time').hide();
+          }else{
+            $('.wrap-line-time').show();
+          }
+        })
+
+        form.on('radio(changeActivityType)', function(data){
+          let activity_type = data.value;
+          $('.tips-activity-type').text(activity_type_tips[activity_type-1])
+          $('.wrap-type').hide();
+          let wrap = '.wrap-type'+ (parseInt(activity_type)-1);
+          $(wrap).show();
+          $('.wrap-limit').hide();
+          if(activity_type == 2 || activity_type == 4){
+            $('.wrap-limit').show();
+          }
+        })
+
+        form.on('radio(changeProType)', function(data){
+          let pro_type = data.value;
+          if(pro_type == 4){
+            $('.store-wrap').show();
+            $('.diy-wrap').hide();
+            autoStoreShowPro();
+          }else{
+            $('.store-wrap').hide();
+            $('.diy-wrap').show();
+            autoDiyShowPro();
+          }
+        })
+
+        //拖拽上传（封面）
+        upload.render({
+          elem: '#cover'
+          ,url: "{:url('common/upload')}"
+          ,done: function(res){
+            if(res.code !=2){
+              layer.msg('图片上传失败')
+            }else{
+              $('#cover').next().next('div').show();
+              $('input[name=cover]').val(res.src);
+              $('input[name=cover]').next('.img-cover').attr('src',res.src);
+            }
+          }
+        });
+
+        $('.btn-add-banner').on('click', function(){
+          //自定页
+          var alyerIdx = layer.open({
+            title: "banner及链接",
+            type: 1,
+            skin: 'layui-layer-demo', //样式类名
+            closeBtn: 1, //不显示关闭按钮
+            anim: 2,
+            area: ['500px', '600px'],
+            shadeClose: false, //开启遮罩关闭
+            content: '<form class="layui-form" id="banner_form" action="{:Activity/addBanner}">' +
+
+                    '    <div class="layui-form-item" style="text-align: center; margin-top:10px;">\n' +
+                    '      <div class="layui-upload-drag" id="banner">\n' +
+                    '        <i class="layui-icon"></i>\n' +
+                    '        <p>点击上传，或将文件拖拽到此处</p>\n' +
+                    '      </div>\n' +
+                    '      <div style="margin-top:10px; display:none;">\n' +
+                    '        <input name="banner" type="hidden" />\n' +
+                    '        <img class="img-banner" style="max-width:450px;max-height:200px;" src="" />\n' +
+                    '      </div style="margin-top:10px;">\n' +
+                    '    </div>' +
+                    '    <div class="layui-form-item">\n' +
+                    '      <label class="layui-form-label">跳转类型：</label>\n' +
+                    '      <div class="layui-input-block">\n' +
+                    '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="1" title="店铺" checked>\n' +
+                    '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="2" title="商品" />\n' +
+                    '      </div>\n' +
+                    '    </div>' +
+                    '    <div class="layui-form-item">\n' +
+                    '       <label class="layui-form-label label-link-id">店铺参数ID</label>\n' +
+                    '       <div class="layui-input-block" style="width:180px;">\n' +
+                    '         <input type="text" name="turn_link_id" placeholder="请输入ID" class="layui-input">\n' +
+                    '       </div>\n' +
+                    '    </div>' +
+
+                    '  <div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label"></label>\n' +
+                    '    <button type="button" class="layui-btn btn-submit-banner">确定</button>\n' +
+                    '    <button type="button" class="layui-btn layui-btn-primary btn-cancel-add">取消</button>\n' +
+                    '  </div>\n' +
+
+                    '</form>'
+          });
+
+          //拖拽上传（banner）
+          upload.render({
+            elem: '#banner'
+            ,url: "{:url('common/upload')}"
+            ,done: function(res){
+              if(res.code !=2){
+                layer.msg('图片上传失败')
+              }else{
+                $('#banner').next().next('div').show();
+                $('input[name=banner]').val(res.src);
+                $('input[name=banner]').next('.img-banner').attr('src',res.src);
+              }
+            }
+          });
+
+          $('.btn-cancel-add').on('click', function(){
+              layer.close(alyerIdx);
+          });
+
+          $('.btn-submit-banner').on('click', function(){
+            let banner_src = $('input[name=banner]').val();
+            let type = $('input[name=turn_type]:checked').val();
+            let link_id = $('input[name=turn_link_id]').val();
+            if(!banner){
+              layer.msg('请上传banner')
+              return false;
+            }
+            if(!type){
+              layer.msg('请选择跳转类型');
+              return false;
+            }
+            if(!link_id){
+              layer.msg('请输入ID');
+              return false;
+            }
+            let data = $('#banner_form').serialize();
+            $.post("{:url('Activity/addBanner')}",data, function(res){
+              if(res.code == 0){
+                layer.msg(res.msg);
+              }else{
+                let banner_data = {
+                  'id' : res.data,
+                  'banner' : banner_src,
+                  type ,
+                  link_id
+                }
+                banner.push(banner_data);
+                layer.closeAll();
+                autoBanner();
+              }
+            }, 'json')
+          })
+
+          form.render();
+        })
+
+        $('#add_store_sure').on('click', function(){
+          let store_id = $('#hide_store_id').val()
+          let store_name = $('#hide_store_name').val()
+          let obj = {
+            store_id,
+            store_name,
+            'pro_data' : []
+          }
+          pro_data_type_store.push(obj)
+          layer.closeAll();
+          autoStoreShowPro();
+        })
+
+        $('.btn-add-store-per').on('click', function(){
+          layer.open({
+            type: 2,
+            title: 'layer mobile页',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['1200px', '90%'],
+            content: "{:url('Activity/storeList')}"
+          });
+        })
+
+        $('.btn-add-recom-coupon').on('click', function(){
+            let html_ = createRecomCoupon();
+            $('.wrap-recom-coupon').append(html_);
+            form.render();
+            checkRecomCoupon();
+        })
+
+        $('.btn-add-satisfy').on('click', function(){
+          let len = enough_rule.length;
+          let html_ = '<div class="per-type2">\n' +
+                  '                    <label>满</label>\n' +
+                  '                    <input style="width:150px;" onchange="changeEnoughRule.call(this)" data-type="1" type="text" name="satisfy_rule[' + len + '][0]" placeholder="请输入" autocomplete="off" class="layui-input">\n' +
+                  '                    <label>元</label>\n' +
+                  '                    <label>减</label>\n' +
+                  '                    <input style="width:150px;" onchange="changeEnoughRule.call(this)" data-type="2" type="text" name="satisfy_rule[' + len + '][1]" placeholder="请输入" autocomplete="off" class="layui-input">\n' +
+                  '                    <label>元</label>\n' +
+                  '                    <button onclick="delSatisfy.call(this)" style="margin-left:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>\n' +
+                  '                </div>';
+          $('.wrap-satisfy').append(html_);
+          checkActivityType2();
+          enough_rule.push({'satisfy_money':'','discount_money':''})
+        })
+
+        $('.btn-add-rtn-coupon').on('click', function(){
+          let html_ = createRtnCoupon();
+          $('.wrap-return-coupon').append(html_);
+          form.render();
+          enough_coupon_rule.push({'satisfy_money':'','coupon_id':0})
+          checkActivityType5();
+        })
+
+        form.on('radio(changeTurnType)', function(data){
+          let text = data.value == 1?"店铺参数ID":"商品参数ID";
+          $(".label-link-id").text(text);
+        })
+
+        form.on('select(chooseRecomCoupon)', function(data){
+            let id = data.value;
+            $(this).parents('.per-recom-coupon').find('input.recom_coupon_ids').val(id)
+            recom_coupon_ids = [];
+            $('input.recom_coupon_ids').each(function(k,v){
+              if($(v).val() != 0){
+                recom_coupon_ids.push($(v).val());
+              }
+            })
+          // console.log(recom_coupon_ids)
+        })
+
+        form.on('select(changeEnoughCoupon)', function(data){
+          let id = data.value;
+          let idx = $(this).parents('.per-rtn-coupon').index();
+          enough_coupon_rule[idx]['coupon_id'] = id;
+          console.log(enough_coupon_rule)
+        })
+
+        $('.btn-add-diy-per').on('click', function(){
+          let obj = {
+            'type_name' : '',
+            'type_id' : pro_data_type_diy.length + 1,
+            'pro_data' : []
+          }
+          pro_data_type_diy.push(obj)
+          autoDiyShowPro();
+        })
+
+      });
+
+      $('.del-cover').on('click', function(){
+        $(this).prev().prev('input[name=cover]').val('');
+        $(this).prev('img').attr('src','');
+        $(this).parent('div').hide();
+      })
+
+      let banner = [
+        // {
+        //   'id' : 1,
+        //   'banner' : "/uploads/admin/admin_thumb/20190917/7d50073a96cb835b3ce585f84d5d0653.png",
+        //   'type' : 1,
+        //   'link_id' : 1008610
+        // },
+      ];
+
+      banner = {$banners};
+
+      let enough_rule = [
+        // {
+        //   'satisfy_money' : 0,
+        //   'discount_money' : 0
+        // }
+      ];
+
+      enough_rule = {$enough_rule2}
+
+      let enough_coupon_rule = [
+        // {
+        //   'satisfy_money':0,
+        //   'coupon_id' : 1
+        // }
+      ];
+
+      enough_coupon_rule = {$return_coupon2}
+
+      function changeEnoughRule(){
+        let idx = $(this).parents('.per-type2').index();
+        let type = $(this).data('type');
+        let val = $(this).val();
+        if(type == 1){
+          enough_rule[idx]['satisfy_money'] = val;
+        }else{
+          enough_rule[idx]['discount_money'] = val;
+        }
+        console.log(enough_rule)
+      }
+
+      function changeTypeName(){
+        let idx = $(this).parents('.per-diy-pro').index();
+        let type_name = $(this).val();
+        pro_data_type_diy[idx].type_name = type_name;
+        console.log(pro_data_type_diy)
+      }
+
+      function checkDiyPro(){
+        let len = $('.per-diy-pro').size();
+        $('.tips-diy-pro').text("还能添加"+ (15-len) +"个自定义类别，类别名称请控制在4个字以内.");
+        if(len >= 15){
+          $('.btn-add-diy-per').hide();
+        }else{
+          $('.btn-add-diy-per').show();
+        }
+      }
+
+      function delPerStorePro(){
+        let idx = $(this).parents('.per-store-pro').index();
+        pro_data_type_store.splice(idx, 1);
+        autoStoreShowPro();
+      }
+
+      function delPerDiyPro(){
+        let idx = $(this).parents('.per-diy-pro').index();
+        pro_data_type_diy.splice((idx),1);
+        autoDiyShowPro();
+      }
+
+      function createRecomCoupon(){
+          let html_ = '<div class="per-recom-coupon">\n' +
+                  '            <div class="wrap-coupon">\n' +
+                  '              <select lay-filter="chooseRecomCoupon" name="" lay-verify="required" lay-search="">\n' +
+                  '                <option value="0">直接选择或搜索选择</option>\n' ;
+
+              coupon_can_use.forEach(function(v,k){
+
+                  html_ += '<option value="' + v.id + '">'+ v.coupon_name +'</option>\n'
+
+              })
+
+              html_ +=    '              </select>\n' +
+                  '            </div>\n' +
+                  '            <input name="recom_coupon_ids[]" class="recom_coupon_ids" type="hidden" value="0" />\n' +
+                  '            <button onclick="delRecomCoupon.call(this)" type="button" class="layui-btn layui-btn-xs layui-btn-normal btn-del-recom-coupon">删除</button>\n' +
+                  '          </div>';
+          return html_;
+      }
+
+      function createRtnCoupon(){
+        let html_ = '<div class="per-rtn-coupon">\n' +
+                '              <label>满</label>\n' +
+                '              <input style="width:150px;" onchange="changeEnoughCouponMoney.call(this)" type="text" placeholder="请输入" autocomplete="off" class="layui-input">\n' +
+                '              <label>元</label>\n' +
+                '              <label>返</label>\n' +
+                '              <div style="width:300px;display:inline-block;">\n' +
+                '                <select lay-verify="required" lay-filter="changeEnoughCoupon" lay-search="">\n' +
+                '                  <option value="0">选择或搜索优惠券</option>\n';
+        coupon_can_rtn.forEach(function(v,k){
+
+            html_ += '<option value="' + v.id + '">'+ v.coupon_name +'</option>\n'
+
+        })
+
+        html_ +=        '                </select>\n' +
+                '              </div>\n' +
+                '              <button onclick="delRtnCoupon.call(this)" style="margin-left:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>\n' +
+                '            </div>';
+        return html_;
+      }
+
+      function changeEnoughCouponMoney(){
+        let idx = $(this).parents('.per-rtn-coupon').index();
+        enough_coupon_rule[idx]['satisfy_money'] = $(this).val();
+      }
+
+      function autoBanner(){
+        console.log(banner);
+          let html_ = "";
+          let type = "店铺";
+          banner.forEach(function(v,k){
+            if(v.type == 2)type = "商品"
+            html_ += '<tr class="per-banner">\n' +
+                    '            <input type="hidden" name="banner_ids[]" value="'+ v.id +'" />\n' +
+                    '            <td>\n' +
+                    '              <img style="max-width: 150px;max-height:100px;" src="'+ v.banner +'" />\n' +
+                    '            </td>\n' +
+                    '            <td>' + type + '</td>\n' +
+                    '            <td>' + v.link_id + '</td>\n' +
+                    '            <td>\n' +
+                    '              <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="editBanner.call(this)">编辑</button>\n' +
+                    '              <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="delBanner.call(this)">删除</button>\n' +
+                    '            </td>\n' +
+                    '          </tr>';
+          })
+          $("#banner_list").html(html_)
+        checkBannerWrap();
+      }
+      autoBanner();
+
+      function editBanner(){
+        let idx = $(this).parents('.per-banner').index();
+        let banner_data = banner[idx];
+        //自定页
+        let html_ = '';
+        if(banner_data.type == 1){
+          html_ = '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="1" title="店铺" checked />\n' +
+          '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="2" title="商品" />\n' ;
+        }else{
+          html_ = '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="1" title="店铺" />\n' +
+          '        <input lay-filter="changeTurnType"  type="radio" name="turn_type" value="2" title="商品" checked />\n' ;
+        }
+        var alyerIdx = layui.layer.open({
+          title: "banner及链接",
+          type: 1,
+          skin: 'layui-layer-demo', //样式类名
+          closeBtn: 1, //不显示关闭按钮
+          anim: 2,
+          area: ['500px', '600px'],
+          shadeClose: false, //开启遮罩关闭
+          content: '<form class="layui-form" id="banner_form" action="{:Activity/addBanner}">' +
+
+                  '    <div class="layui-form-item" style="text-align: center; margin-top:10px;">\n' +
+                  '      <div class="layui-upload-drag" id="banner">\n' +
+                  '        <i class="layui-icon"></i>\n' +
+                  '        <p>点击上传，或将文件拖拽到此处</p>\n' +
+                  '      </div>\n' +
+                  '      <div style="margin-top:10px;">\n' +
+                  '        <input name="banner" type="hidden" value="'+ banner_data.banner +'" />\n' +
+                  '        <img class="img-banner" style="max-width:450px;max-height:200px;" src="'+ banner_data.banner +'" />\n' +
+                  '      </div style="margin-top:10px;">\n' +
+                  '    </div>' +
+                  '    <div class="layui-form-item">\n' +
+                  '      <label class="layui-form-label">跳转类型：</label>\n' +
+                  '      <div class="layui-input-block">\n' +
+                  html_ +
+                  '      </div>\n' +
+                  '    </div>' +
+                  '    <div class="layui-form-item">\n' +
+                  '       <label class="layui-form-label label-link-id">店铺参数ID</label>\n' +
+                  '       <div class="layui-input-block" style="width:180px;">\n' +
+                  '         <input type="text" name="turn_link_id" placeholder="请输入ID" value="'+ banner_data.link_id +'" class="layui-input">\n' +
+                  '       </div>\n' +
+                  '    </div>' +
+
+                  '  <div class="layui-form-item">\n' +
+                  '    <label class="layui-form-label"></label>\n' +
+                  '    <button type="button" class="layui-btn btn-submit-banner">确定</button>\n' +
+                  '    <button type="button" class="layui-btn layui-btn-primary btn-cancel-add">取消</button>\n' +
+                  '  </div>\n' +
+
+                  '</form>'
+        });
+
+        //拖拽上传（banner）
+        layui.upload.render({
+          elem: '#banner'
+          ,url: "{:url('common/upload')}"
+          ,done: function(res){
+            if(res.code !=2){
+              layui.layer.msg('图片上传失败')
+            }else{
+              $('#banner').next().next('div').show();
+              $('input[name=banner]').val(res.src);
+              $('input[name=banner]').next('.img-banner').attr('src',res.src);
+            }
+          }
+        });
+
+        $('.btn-cancel-add').on('click', function(){
+          layui.layer.close(alyerIdx);
+        });
+
+        $('.btn-submit-banner').on('click', function(){
+          let banner_src = $('input[name=banner]').val();
+          let type = $('input[name=turn_type]:checked').val();
+          let link_id = $('input[name=turn_link_id]').val();
+          if(!banner){
+            layui.layer.msg('请上传banner')
+            return false;
+          }
+          if(!type){
+            layui.layer.msg('请选择跳转类型');
+            return false;
+          }
+          if(!link_id){
+            layui.layer.msg('请输入ID');
+            return false;
+          }
+          let data = $('#banner_form').serialize();
+          data+="&id="+banner_data.id
+          console.log(data);
+          $.post("{:url('Activity/editBanner')}",data, function(res){
+            if(res.code == 0){
+              layui.layer.msg(res.msg);
+            }else{
+              let banner_data = {
+                'id' : res.data,
+                'banner' : banner_src,
+                type ,
+                link_id
+              }
+              banner[idx] = banner_data;
+              layui.layer.closeAll();
+              autoBanner();
+            }
+          }, 'json')
+        })
+
+        layui.form.render();
+      }
+
+      /**
+       * 删除banner
+       */
+      function delBanner(){
+          let idx = $(this).parents('.per-banner').index();
+          $(this).parents('.per-banner').remove();
+          banner.splice(idx, 1);
+          checkBannerWrap();
+      }
+
+      /**
+       * 删除推荐的优惠券
+       */
+       function delRecomCoupon(){
+          $(this).parents('.per-recom-coupon').remove();
+          recom_coupon_ids = [];
+          $('input.recom_coupon_ids').each(function(k,v){
+            if($(v).val() != 0){
+              recom_coupon_ids.push($(v).val());
+            }
+          })
+          checkRecomCoupon();
+       }
+
+      /**
+       * 判断banner列表的显示隐藏
+       */
+      function checkBannerWrap(){
+        let len = banner.length;
+        if(len == 0){
+            $('.wrap-banner').hide();
+        }else{
+            $('.wrap-banner').show();
+        }
+        $('.tips-banner').text("还可添加"+ (10 - len) +"张banner")
+      }
+
+      /**
+       * 检查推荐优惠券还可添加数量
+       */
+      function checkRecomCoupon(){
+          let len = $('input.recom_coupon_ids').size();
+          $('.tips-recom-coupon').text("还可添加"+ (8 - len) +"张优惠券");
+          if(len == 8){
+            $('.btn-add-recom-coupon').hide();
+          }else{
+            $('.btn-add-recom-coupon').show();
+          }
+      }
+      checkRecomCoupon();
+
+      let recom_coupon_ids = [];
+
+      recom_coupon_ids = {$recom_coupon_ids}
+
+      let coupon_can_use = [
+        // {
+        //   'id' : 1,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦1"
+        // },
+        // {
+        //   'id' : 2,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦2"
+        // },
+        // {
+        //   'id' : 3,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦3"
+        // },
+        // {
+        //   'id' : 4,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦4"
+        // },
+      ];
+
+      coupon_can_use = {$coupon_can_use2};
+
+      let coupon_can_rtn = [
+        // {
+        //   'id' : 1,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦1"
+        // },
+        // {
+        //   'id' : 2,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦2"
+        // },
+        // {
+        //   'id' : 3,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦3"
+        // },
+        // {
+        //   'id' : 4,
+        //   'coupon_name' : "中秋节推荐优惠券阿拉啦啦啦4"
+        // },
+      ];
+
+      coupon_can_rtn = {$coupon_can_rtn2};
+
+
+      let activity_type_tips = [
+              '仅作为将商品纳入活动板块，但不选择优惠形式的促销活动使用。',
+              '抵扣会修改商品售价，售价 =  商品单价 - 抵扣',
+              '满减不会修改价格。单次订单金额达到满减门槛时进行优惠补贴（取最大优惠）',
+              '打折会修改商品售价，售价 = 商品单价 * 折扣比例（但优惠金额不会超过上限）',
+              '返现不会修改价格。活动期间创建的订单完成后都会进行比例返现，但返现金额不会超过最大值。',
+              '返优惠券不会修改价格。活动期间创建的单个订单总金额达到门槛，且完成订单后进行返优惠券。注意：订单中途出现退货，订单金额无法满足门槛时无法触发返优惠券行为。'
+      ];
+
+      // function getCoupon(){
+      //   $.post("{:url('Activity/couponList')}",{1:1},function(res){
+      //     coupon_can_use = res.data.coupon_can_use;
+      //     coupon_can_rtn = res.data.coupon_can_rtn;
+      //   },'json')
+      // }
+      //
+      // getCoupon();
+
+      /**
+       * 删除满减
+       */
+      function delSatisfy(){
+        let idx = $(this).parents('.per-type2').index();
+        $(this).parents('.per-type2').remove();
+        enough_rule.splice(idx,1);
+        console.log(enough_rule)
+        checkActivityType2();
+      }
+
+      function checkActivityType2(){
+        let len = $('.per-type2').size();
+        $('.tips-activity-type2').text("还能添加"+ (5-len) +"档满减优惠")
+        if(len >= 5){
+          $('.btn-add-satisfy').hide();
+        }else{
+          $('.btn-add-satisfy').show();
+        }
+      }
+      checkActivityType2();
+
+      let satisfy_idx = $('.per-type2').size();
+
+      /**
+       * 删除返还优惠券
+       */
+      function delRtnCoupon(){
+        let idx = $(this).parents('.per-rtn-coupon').index();
+        enough_coupon_rule.splice(idx,1);
+        $(this).parents('.per-rtn-coupon').remove();
+        checkActivityType5();
+      }
+
+      function checkActivityType5(){
+        let len = $('.per-rtn-coupon').size();
+        $('.tips-activity-type5').text("还能添加"+ (5-len) +"档返优惠券优惠")
+        if(len >= 5){
+          $('.btn-add-rtn-coupon').hide();
+        }else{
+          $('.btn-add-rtn-coupon').show();
+        }
+      }
+      checkActivityType5();
+
+      /**
+       * 删除单个商品
+       */
+      function delPro(){
+        let idx = $(this).parents('.per-diy-pro').index();
+        let index = $(this).parents('.per-pro').index();
+        console.log(idx ,index);
+        pro_data_type_diy[idx]['pro_data'].splice(index,1);
+        console.log(pro_data_type_diy)
+        autoDiyShowPro();
+      }
+
+      //店铺方式选择商品
+      let pro_data_type_store = [
+        // {
+        //   'store_id' : 1,
+        //   'store_name' : '测试店铺122',
+        //   'pro_data' : [
+        //     {
+        //       'pro_id' : 693,
+        //       'pro_name' : '测试商品245'
+        //     }
+        //   ]
+        // }
+      ];
+
+      pro_data_type_store ={$pro_store}
+
+      //自定义方式选择商品
+      let pro_data_type_diy = [
+          // {
+          //   'type_name' : '',
+          //   'type_id' : 1,
+          //   'pro_data' : [
+          //     // {
+          //     //   'pro_id' : 901,
+          //     //   'pro_name' : '测试商品22'
+          //     // }
+          //   ]
+          // }
+      ];
+
+      pro_data_type_diy = {$pro_diy};
+
+      function autoDiyShowPro(){
+        let html_ = '';
+        pro_data_type_diy.forEach(function(v,k){
+          console.log(v)
+          html_ += '<div class="per-diy-pro">\n' +
+                  '              <div class="layui-input-inline">\n' +
+                  '                <input onchange="changeTypeName.call(this)" type="text" name="pros['+ k +'][type_name]" placeholder="请输入类别名称" autocomplete="off" class="layui-input" value="'+ v.type_name +'">\n' +
+                  '              </div>\n' +
+                  '              <label style="float:left;margin-top:8px;">商品范围</label>\n' +
+                  '              <div class="wrap-per-pros layui-input-inline">\n'
+          v.pro_data.forEach(function(vv,kk){
+            html_ += '                <span class="layui-btn layui-btn-sm per-pro">\n' + vv.pro_name +
+                    '                  <input name="pros['+ k +'][pro][]" type="hidden" value="'+ vv.pro_id +'">\n' +
+                    '                  <i onclick="delPro.call(this)" style="cursor: pointer;margin-left:8px;" class="layui-icon">&#xe640;</i>\n' +
+                    '                </span>\n'
+          })
+
+
+          html_ +=       '                <button onclick="showAddPro.call(this)" type="button" data-type="5" data-type-id="'+ v.type_id +'" class="layui-btn layui-btn-primary layui-btn-sm">添加</button>\n' +
+                  '              </div>\n' +
+                  '<button onclick="delPerDiyPro.call(this)" style="margin-left:10px;margin-top:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>' +
+                  '            </div>';
+        })
+        $('.diy-pro-wrap').html(html_);
+        checkDiyPro();
+      }
+      autoDiyShowPro();
+
+      function autoStoreShowPro(){
+        let html_ = '';
+        pro_data_type_store.forEach(function(v,k){
+          html_ += '<div class="per-store-pro">\n' +
+                  '              <div class="layui-input-inline">\n' +
+                  '                <input type="text" value="'+ v.store_name +'" disabled class="layui-input">\n' +
+                  '              </div>\n' +
+                  '              <label style="float:left;margin-top:8px;">商品范围</label>\n' +
+                  '              <div class="wrap-per-pros layui-input-inline">\n' ;
+
+          v.pro_data.forEach(function(vv,kk){
+            html_ += '                <span class="layui-btn layui-btn-sm per-pro">\n' + vv.pro_name +
+                    '                  <input name="pros['+ k +'][pro][]" type="hidden" value="'+ vv.pro_id +'">\n' +
+                    '                  <i onclick="delStorePro.call(this)" style="cursor: pointer;margin-left:8px;" class="layui-icon">&#xe640;</i>\n' +
+                    '                </span>\n'
+          })
+
+          html_ +=        '                <button onclick="showAddStorePro.call(this)" type="button" data-type="4" data-store-id="'+ v.store_id +'" class="layui-btn layui-btn-primary layui-btn-sm">添加</button>\n' +
+                  '              </div>\n' +
+                  '              <button onclick="delPerStorePro.call(this)" style="margin-left:10px;margin-top:10px;" type="button" class="layui-btn layui-btn-xs layui-btn-normal">删除</button>\n' +
+                  '            </div>';
+        })
+        $('.store-pro-wrap').html(html_);
+      }
+      autoStoreShowPro();
+
+      function delStorePro(){
+        let idx = $(this).parents('.per-store-pro').index();
+        console.log(idx)
+        let index = $(this).parents('.per-pro').index();
+        pro_data_type_store[idx]['pro_data'].splice(index,1)
+        autoStoreShowPro();
+      }
+
+      function createDiyPro(keywords){
+        let data = pro_data_type_diy
+        let id = parseInt($("input[name=id]").val());
+        $.post("{:url('Activity/storeProductList')}", {keywords, data, id}, function(res){
+          let store_html = '';
+          res.data.forEach(function(v,k){
+            store_html += '<div class="per-store">' +
+                    '<div class="layui-form-item" style="margin-bottom: 0;">\n' +
+                    '    <label class="layui-form-label" style="width: 20px;"><i style="cursor: pointer;" onclick="openClose.call(this)" class="layui-icon">&#xe668;</i></label>\n' +
+                    '    <div class="layui-input-block" style="margin-left:50px;">\n' +
+                    '      <input lay-filter="chooseStore" value="'+ v.id +'" data-name="'+ v.store_name +'" class="ipt-store" type="checkbox" lay-skin="primary" title="'+ v.store_name +'" />\n' +
+                    '    </div>\n' +
+
+                    '  </div>'+
+                    '<div class="wrap-store-pro ayui-input-block">' +
+                    '    <label class="layui-form-label" style="width:20px;"></label>\n' +
+                    '    <div class="layui-input-block" style="margin-left:50px;">\n';
+
+            v.pro_list.forEach(function(vv,kk){
+              if(vv.is_check){
+                if(vv.is_disabled){
+                  store_html += '      <input disabled lay-filter="choosePro" value="'+ vv.id +'" type="checkbox" lay-skin="primary" title="'+ vv.product_name +'">\n'
+                }else{
+                  store_html += '      <input checked lay-filter="choosePro" value="'+ vv.id +'" type="checkbox" lay-skin="primary" title="'+ vv.product_name +'">\n'
+                }
+              }else{
+                if(vv.is_disabled){
+                  store_html += '      <input disabled lay-filter="choosePro" value="'+ vv.id +'" type="checkbox" lay-skin="primary" title="'+ vv.product_name +'">\n'
+                }else{
+                  store_html += '      <input lay-filter="choosePro" value="'+ vv.id +'" type="checkbox" lay-skin="primary" title="'+ vv.product_name +'">\n'
+                }
+              }
+            })
+
+
+            store_html+=       '    </div>'+
+                    '</div>' +
+                    '</div>' ;
+          })
+          $('.wrap-diy-pro').html(store_html);
+          layui.form.render();
+          $('.per-store').each(function(k,v){
+            let len = $(v).find('.wrap-store-pro').find('.layui-form-checked').size();
+            let len2 = $(v).find('.wrap-store-pro').find('.layui-form-checkbox').size();
+            if(len == len2){
+              $(v).find('.ipt-store').prop('checked', true);
+            }else{
+              $(v).find('.ipt-store').prop('checked', false);
+            }
+            let dis_len = $(v).find('.layui-checkbox-disbaled').size();
+            if(dis_len){
+              $(v).find('.ipt-store').prop('disabled', true);
+            }
+            layui.form.render();
+          });
+        }, 'json')
+      }
+
+      function changeStore(){
+        let keywords = $('input[name=keywords]').val();
+        if(!$.trim(keywords)){
+          layui.layer.msg('请填写关键词')
+          return false;
+        }
+        createDiyPro(keywords);
+      }
+
+      function showAddPro(){
+        let pro_type = $(this).data('type');
+        let type_id = $(this).data('typeId');
+
+        createDiyPro('DEMO');
+
+        var alyerIdx = layer.open({
+          title: "选择商品",
+          type: 1,
+          skin: 'layui-layer-demo', //样式类名
+          closeBtn: 2, //不显示关闭按钮
+          anim: 2,
+          area: ['1200px', '600px'],
+          shadeClose: true, //开启遮罩关闭
+          content:
+                  '<div style="margin-top:20px;">' +
+                  '<div class="layui-form-item">\n' +
+                  '    <label class="layui-form-label" style="margin-left:0;width:20px;"></label>\n' +
+                  '    <div class="layui-input-inline">\n' +
+                  '      <input type="text" name="keywords" placeholder="请输入店铺名" autocomplete="off" class="layui-input">\n' +
+                  '    </div>\n' +
+                  '<button type="button" class="layui-btn" onclick="changeStore()">筛选</button>' +
+                  '  </div>'+
+
+                  '</div>'+
+
+                  '<form class="layui-form" id="banner_form" action="{:Activity/addBanner}">' +
+
+                  '<div class="wrap-diy-pro">' +
+
+                  '</div>' +
+                  '  <div class="layui-form-item" style="margin-top:10px;">\n' +
+                  '    <label class="layui-form-label" style="width:20px;"></label>\n' +
+                  '    <button type="button" class="layui-btn btn-submit-pros">确定</button>\n' +
+                  '    <button type="button" class="layui-btn layui-btn-primary btn-cancel-add">取消</button>\n' +
+                  '  </div>\n' +
+
+
+                  '</form>'
+        })
+        layui.form.render();
+
+        // $('.icon-open').on('click', function(){
+        //   let status = $(this).parents('.per-store').find('.wrap-store-pro').css('display');
+        //   if(status == 'block'){
+        //     $(this).parents('.per-store').find('.wrap-store-pro').hide();
+        //     $(this).html('&#xe66b;');
+        //   }else{
+        //     $(this).parents('.per-store').find('.wrap-store-pro').show();
+        //     $(this).html('&#xe668;');
+        //   }
+        // })
+
+
+
+        $('.btn-submit-pros').on('click', function(){
+          let data = [];
+          let pro_total_data = [];
+          $('.per-store').each(function(k,v){
+            let store_id = $(v).find('.ipt-store').val();
+            let store_name = $(v).find('.ipt-store').data('name');
+            let pros = $(v).find('.wrap-store-pro').find('input:checked');
+            if(pros.size()){
+              let pro_data = [];
+              pros.each(function(kk,vv){
+                let pro_obj = {
+                  'pro_id' : $(vv).val(),
+                  'pro_name' : $(vv).attr('title')
+                };
+                pro_data.push(pro_obj)
+                pro_total_data.push(pro_obj);
+              })
+              let obj = {
+                store_id,
+                store_name,
+                pro_data : pro_data
+              }
+              data.push(obj)
+            }
+          })
+
+          //判断商品选择方式
+          if(pro_type == 5){ //自定义
+            pro_data_type_diy.forEach(function(v,k){
+              if(v.type_id == type_id){
+                console.log(pro_total_data)
+                pro_data_type_diy[k].pro_data = pro_data_type_diy[k].pro_data.concat(pro_total_data)
+              }
+            })
+            autoDiyShowPro();
+            layui.layer.close(alyerIdx);
+          }else if(pro_type == 4){  //店铺
+            pro_data_type_store.forEach(function(v,k){
+
+            })
+          }
+        })
+
+        layui.form.on('checkbox(choosePro)', function(data){
+          autoCheckBox()
+        })
+
+        layui.form.on('checkbox(chooseStore)', function(data){
+          let checked = data.elem.checked;
+          if(checked){
+            $(this).parents('.per-store').find('.wrap-store-pro input').prop('checked', true);
+          }else{
+            $(this).parents('.per-store').find('.wrap-store-pro input').prop('checked', false);
+          }
+          layui.form.render();
+        })
+
+        function autoCheckBox(){
+          $('.per-store').each(function(k,v){
+            let len = $(v).find('.wrap-store-pro').find('.layui-form-checked').size();
+            let len2 = $(v).find('.wrap-store-pro').find('.layui-form-checkbox').size();
+            if(len == len2){
+              $(v).find('.ipt-store').prop('checked', true);
+            }else {
+              $(v).find('.ipt-store').prop('checked', false);
+            }
+            let dis_len = $(v).find('.layui-checkbox-disbaled').size();
+            if(dis_len){
+              $(v).find('.ipt-store').prop('disabled', true);
+            }
+            layui.form.render();
+          });
+        }
+        autoCheckBox();
+      }
+
+      function openClose(){
+        let status = $(this).parents('.per-store').find('.wrap-store-pro').css('display');
+        if(status == 'block'){
+          $(this).parents('.per-store').find('.wrap-store-pro').hide();
+          $(this).html('&#xe66b;');
+        }else{
+          $(this).parents('.per-store').find('.wrap-store-pro').show();
+          $(this).html('&#xe668;');
+        }
+      }
+
+      function showAddStorePro(){
+        let store_id = $(this).data('storeId');
+        let pros_html = '';
+        let id = parseInt($("input[name=id]").val());
+        var index = layer.load(1, {
+          shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+        $.post("{:url('Activity/productList')}", {store_id, pro_data_type_store, id}, function(res){
+          layer.close(index);
+          res.data.forEach(function(v,k){
+            if(v.is_check){
+              if(v.is_disabled){
+                pros_html +=  '      <input disabled lay-filter="choosePro" value="'+ v.id +'" type="checkbox" lay-skin="primary" title="'+ v.product_name +'">\n';
+              }else{
+                pros_html +=  '      <input checked lay-filter="choosePro" value="'+ v.id +'" type="checkbox" lay-skin="primary" title="'+ v.product_name +'">\n';
+              }
+            }else{
+              if(v.is_disabled){
+                pros_html +=  '      <input disabled lay-filter="choosePro" value="'+ v.id +'" type="checkbox" lay-skin="primary" title="'+ v.product_name +'">\n';
+              }else{
+                pros_html +=  '      <input lay-filter="choosePro" value="'+ v.id +'" type="checkbox" lay-skin="primary" title="'+ v.product_name +'">\n';
+              }
+            }
+          })
+          $('.wrap-layer-store-pro').html(pros_html);
+          layui.form.render();
+        }, 'json')
+
+        var alyerIdx = layui.layer.open({
+          title: "选择商品",
+          type: 1,
+          skin: 'layui-layer-demo', //样式类名
+          closeBtn: 1, //不显示关闭按钮
+          anim: 2,
+          area: ['1200px', '600px'],
+          shadeClose: true, //开启遮罩关闭
+          content: '<form style="margin-top:20px;" class="layui-form" id="store-pro-form">' +
+
+                  '<div class="per-store">' +
+                  '<div class="wrap-store-pro ayui-input-block">' +
+                  '    <div class="wrap-layer-store-pro layui-input-block" style="margin-left:50px;">\n' +
+
+                  '    </div>'+
+                  '</div>' +
+                  '</div>' +
+
+                  '  <div class="layui-form-item" style="margin-top:10px;">\n' +
+                  '    <label class="layui-form-label" style="width:20px;"></label>\n' +
+                  '    <button type="button" class="layui-btn btn-submit-pros">确定</button>\n' +
+                  '    <button type="button" class="layui-btn layui-btn-primary btn-cancel-add">取消</button>\n' +
+                  '  </div>\n' +
+                  '</div>' +
+
+                  '</form>'
+        })
+
+
+        $('.btn-cancel-add').on('click', function(){
+          layui.layer.close(alyerIdx)
+        })
+        layui.form.render();
+
+        $('.btn-submit-pros').on('click', function(){
+          let pro_data = [];
+          $('#store-pro-form input:checked').each(function(k,v){
+            pro_data.push({
+              'pro_id' : $(v).val(),
+              'pro_name' : $(v).attr('title')
+            })
+          })
+          pro_data_type_store.forEach(function(v,k){
+            if(v.store_id == store_id){
+              pro_data_type_store[k]['pro_data'] = pro_data_type_store[k]['pro_data'].concat(pro_data)
+            }
+          })
+          autoStoreShowPro();
+          layui.layer.close(alyerIdx);
+        })
+      }
+
+  </script>
+
+</div>
+</body>
+</html>

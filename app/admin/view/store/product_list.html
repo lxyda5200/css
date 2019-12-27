@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('admin/store/index')}" class="a_menu">商家列表</a></li>
+            <li class="layui-this">{$store_name}的商品列表</li>
+        </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+        <colgroup>
+            <col width="50">
+            <col width="100">
+            <col width="100">
+            <col width="120">
+            <col width="80">
+            <col width="100">
+            <col width="80">
+            <col width="80">
+            <col width="100">
+            <col width="120">
+            <col width="120">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>商品图片</th>
+            <th>商品名称</th>
+            <th>商品分类</th>
+            <th>商品价格</th>
+            <th>销售量</th>
+            <th>状态</th>
+            <th>审核状态</th>
+            <th>创建时间</th>
+            <th>审核时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="list" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td><a href="{$vo.product_img}" class="tooltip"><img src="{$vo.product_img}" width="20" height="20"></a></td>
+                <td>{$vo.product_name}</td>
+                <td>{$vo.category_name}</td>
+                <td>{$vo.price} 元</td>
+                <td>{$vo.sales}</td>
+                <td>{if condition="$vo.status eq 1"}上架{else/}下架{/if}</td>
+                <td>{if condition="$vo.sh_status eq 1"}<span style="color: green">审核通过</span>{elseif condition="$vo.sh_status eq -1"/}<span style="color: red">审核未通过</span>{else/}<span style="color: blue">待审核</span>{/if}</td>
+                <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                <td>{if condition="$vo.sh_time eq 0"}{else/}{$vo.sh_time|date="Y-m-d H:i:s",###}{/if}</td>
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/store/product_publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-eye" aria-hidden="true"></i>查看详情</a>
+                        {if condition="$vo.sh_status eq 0"}
+                        <a href="{:url('admin/store/dsh_product',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-edit" aria-hidden="true">进入审核</i></a>
+                        {/if}
+                        {if condition="$vo.sh_status eq 1"}
+                        <a class="layui-btn layui-btn-xs layui-btn-primary status" {if condition="$vo.status eq 1"}data-id="0"{else /}data-id="1"{/if} id="{$vo.id}" style="margin-right: 0;font-size:12px;" ><i class="fa {if condition="$vo.status eq 1"}fa-toggle-on{else /}fa-toggle-off{/if}"></i>上架/下架</a>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </tbody>
+    </table>
+    </form>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+        layui.use('layer', function(){
+            var layer = layui.layer;
+
+
+            $('.status').click(function(){
+                var id = $(this).attr('id');
+                var status = $(this).attr('data-id');
+                layer.confirm('确定要设置?', function(index) {
+                    $.ajax({
+                        url:"{:url('admin/store/product_status')}",
+                        type:'post',
+                        data:{id:id,status:status},
+                        success:function(res) {
+                            layer.msg(res.msg);
+                            if(res.code == 1) {
+                                setTimeout(function(){
+                                    location.href = res.url;
+                                },1500)
+                            }
+                        }
+                    })
+                })
+            })
+
+        });
+    </script>
+</div>
+</body>
+</html>

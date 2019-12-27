@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商家列表</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/check.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+
+    <div class="today-table-header">
+        <form class="layui-form layui-inline" lay-filter="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="key" class="layui-input" placeholder="请输入营业执照上的名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 110px;">营业执照注册号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="license_no" class="layui-input" placeholder="请输入注册号">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">申请时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="stime" lay-verify="date" placeholder="开始时间" autocomplete="off" id="starDate" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="etime" lay-verify="date" placeholder="结束时间" autocomplete="off" id="endDate" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>营业执照注册号</th>
+            <th>主体类型</th>
+            <th>入驻业务</th>
+            <th>名称</th>
+            <th>营业期限</th>
+            <th>成立时间</th>
+            <th>申请时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>84908034</td>
+            <td>个体工商户</td>
+            <td>会员商城业务</td>
+            <td>春熙路薇薇小铺女装店</td>
+            <td>起始时间：2010-01-01<br/>
+                到期时间：2020-01-01</td>
+            <td>2019-10-02 12:00:00</td>
+            <td>2019-10-02 12:00:00</td>
+            <td>待审核</td>
+            <td style="width: 100px;">
+                &lt;!&ndash;<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>&ndash;&gt;
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.seeDetails(this)">
+                    <i class="layui-icon">&#xe60e;</i>查看
+                </button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 查看 -->
+<div class="layer-box-page" id="detailsLayer">
+    <div class="layer-texttit">企业主体信息</div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md3 w-row">
+            <div class="">名称：</div>
+            <div class="w-font-bold" id="merchantName"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">主体类型：</div>
+            <div class="w-font-bold" id="mainType"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">入驻业务：</div>
+            <div class="" id="merchantType"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">证件类型：</div>
+            <div class="" id="paperType"></div>
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md3 w-row">
+            <div class="">营业执照注册号：</div>
+            <div id="licenseNo"></div>
+        </div>
+        <div class="layui-col-md9 w-row">
+            <div class="">营业执照电子版：</div>
+            <ul class="w-row" id="licenseImg">
+
+            </ul>
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md3 w-row" style="align-items: center">
+            <div class="">成立时间：</div>
+            <div class="" id="buildTime"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">营业期限：</div>
+            <div class="" id="yyTime"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">经营者证件类型：</div>
+            <div class="" id="cardType"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md12 w-row">
+            <div class="">经营者证件电子版：</div>
+            <ul id="cardImg" class="w-row">
+
+            </ul>
+        </div>
+    </div>
+    <hr class="layui-bg-gray">
+    <div class="layer-texttit w-mt10">审核处理</div>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">审核结论</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sh_status" value="1" title="审核通过" checked>
+                <input type="radio" name="sh_status" value="2" title="审核不通过">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">不通过原因</label>
+            <div class="layui-input-block">
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="nopass1" lay-skin="primary" value="身份证信息与法人身份证不一致" title="身份证信息与法人身份证不一致">
+                <input type="checkbox" name="nopass2" lay-skin="primary" value="经营范围与营业执照范围不一致" title="经营范围与营业执照范围不一致">
+                <input type="checkbox" name="nopass3" lay-skin="primary" value="营业执照已过期" title="营业执照已过期">
+                <input type="checkbox" name="nopass4" lay-skin="primary" value="法人身份证已过期" title="法人身份证已过期">
+                <input type="checkbox" name="nopass5" lay-skin="primary" value="营业执照和法人身份证电子图片模糊不清" title="营业执照和法人身份证电子图片模糊不清">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea class="layui-textarea" name="reason" placeholder="添加审核备注说明" ></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 66px;">
+            <div class="layui-input-block">
+                <input type="hidden" name="merchantId">
+                <button class="layui-btn" lay-submit lay-filter="formCheckSubmit">提交</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+</body>
+<script src="__WZH__/js/http.js"></script>
+
+<script>
+    let layer = null;
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let openLayer = null;
+    let obj = {
+        getDatalist: function(page, key, license_no, time, isPage) {
+            ajaxPost('/admin/Company_review/reviewList', {
+                page: page,
+                key: key,
+                license_no: license_no,
+                time: time
+            }).then(res => {
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        tr += `<tr>
+                                <td>`+datalist[i].license_no+`</td>
+                                <td>`+datalist[i].main_body_type+`</td>
+                                <td>`+datalist[i].type+`</td>
+                                <td>`+datalist[i].license_name+`</td>
+                                <td>起始时间：`+datalist[i].open_start_time+`<br/>
+                                    到期时间：`+datalist[i].open_end_time+`</td>
+                                <td>`+datalist[i].build_time+`</td>
+                                <td>`+datalist[i].create_time+`</td>
+                                <td>`+datalist[i].status+`</td>
+                                <td style="width: 100px;">
+                                    <!--<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>-->
+                                    <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.seeDetails(`+datalist[i].id+`)">
+                                        <i class="layui-icon">&#xe60e;</i>查看
+                                    </button>
+                                </td>
+                            </tr>`;
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/10));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 10
+                                ,theme: '#FF5722'
+                                ,jump: function(objs, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = objs.curr;
+                                        obj.getDatalist(objs.curr, key, license_no, time, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+
+            }).catch(err => {});
+
+        },
+        // 查看详情
+        seeDetails(id) {
+            ajaxPost('/admin/Company_review/reviewDetail', {
+                id: id
+            }).then(res => {
+                $("input[name=merchantId]").val(id);
+                $("#merchantName").text(res.license_name);
+                $("#mainType").text(res.main_body_type);
+                $("#merchantType").text(res.type);
+                $("#paperType").text(res.paper_type);
+                $("#licenseNo").text(res.license_no);
+                $("#buildTime").text(res.build_time);
+                $("#yyTime").text(res.open_start_time+' 至 '+res.open_end_time);
+                $("#cardType").text(res.card_type);
+
+                let license_img_str = '';
+                if (res.license_img.length > 0) {
+                    for(let i in res.license_img){
+                        license_img_str += `<li class="w-mr10 w-mb15">
+                                            <img layer-src="`+httpUrl+res.license_img[i]+`" src="`+httpUrl+res.license_img[i]+`" class="w-img120 w-hover">
+                                        </li>`
+                    }
+                }
+                $("#licenseImg").html(license_img_str);
+                let card_img_str = '';
+                if (res.card_img.length > 0) {
+                    for(let i in res.card_img){
+                        card_img_str += `<li class="w-mr10 w-mb15">
+                                            <img layer-src="`+httpUrl+res.card_img[i]+`" src="`+httpUrl+res.card_img[i]+`" class="w-img120 w-hover">
+                                        </li>`
+                    }
+                }
+                $("#cardImg").html(card_img_str);
+
+                layer.photos({
+                    photos: '#licenseImg'
+                    ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                });
+                layer.photos({
+                    photos: '#cardImg'
+                    ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                });
+                openLayer = layer.open({
+                    type: 1,
+                    content: $('#detailsLayer'),
+                    title: '商家资质审核',
+                    area: ['90%', '90%'],
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                        obj.closeDetailsLayer()
+                    }
+                })
+            })
+
+        },
+        closeDetailsLayer() {
+            // $("input[name=storeId]").val('');
+        },
+    };
+    $(function() {
+        obj.getDatalist(1, '', '', '', true);
+        layui.use(["layer", "form", "upload", "laydate"], function() {
+            layer = layui.layer;
+            form = layui.form;
+            upload = layui.upload;
+            let laydate = layui.laydate;
+            laydate.render({
+                elem: '#starDate'
+                , type: 'date'
+            });
+            laydate.render({
+                elem: '#endDate'
+                , type: 'date'
+            });
+            // 搜索
+            form.on('submit(formSearchList)', function(data) {
+                let param = data.field;
+                let time = '';
+                if (param.stime&&param.etime) {
+                    time = (param.stime).replace(/-/g,'/') + '-' + (param.etime).replace(/-/g,'/')
+                }
+                now_page = 1;
+                obj.getDatalist(1, param.key, param.license_no, time, true);
+                return false;
+            });
+            // 审核提交
+            form.on('submit(formCheckSubmit)', function(data){
+                let param = data.field;
+                let content = param.reason;
+                if (param.sh_status == 1) {
+                    // 通过
+                } else {
+                    if(!param.nopass1&&!param.nopass2&&!param.nopass3&&!param.nopass4&&!param.nopass5&&!param.reason){
+                        layer.msg('请输入不通过原因');
+                        return false
+                    }else{
+                        if (param.nopass1) {
+                            content =param.nopass1+','+ content
+                        }
+                        if (param.nopass2) {
+                            content = param.nopass2+','+ content
+                        }
+                        if (param.nopass3) {
+                            content = param.nopass3+','+ content
+                        }
+                        if (param.nopass4) {
+                            content = param.nopass4+','+ content
+                        }
+                        if (param.nopass5) {
+                            content = param.nopass5+','+ content
+                        }
+                    }
+                }
+                let subParam = {
+                    id: $("input[name=merchantId]").val(),
+                    status: param.sh_status,
+                    review_note: content
+                };
+                ajaxPost('/admin/Company_review/review', subParam).then(res => {
+                    layer.close(openLayer);
+                    layer.msg('审核成功', {time: 1500}, function(){
+                        let key = $("input[name=key]").val();
+                        let license_no = $("input[name=license_no]").val();
+                        let stime = $("input[name=stime]").val();
+                        let etime = $("input[name=etime]").val();
+                        let time = '';
+                        if (stime&&etime) {
+                            time = stime.replace(/-/g,'/') + '-' + etime.replace(/-/g,'/')
+                        }
+                        obj.getDatalist(now_page, key, license_no, time, false);
+                    })
+
+                });
+                //
+                return false;
+            })
+
+        })
+
+
+
+    });
+</script>
+</html>

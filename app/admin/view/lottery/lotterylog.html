@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<style>
+    .flex-row-center{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .flex-col-center{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin" method="post" action="">
+
+        <input type="hidden" id="id" value="{$id}">
+        <div class="layui-form-item">
+            <label style="padding-left: 20px;font-size: 18px;">活动名称:</label>
+            <label style="font-size: 18px;">{$active_data.title}</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label style="padding-left: 20px;font-size: 18px;">活动时间:</label>
+            <label style="font-size: 18px;">{$active_data.start_time} - {$active_data.end_time}</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label style="padding-left: 20px;font-size: 18px;">实时数据:</label>
+            <label style="font-size: 18px;">{$time}</label>
+        </div>
+
+
+        <div class="layui-row" style="margin-top: 60px;">
+            <div class="layui-col-md6 flex-col-center" style="padding: 25px;border-right: 1px solid #0C0C0C;height: 265px;">
+                <div class="today-cy" style="font-size: 17px;">今日参与用户数(人)</div>
+                <div class="today-cy-num" style="font-size: 25px;color: firebrick;margin-top: 15px;">{$today.cy}</div>
+                <div class="today-zj" style="font-size: 17px;margin-top: 25px;">今日中奖用户数(人)</div>
+                <div class="today-cy-num" style="font-size: 25px;color: firebrick;margin-top: 15px;">{$today.zj}</div>
+            </div>
+            <div class="layui-col-md6 flex-col-center" style="padding: 25px;height: 265px;">
+                <div class="today-cy" style="font-size: 17px;">累计参与用户数(人)</div>
+                <div class="today-cy-num" style="font-size: 25px;color: firebrick;margin-top: 15px;">{$lj.cy}</div>
+                <div class="today-zj" style="font-size: 17px;margin-top: 25px;">累计中奖用户数(人)</div>
+                <div class="today-cy-num" style="font-size: 25px;color: firebrick;margin-top: 15px;">{$lj.zj}</div>
+            </div>
+        </div>
+
+        <div class="layui-row" style="margin-top: 60px;">
+            <div id="zj" class="layui-col-md6 flex-col-center" style="border-right: 1px solid #0C0C0C;height: 265px;"></div>
+            <div id="zjtj" class="layui-col-md6 flex-col-center" style="height: 265px;"></div>
+        </div>
+
+    </form>
+
+
+    <form class="layui-form" method="post" action="{:url('exportExcel')}">
+        <!--搜索-->
+        <input type="hidden" name="id" value="{$id}">
+        <div class="layui-form-item" style="float: left;margin-top: 35px;">
+            <div class="layui-input-inline flex-row-center" style="width: 35%;">
+                <label style="width: 240px;">抽奖时间：</label>
+                <input type="text" id="start_time" name="start_time" lay-verify="title" value="" autocomplete="off" placeholder="请选择开始时间" class="layui-input layui-btn-sm">
+                ——
+                <input type="text" id="end_time" name="end_time" lay-verify="title" value="" autocomplete="off" placeholder="请选择结束时间" class="layui-input layui-btn-sm">
+            </div>
+
+
+            <div class="layui-input-inline flex-row-center">
+                <label style="width: 105px;">手机号：</label>
+                <input type="text" name="mobile" lay-verify="title" value="" autocomplete="off" placeholder="请输入手机号" class="layui-input layui-btn-sm">
+            </div>
+
+
+            <div class="layui-input-inline flex-row-center">
+                <label style="width: 145px;">奖品名称：</label>
+                <input type="text" name="gift_name" lay-verify="title" value="" autocomplete="off" placeholder="请输入奖品名" class="layui-input layui-btn-sm">
+            </div>
+
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="is_reward">
+                        <option value="">是否中奖</option>
+                        <option value="">全部</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="button" onclick="AjaxPage(1);" class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">搜索</button>
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">导出</button>
+        </div>
+
+
+        <table class="layui-table" lay-size="sm">
+
+            <thead>
+            <tr>
+                <th>用户名称</th>
+                <th>手机号</th>
+                <th>抽奖时间</th>
+                <th>是否中奖</th>
+                <th>奖品名称</th>
+            </tr>
+            </thead>
+            <tbody id="view"></tbody>
+        </table>
+
+        <script id="tpl" type="text/html">
+            {{# layui.each(d.data, function(index, item) { }}
+            <tr>
+                <td>{{item.nickname}}</td>
+                <td>{{item.mobile==null?"未知":item.mobile}}</td>
+                <td>{{item.draw_time}}</td>
+                <td>{{item.is_reward==0?"未中奖":"中奖"}}</td>
+                <td>{{item.gift_name==null?"无奖品":item.gift_name}}</td>
+            </tr>
+            {{#  }); }}
+        </script>
+        <div id="AjaxPage" style="text-align:right;"></div>
+        <div style="text-align: right;"></div>
+    </form>
+</div>
+
+
+</body>
+</html>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script src="__PUBLIC__/jquery/jquery.min.js"></script>
+<script src="__WZH__/js/echarts.min.js"></script>
+<script>
+
+    // 时间控件加载
+    layui.use(['form', 'laydate'], function () {
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#start_time',
+            type: "datetime"
+        });
+
+        laydate.render({
+            elem: '#end_time',
+            type: "datetime"
+        });
+
+    })
+
+    var lottery_id = $('#id').val()
+    // 中奖/参与统计
+    $.ajax({
+        url: "{:url('accumulative')}",
+        method: 'post',
+        data: {lottery_id: lottery_id},
+        dataType: 'json',
+        success: function (res) {
+            var data = res.data
+            echarts.init(document.getElementById('zj')).setOption({
+                series: {
+                    type: 'pie',
+                    data: [
+                        {name: '累计中奖人数'+((data.yes+data.no)==0?"0%":(Math.round(data.yes/(data.yes+data.no)*100*100)/100+"%"))+" "+data.yes+"人", value: data.yes},
+                        {name: '累计未中奖人数'+((data.yes+data.no)==0?"0%":(Math.round(data.no/(data.yes+data.no)*100*100)/100+"%"))+" "+data.no+"人", value: data.no}
+                    ]
+                }
+            });
+        }
+    })
+
+
+    // 中奖次数统计
+    $.ajax({
+        url: "{:url('lotteryCount')}",
+        method: 'post',
+        data: {lottery_id: lottery_id},
+        dataType: 'json',
+        success: function (res) {
+            var data = res.data
+            var e_data = [];
+
+            if(data.zj_count.length == 0) {
+                $('#zjtj').html("<div style='font-size: 20px;color: firebrick;width: 100%;height: 100%;display: flex;flex-direction: row;justify-content: center;align-items: center;'>暂无数据</div>")
+                return false
+            }
+
+            for (i in data.zj_count) {
+                e_data.push({
+                    name: i + "次中奖人数: "+Math.round(data.zj_count[i]/data.count*100*100)/100+'% '+data.zj_count[i]+'人',
+                    value: data.zj_count[i]
+                })
+            }
+
+            echarts.init(document.getElementById('zjtj')).setOption({
+                series: {
+                    type: 'pie',
+                    data: e_data
+                }
+            });
+        }
+    })
+
+
+
+    // 异步加载
+    AjaxPage(1);
+    function AjaxPage(curr) {
+        layui.use(['laytpl', 'laypage'], function () {
+            var laytpl = layui.laytpl
+            var laypage = layui.laypage
+            var data = {
+                start_time: $('input[name="start_time"]').val(),
+                end_time: $('input[name="end_time"]').val(),
+                mobile: $('input[name="mobile"]').val(),
+                gift_name: $('input[name="gift_name"]').val(),
+                is_reward: $('select[name="is_reward"]').val(),
+                id: lottery_id,
+                page: curr || 1
+            }
+            $.ajax({
+                url: "{:url('getRecord')}",
+                data: data,
+                dataType: 'json',
+                method: 'post',
+                success: function (res) {
+                    var data = res.data
+                    var getTpl = tpl.innerHTML
+                        ,view = document.getElementById('view');
+                    laytpl(getTpl).render(data, function(html){
+                        view.innerHTML = html;
+                    });
+
+                    laypage.render({
+                        elem: 'AjaxPage',
+                        count: data.total,
+                        limit: data.per_page,
+                        curr: curr || 1,
+                        jump: function (obj, first) {
+                            if(!first) {
+                                AjaxPage(obj.curr)
+                            }
+                        }
+                    });
+
+                }
+            })
+        })
+    }
+
+</script>

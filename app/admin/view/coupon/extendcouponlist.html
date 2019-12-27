@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">推广优惠券列表</li>
+        </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+        <colgroup>
+            <col width="50">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="100">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>优惠券名</th>
+            <th>推广用户数</th>
+            <th>发放券总数</th>
+            <th>兑换码</th>
+            <th>优惠券状态</th>
+            <th>创建时间</th>
+<!--            <th>操作</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="lists" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.coupon_name}</td>
+                <td>{$vo.extend_num}</td>
+                <td>{$vo.exchange_num}</td>
+                <td>{$vo.exchange_code}</td>
+                <td>{if condition="$vo.is_open eq 1"}上线{else/}下线{/if}</td>
+                <td>{$vo.create_time}</td>
+
+            </tr>
+            {/volist}
+        </form>
+        </tbody>
+    </table>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    {include file="public/foot"}
+
+    <script type="text/javascript">
+        // $('.choose').click(function(){
+        //     let id = $(this).data('id');
+        //     let val = $(this).data('val');
+        //     let html_ = $(window.parent.document.getElementById("extend_id")).html();
+        //     let extend_ids = $(window.parent.document.getElementById("extend_ids")).data('val');
+        //     let extend_ids2 = extend_ids
+        //     extend_ids = extend_ids.split(',');
+        //     if(extend_ids.indexOf(""+id) != -1){
+        //         alert('该推广人已存在')
+        //         return false;
+        //     }
+        //     html_ = "<input checked=\"\" type=\"checkbox\" name=\"extend_id[]\" title=\""+ val +"\" value=\""+ id +"\" />" + html_;
+        //     $(window.parent.document.getElementById("extend_id")).html(html_);
+        //     extend_ids2 = extend_ids2 + ',' + id
+        //     $(window.parent.document.getElementById("extend_ids")).attr('data-val',extend_ids2)
+        //     window.parent.document.getElementById("btn_hide_iframe").click();
+        // })
+
+    </script>
+</div>
+</body>
+</html>

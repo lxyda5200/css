@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<style>
+    #no_gift{
+        display: none;
+    }
+    #open{
+        display: none;
+    }
+</style>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin" method="post" action="">
+
+        <div class="layui-form-item">
+            <label style="font-size: 20px;" class="layui-form-item">基础信息</label>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动名称：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="title" autocomplete="off" placeholder="请输入活动名称" class="layui-input" type="text"
+                       value="">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">说明：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <textarea name="description" placeholder="请输入活动说明" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">活动时间：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input style="width: 45%;" name="start_time" type="text" class="layui-input" id="start_time"> —— <input
+                    style="width: 45%;" name="end_time" type="text" class="layui-input" id="end_time">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动规则：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="rule" autocomplete="off" placeholder="请输入活动规则， 多个规则用 | 隔开" class="layui-input" type="text"
+                       value="">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动平台</label>
+            <div class="layui-input-block">
+                <input type="radio" name="client" value="1" title="App" checked>
+                <input type="radio" name="client" value="2" title="小程序">
+                <input type="radio" name="client" value="3" title="App&小程序">
+            </div>
+            <p style="color: #999;">显示活动展示平台</p>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户筛选</label>
+            <div class="layui-input-block">
+                <input type="radio" name="user_type" value="全部用户" title="全部用户" checked>
+                <input type="radio" name="user_type" value="部分用户" title="部分用户" disabled>
+            </div>
+            <p style="color: #999;">选择参与活动的用户</p>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label style="font-size: 20px;" class="layui-form-item">奖品设置</label>
+        </div>
+
+        <button type="button" style="margin-left: 7%;margin-bottom: 15px;" class="layui-btn" lay-submit lay-filter="formDemo" id="addGift">添加奖品</button>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">预期抽奖次数：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="number" autocomplete="off" placeholder="请输入预期抽奖人数" class="layui-input number" type="text"
+                       value="">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">虚拟中奖人数：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="fake_user" autocomplete="off" placeholder="请输入虚拟中奖人数" class="layui-input" type="text"
+                       value="">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">中奖模式</label>
+            <div class="layui-input-block">
+                <input type="radio" lay-filter="zj-mode" name="type" value="1" title="随机模式" checked>
+                <input type="radio" lay-filter="zj-mode" name="type" value="2" title="概率模式">
+            </div>
+        </div>
+
+        <table class="layui-table" lay-size="sm">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>奖品名称(外)</th>
+                <th>奖品图标</th>
+                <th>奖品名称(优惠券名称)</th>
+                <th>奖品数量</th>
+                <th>实际奖池数量</th>
+                <th>已中/剩余</th>
+                <th class="mode_1">实际中奖率%</th>
+                <th class="mode" style="display: none;">中奖概率%</th>
+                <th>排序</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="view1"></tbody>
+        </table>
+
+
+        <script id="tpl1" type="text/html">
+            {{# layui.each(d, function(index, item) { }}
+            <tr>
+                <td>{{index+1}}</td>
+                <td><input maxlength="4" class="cgift_name" type="text" data-index="{{index}}" data-key="gift_name" value="{{item.gift_name}}"></td>
+                <td>
+                    <div class="layui-form-item">
+                        <div class="layui-upload-drag" id="icon_{{index}}" style="float:left;">
+                            <i class="layui-icon"></i>
+                            <p>点击上传，或将文件拖拽到此处</p>
+                        </div>
+                        <div style="float:left;margin-left:10px;position:relative;display:block;">
+                            <input id="icon_ipt_{{index}}" type="hidden" value="{{item.icon}}" />
+                            <img class="img-cover" style="max-width:300px;max-height:135px;" src="{{item.icon}}" />
+                            <i style="cursor:pointer;position:absolute;right:0;top:0;padding:3px;" class="layui-icon del-cover">&#xe640;</i>
+                        </div>
+                    </div>
+                </td>
+                <td>{{item.coupon_name}}</td>
+                <td><input class="cgift_count" type="number" data-index="{{index}}" data-key="gift_count" value="{{item.gift_count}}"></td>
+                <td><input class="cactual_gift_count" type="number" data-index="{{index}}" data-key="actual_gift_count" value="{{item.actual_gift_count}}"></td>
+                <td>0/{{item.actual_gift_count}}</td>
+                <td class="mode_1">{{item.gl}}%</td>
+                <td class="mode" style="display: none;"><input class="cmanic" type="number" data-index="{{index}}" data-key="manic" value="{{item.manic}}"></td>
+                <td><input class="csort" type="number" data-key="sort" data-index="{{index}}" value="{{item.sort}}"></td>
+                <td onclick="del({{index}});" style="cursor: pointer">删除</td>
+            </tr>
+            {{#  }); }}
+        </script>
+
+
+        <p style="color: #999;">注：奖品图标最佳尺寸 240*240</p>
+
+
+
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label style="font-size: 20px;" class="layui-form-item">活动策略</label>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="tactics">
+                <div class="layui-input-block" style="max-width:600px;">
+                    活动每满 <input style="width: 70px;" name="conditions" autocomplete="off" placeholder="" class="layui-input" type="text"
+                                value=""> 元，抽奖一次，以此类推 <button type="button" class="layui-btn del_tac">删除</button>
+                </div>
+            </div>
+            <button type="button" style="margin-left: 7%;margin-top: 10px;" class="layui-btn" lay-submit lay-filter="formDemo" onclick="addTactics();">添加</button>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="max-width:600px;">
+                每人活动期内最多抽 <input style="width: 70px;" name="per_user_max_number" autocomplete="off" placeholder="" class="layui-input" type="text"
+                           value=""> 次(-1为不限制)
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label style="font-size: 20px;" class="layui-form-item">其它设置</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动背景：</label>
+            <div class="layui-upload-drag" id="bg_img" style="float:left;">
+                <i class="layui-icon"></i>
+                <p>点击上传，或将文件拖拽到此处</p>
+            </div>
+            <div style="float:left;margin-left:10px;position:relative;display:{if condition='$info[bg_img]'}block{else /}none{/if};">
+                <input name="bg_img" type="hidden" value="" />
+                <img class="img-cover" style="max-width:300px;max-height:135px;" src="" />
+                <i style="cursor:pointer;position:absolute;right:0;top:0;padding:3px;" class="layui-icon del-cover">&#xe640;</i>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动icon：</label>
+            <div class="layui-upload-drag" id="icon" style="float:left;">
+                <i class="layui-icon"></i>
+                <p>点击上传，或将文件拖拽到此处</p>
+            </div>
+            <div style="float:left;margin-left:10px;position:relative;display:{if condition='$info[icon]'}block{else /}none{/if};">
+                <input name="icon" type="hidden" value="" />
+                <img class="img-cover" style="max-width:300px;max-height:135px;" src="" />
+                <i style="cursor:pointer;position:absolute;right:0;top:0;padding:3px;" class="layui-icon del-cover">&#xe640;</i>
+            </div>
+        </div>
+
+        <input type="hidden" name="id" value="{$info.id}">
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="submit" lay-submit lay-filter="admin" data-status="2">提交</button>
+                <button class="layui-btn layui-btn-primary" lay-submit lay-filter="admin" data-status="1">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<div class="tplay-body-div" style="padding: 20px;" id="open">
+    <div style="margin-top: 20px;">
+    </div>
+
+    <form class="layui-form serch" action="{:url('getCoupon')}" method="post">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">奖品类型</label>
+            <div class="layui-input-block">
+                <input type="radio" name="gift_type" lay-filter="gift_type" value="1" title="优惠券" checked>
+                <input type="radio" name="gift_type" lay-filter="gift_type" value="2" title="无奖品">
+            </div>
+        </div>
+
+        <div class="layui-form-item gift" style="float: left;">
+            <div class="layui-input-inline">
+                <input type="text" name="keywords" lay-verify="title" value="" autocomplete="off" placeholder="请输入优惠券名称" class="layui-input layui-btn-sm">
+            </div>
+
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="type">
+                        <option value="">请选择券类别</option>
+                        <option value="1">平台券</option>
+                        <option value="2">店铺券</option>
+                        <option value="3">商品券</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" type="button" id="searchCoupon" lay-filter="serch">搜索</button>
+        </div>
+    </form>
+
+
+    <div class="layui-form-item" id="no_gift">
+        <label class="layui-form-label">奖品文案：</label>
+        <div class="layui-input-block" style="max-width:600px;">
+            <input name="title" id="gift_title" autocomplete="off" placeholder="请输入其它文案" class="layui-input" type="text"
+                   value="">
+        </div>
+    </div>
+
+    <table class="layui-table gift" lay-size="sm">
+        <thead>
+        <tr>
+            <th>选择</th>
+            <th>序号</th>
+            <th>优惠券名称</th>
+            <th>优惠券类型</th>
+            <th>优惠券类别</th>
+        </tr>
+        </thead>
+
+        <tbody id="view"></tbody>
+
+    </table>
+
+
+    <script id="tpl" type="text/html">
+        {{# layui.each(d.data, function(index, item) { }}
+        <tr>
+            <td><input type="checkbox" name="coupon_id" value="{{item.id}}_{{item.coupon_name}}_{{item.surplus_number}}"></td>
+            <td>{{item.id}}</td>
+            <td>{{item.coupon_name}}</td>
+            <td>{{item.new_type}}</td>
+            <td>{{item.new_coupon_type}}</td>
+        </tr>
+        {{#  }); }}
+    </script>
+
+
+    <div id="AjaxPage" style="text-align:right;"></div>
+    <div style="text-align: right;">
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" id="selCoupon" lay-submit lay-filter="admin" data-status="2">确认</button>
+            <button type="button" class="layui-btn layui-btn-primary" id="cancelCoupon" lay-submit lay-filter="admin" data-status="1">取消</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+</body>
+</html>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script src="__PUBLIC__/jquery/jquery.min.js"></script>
+<script>
+    var coupon_data = [];
+    var flag = 0;
+
+    function getNow() {
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        var hour = date.getHours();
+        var minut = date.getMinutes();
+        var second = date.getSeconds();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        if (hour >= 0 && hour <= 9) {
+            hour = "0" + hour;
+        }
+        if (minut >= 0 && minut <= 9) {
+            minut = "0" + minut;
+        }
+        if (second >= 0 && second <= 9) {
+            second = "0" + second;
+        }
+        return date.getFullYear() + seperator1 + month + seperator1 + strDate
+            + " " + hour + seperator2 + minut
+            + seperator2 + second
+    }
+
+
+    layui.use(['laydate', 'form', 'upload', 'layer', 'laytpl'], function(){
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#start_time',
+            type: "datetime",
+            value: getNow(),
+            done: function (value, date, endDate) {
+                end_time.config.min = {
+                    year:date.year,
+                    month:date.month-1,//关键
+                    date: date.date,
+                    hours: date.hours,
+                    minutes: date.minutes,
+                    seconds : date.seconds
+                }
+            }
+        });
+
+        var end_time = laydate.render({
+            elem: '#end_time',
+            type: "datetime",
+            value: getNow()
+        });
+
+        var upload = layui.upload;
+
+        //拖拽上传（封面）
+        upload.render({
+            elem: '#bg_img'
+            ,url: "{:url('common/upload')}"
+            ,done: function(res){
+                if(res.code !=2){
+                    layer.msg('图片上传失败')
+                }else{
+                    $('#bg_img').next().next('div').show();
+                    $('input[name=bg_img]').val(res.src);
+                    $('input[name=bg_img]').next('.img-cover').attr('src',res.src);
+                }
+            }
+        });
+
+        upload.render({
+            elem: '#icon'
+            ,url: "{:url('common/upload')}"
+            ,done: function(res){
+                if(res.code !=2){
+                    layer.msg('图片上传失败')
+                }else{
+                    $('#icon').next().next('div').show();
+                    $('input[name=icon]').val(res.src);
+                    $('input[name=icon]').next('.img-cover').attr('src',res.src);
+                }
+            }
+        });
+
+
+        var layer = layui.layer
+        $('#addGift').click(function () {
+            var len = coupon_data.length
+            if(len >= 8) {
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "最多只能添加8个奖品哦"
+                })
+                return false
+            }
+            AjaxPage(1)
+            layer.open({
+                type: 1,
+                title: "奖品选择",
+                area: ['1500px', '800px'],
+                content: $('#open')
+            });
+        })
+
+
+        var form = layui.form
+
+        form.on('radio(gift_type)', function (data) {
+            var type = data.value
+            if(type == 1) {
+                $('#no_gift').hide()
+                $('.gift').show()
+                $('#AjaxPage').show()
+            }else {
+                $('input[name="coupon_id"]').each(function (index, item) {
+                    $(this).prop('checked',false)
+                })
+                $('#no_gift').show()
+                $('.gift').hide()
+                $('#AjaxPage').hide()
+            }
+        })
+
+
+        form.on('radio(zj-mode)', function (data) {
+            var type = data.value
+            if(type == 1) {
+                $('.mode_1').show()
+                $('.mode').hide()
+                coupon_data.forEach(function (item, index) {
+                    item.manic = "0"
+                })
+            }else {
+                layui.use(['laytpl', 'upload'], function () {
+                    var laytpl = layui.laytpl
+                    var upload = layui.upload
+                    var getTpl = tpl1.innerHTML
+                        , view = document.getElementById('view1');
+                    laytpl(getTpl).render(coupon_data, function (html) {
+                        view.innerHTML = html;
+                    });
+
+
+                    coupon_data.forEach(function (item, index) {
+                        upload.render({
+                            elem: '#icon_'+index
+                            ,url: "{:url('common/upload')}"
+                            ,done: function(res){
+                                if(res.code !=2){
+                                    layer.msg('图片上传失败')
+                                }else{
+                                    // $('#icon_'+index).next().next('div').show();
+                                    $('#icon_ipt_'+index).val(res.src);
+                                    $('#icon_ipt_'+index).next('.img-cover').attr('src',res.src);
+                                    coupon_data[index].icon = res.src
+                                }
+
+                                // console.log(coupon_data)
+                            }
+                        });
+                    })
+                })
+                $('.mode_1').hide()
+                $('.mode').show()
+            }
+        })
+
+
+        var laytpl = layui.laytpl
+        $('#selCoupon').click(function () {
+                var is_repeat = false
+            if($('input[name="coupon_id"]:checked').length + coupon_data.length > 8) {
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "奖品最多只能选择8个哦"
+                })
+            }
+
+            coupon_data.forEach(function (item, index) {
+                $('input[name="coupon_id"]').each(function (key, val) {
+                    if($(this).is(":checked")) {
+                        if($(this).val().split('_')[0] == item.coupon_id) {
+                            is_repeat = true
+                        }
+                    }
+                })
+            })
+
+            if(is_repeat) {
+                layui.use(['layer'], function() {
+                    layer.msg('提示', {
+                        icon: 5,
+                        time: 1500,
+                        content: "不能重复选择优惠券哦"
+                    })
+                })
+                is_repeat = false
+                return false
+            }
+
+            if($('input[name="gift_type"]:checked').val() == 1) {
+                $('input[name="coupon_id"]').each(function (index, item) {
+                    if ($(this).is(":checked")) {
+                        coupon_data.push({
+                            coupon_id: $(this).val().split('_')[0],
+                            coupon_name: $(this).val().split('_')[1],
+                            surplus_number: $(this).val().split('_')[2],
+                            gift_name: "",
+                            icon: "",
+                            gift_count: 0,
+                            actual_gift_count: 0,
+                            sort: 0,
+                            gl: "0",
+                            gift_type: 1,
+                            gift_desc: "",
+                            manic: "0"
+                        });
+                    }
+                });
+            }else {
+                coupon_data.push({
+                    coupon_id: 0,
+                    coupon_name: '-',
+                    gift_name: "",
+                    surplus_number: -1,
+                    icon: "",
+                    gift_count: 0,
+                    actual_gift_count: 0,
+                    sort: 0,
+                    gl: "0",
+                    gift_type: 2,
+                    gift_desc: $('#gift_title').val(),
+                    manic: "0"
+                });
+            }
+
+            var getTpl = tpl1.innerHTML
+                , view = document.getElementById('view1');
+            laytpl(getTpl).render(coupon_data, function (html) {
+                view.innerHTML = html;
+            });
+
+
+            coupon_data.forEach(function (item, index) {
+                upload.render({
+                    elem: '#icon_'+index
+                    ,url: "{:url('common/upload')}"
+                    ,done: function(res){
+                        if(res.code !=2){
+                            layer.msg('图片上传失败')
+                        }else{
+                            // $('#icon_'+index).next().next('div').show();
+                            $('#icon_ipt_'+index).val(res.src);
+                            $('#icon_ipt_'+index).next('.img-cover').attr('src',res.src);
+                            coupon_data[index].icon = res.src
+                        }
+
+                        // console.log(coupon_data)
+                    }
+                });
+            })
+
+            var type = $('input[name=type]:checked').val()
+            console.log(type)
+            if(type == 2) {
+                $('.mode_1').hide()
+                $('.mode').show()
+            }else {
+                $('.mode_1').show()
+                $('.mode').hide()
+            }
+
+
+            layer.closeAll()
+        })
+
+        $('#cancelCoupon').click(function () {
+            layer.closeAll()
+        })
+    });
+
+
+    function addTactics() {
+        $('.tactics').append('<div class="layui-input-block" style="max-width:600px;">\n' +
+            '                    活动每满 <input style="width: 70px;" name="conditions" autocomplete="off" placeholder="" class="layui-input" type="text"\n' +
+            '                                value=""> 元，抽奖一次，以此类推  <button type="button" class="layui-btn del_tac">删除</button></div>')
+    }
+
+
+    function AjaxPage(curr) {
+        layui.use(['laytpl', 'laypage'], function () {
+            var laytpl = layui.laytpl
+            var laypage = layui.laypage
+            var data = {
+                coupon_name: $('input[name="keywords"]').val(),
+                type: $('select[name="type"]').val(),
+                page: curr || 1
+            }
+            $.ajax({
+                url: "{:url('getCoupon')}",
+                data: data,
+                dataType: 'json',
+                method: 'post',
+                success: function (res) {
+                    var data = res.data
+                    var getTpl = tpl.innerHTML
+                        ,view = document.getElementById('view');
+                    laytpl(getTpl).render(data, function(html){
+                        view.innerHTML = html;
+                    });
+
+                    laypage.render({
+                        elem: 'AjaxPage',
+                        count: data.total,
+                        limit: data.per_page,
+                        curr: curr || 1,
+                        jump: function (obj, first) {
+                            if(!first) {
+                                AjaxPage(obj.curr)
+                            }
+                        }
+                    });
+
+                }
+            })
+        })
+    }
+
+
+
+    $('#searchCoupon').click(function () {
+        AjaxPage(1)
+    })
+
+
+    $(document).on('input', '.number', function () {
+        var lottery_count = $(this).val()
+        coupon_data.forEach(function (item, index) {
+            coupon_data[index].gl = Math.round(parseInt(item.actual_gift_count) / lottery_count * 100 * 100) / 100
+        })
+        layui.use(['laytpl', 'upload'], function () {
+            var laytpl = layui.laytpl
+            var upload = layui.upload
+            var getTpl = tpl1.innerHTML
+                , view = document.getElementById('view1');
+            laytpl(getTpl).render(coupon_data, function (html) {
+                view.innerHTML = html;
+            });
+
+            coupon_data.forEach(function (item, index) {
+                upload.render({
+                    elem: '#icon_'+index
+                    ,url: "{:url('common/upload')}"
+                    ,done: function(res){
+                        if(res.code !=2){
+                            layer.msg('图片上传失败')
+                        }else{
+                            // $('#icon_'+index).next().next('div').show();
+                            $('#icon_ipt_'+index).val(res.src);
+                            $('#icon_ipt_'+index).next('.img-cover').attr('src',res.src);
+                            coupon_data[index].icon = res.src
+                        }
+
+                        // console.log(coupon_data)
+                    }
+                });
+            })
+        })
+    })
+
+
+    $(document).on('change', '.cicon', function () {
+        var index = $(this).data('index')
+        coupon_data[index].icon = $(this).val()
+    })
+
+    $(document).on('change', '.cmanic', function () {
+        var index = $(this).data('index')
+        coupon_data[index].manic = $(this).val()
+    })
+
+
+    $(document).on('change', '.cgift_name', function () {
+        var index = $(this).data('index')
+        coupon_data[index].gift_name = $(this).val()
+    })
+
+    $(document).on('change', '.cgift_count', function () {
+        var index = $(this).data('index')
+        coupon_data[index].gift_count = $(this).val()
+    })
+
+    $(document).on('change', '.cactual_gift_count', function () {
+        var index = $(this).data('index')
+        var surplus_number = parseInt(coupon_data[index].surplus_number)
+        if(surplus_number != -1) {
+            if(parseInt($(this).val()) > surplus_number) {
+                layui.use(['layer'], function () {
+                    layer.msg('提示', {
+                        icon: 5,
+                        time: 1500,
+                        content: "数量超过剩余数量 请重新输入"
+                    })
+                })
+                return false
+            }
+        }
+
+        var lottery_count = $('input[name="number"]').val()
+        var gl = 0
+        if(lottery_count) {
+            gl = Math.round($(this).val() / lottery_count * 100 * 100) / 100
+        }
+        coupon_data[index].actual_gift_count = $(this).val()
+        coupon_data[index].gl = gl
+        layui.use(['laytpl', 'upload'], function () {
+            var laytpl = layui.laytpl
+            var upload = layui.upload
+            var getTpl = tpl1.innerHTML
+                , view = document.getElementById('view1');
+            laytpl(getTpl).render(coupon_data, function (html) {
+                view.innerHTML = html;
+            });
+
+            coupon_data.forEach(function (item, index) {
+                upload.render({
+                    elem: '#icon_'+index
+                    ,url: "{:url('common/upload')}"
+                    ,done: function(res){
+                        if(res.code !=2){
+                            layer.msg('图片上传失败')
+                        }else{
+                            // $('#icon_'+index).next().next('div').show();
+                            $('#icon_ipt_'+index).val(res.src);
+                            $('#icon_ipt_'+index).next('.img-cover').attr('src',res.src);
+                            coupon_data[index].icon = res.src
+                        }
+
+                        // console.log(coupon_data)
+                    }
+                });
+            })
+            var type = $('input[name=type]:checked').val()
+            if(type == 2) {
+                $('.mode_1').hide()
+                $('.mode').show()
+            }else {
+                $('.mode_1').show()
+                $('.mode').hide()
+            }
+
+        })
+    })
+
+    $(document).on('change', '.csort', function () {
+        var index = $(this).data('index')
+        coupon_data[index].sort = $(this).val()
+    })
+
+
+    $(document).on('blur', 'input[name="conditions"]', function () {
+        var conditions = []
+        $('input[name="conditions"]').each(function (index, item) {
+            conditions.push({conditions: $(this).val()})
+        })
+        layui.use(['layer'], function () {
+            conditions.forEach(function (item, index) {
+                if(index > 0) {
+                    if(parseFloat(conditions[index].conditions) <= parseFloat(conditions[index-1].conditions)) {
+                        layer.msg('提示', {
+                            icon: 5,
+                            time: 1500,
+                            content: '活动策略必须递增'
+                        })
+                        flag = 1
+                        return false
+                    }else {
+                        flag = 0
+                    }
+                }
+            })
+        })
+
+    })
+
+
+    $(document).on('blur', 'input[name="per_user_max_number"]', function () {
+        var val = $(this).val()
+        if(val == 0) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "抽取次数不能为0"
+                })
+            })
+        }
+        if(val < -1) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "抽取次数不合规"
+                })
+            })
+        }
+    })
+
+
+    function del(index) {
+        coupon_data.splice(index, 1)
+        layui.use(['laytpl', 'upload'], function () {
+            var laytpl = layui.laytpl
+            var upload = layui.upload
+            var getTpl = tpl1.innerHTML
+                , view = document.getElementById('view1');
+            laytpl(getTpl).render(coupon_data, function (html) {
+                view.innerHTML = html;
+            });
+
+
+            coupon_data.forEach(function (item, index) {
+                upload.render({
+                    elem: '#icon_'+index
+                    ,url: "{:url('common/upload')}"
+                    ,done: function(res){
+                        if(res.code !=2){
+                            layer.msg('图片上传失败')
+                        }else{
+                            // $('#icon_'+index).next().next('div').show();
+                            $('#icon_ipt_'+index).val(res.src);
+                            $('#icon_ipt_'+index).next('.img-cover').attr('src',res.src);
+                            coupon_data[index].icon = res.src
+                        }
+
+                        // console.log(coupon_data)
+                    }
+                });
+            })
+        })
+    }
+
+
+
+    // 提交
+    $('#submit').click(function () {
+        tactics_data = []
+        $('input[name="conditions"]').each(function (index, item) {
+            tactics_data.push({conditions: $(this).val()})
+        })
+
+        var len = tactics_data.length
+        if(len == 0) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "活动策略不能不填哦"
+                })
+            })
+            return false
+        }
+
+        var max = $("input[name='per_user_max_number']").val()
+        if(max == 0) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "抽取次数不能为0"
+                })
+            })
+            return false
+        }
+        if(max < -1) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "抽取次数不合规"
+                })
+            })
+            return false
+        }
+
+        if(flag) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示', {
+                    icon: 5,
+                    time: 1500,
+                    content: "活动策略必须递增"
+                })
+            })
+            return false
+        }
+
+
+
+        if(coupon_data.length != 8) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer
+                layer.msg('提示',{
+                    icon: 5,
+                    content: '奖品数量必须为8',
+                    time: 1500
+                })
+            })
+            return false
+        }
+
+
+        var manic = 0
+        var type = $('input[name="type"]:checked').val()
+        if(type == 2) {
+            coupon_data.forEach(function (item, index) {
+                manic += parseInt(item.manic)
+            })
+            if(manic != 100) {
+                layer.msg('提示',{
+                    icon: 5,
+                    content: '概率模式下中奖概率必须为100%',
+                    time: 1500
+                })
+                return false
+            }
+        }
+
+
+        var submit_data = {
+            coupon_data: coupon_data,
+            title: $('input[name="title"]').val(),
+            description: $('textarea[name="description"]').val(),
+            start_time: $('input[name="start_time"]').val(),
+            end_time: $('input[name="end_time"]').val(),
+            rule: $('input[name="rule"]').val(),
+            client: $('input[name="client"]:checked').val(),
+            number: $('input[name="number"]').val(),
+            fake_user: $('input[name="fake_user"]').val(),
+            type: $('input[name="type"]:checked').val(),
+            tactics_data: tactics_data,
+            per_user_max_number: $('input[name="per_user_max_number"]').val(),
+            bg_img: $('input[name="bg_img"]').val(),
+            icon: $('input[name="icon"]').val()
+        }
+
+
+
+        layui.use(['layer'], function () {
+            var layer = layui.layer
+
+            $.ajax({
+                url: "{:url('addLottery')}",
+                method: 'post',
+                data: submit_data,
+                dataType: 'json',
+                success: function (res) {
+                    if(res.code == 1) {
+                        layer.msg('提示',{
+                            icon: 5,
+                            content: res.msg,
+                            time: 1500
+                        })
+                    }else {
+                        layer.msg('提示', {
+                            icon: 6,
+                            content: res.msg,
+                            time: 1500
+                        })
+                        setTimeout(function () {
+                            window.location.href = "{:url('lotteryList')}";
+                        }, 1500)
+                    }
+                }
+            })
+
+        })
+    })
+
+
+    $(document).on('click', '.del_tac', function () {
+        $(this).parent().remove()
+    })
+
+
+    $(document).on('click', '.del-cover', function () {
+        $(this).prev().prev('input[name=cover]').val('');
+        $(this).prev('img').attr('src','');
+        // $(this).parent('div').hide();
+    })
+
+
+</script>

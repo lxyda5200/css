@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">短租房源</li>
+            <!--<li><a href="{:url('admin/house_short/publish')}" class="a_menu">新增短租</a></li>-->
+        </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+        <colgroup>
+            <col width="50">
+            <col width="100">
+            <col width="250">
+            <col width="150">
+            <col width="150">
+
+        </colgroup>
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>房源图</th>
+            <th>标题</th>
+            <th>租金</th>
+            <th>所属城市</th>
+            <th>所属区域</th>
+            <th>小区</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="list" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td><a href="{$vo.house_img.img_url}" class="tooltip"><img src="{$vo.house_img.img_url}" width="20" height="20"></a></td>
+                <td>{$vo.title}</td>
+                <td>{$vo.rent}元/日</td>
+                <td>{$vo.city_name}</td>
+                <td>{$vo.area_name1} {$vo.area_name2}</td>
+                <td>{$vo.xiaoqu_name}</td>
+                <td>{if condition="$vo.status eq 2"}<span class="layui-badge">上架</span>{else /}<span class="layui-badge layui-bg-gray">下架</span>{/if}</td>
+                <td>{$vo.create_time}</td>
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/house_short/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+                       <!-- <a href="{:url('admin/house_short/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>改为长租</a>-->
+                        <a class="layui-btn layui-btn-xs layui-btn-primary status" {if condition="$vo.status eq 2"}data-id="3"{else /}data-id="2"{/if} id="{$vo.id}" style="margin-right: 0;font-size:12px;" ><i class="fa {if condition="$vo.status eq 2"}fa-toggle-on{else /}fa-toggle-off{/if}"></i>上架/下架</a>
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </tbody>
+    </table>
+    </form>
+    <div style="padding:0 20px;">{$list->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+        layui.use('layer', function(){
+            var layer = layui.layer;
+
+
+            $('.status').click(function(){
+                var id = $(this).attr('id');
+                var status = $(this).attr('data-id');
+                layer.confirm('确定要设置?', function(index) {
+                    $.ajax({
+                        url:"{:url('admin/house_short/status')}",
+                        type:'post',
+                        data:{id:id,status:status},
+                        success:function(res) {
+                            layer.msg(res.msg);
+                            if(res.code == 1) {
+                                setTimeout(function(){
+                                    location.href = res.url;
+                                },1500)
+                            }
+                        }
+                    })
+                })
+            })
+
+        });
+    </script>
+
+</div>
+</body>
+</html>

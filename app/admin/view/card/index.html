@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">卡券列表</li>
+            <li><a href="{:url('admin/card/publish')}" class="a_menu">新增卡券</a></li>
+        </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>礼包</th>
+            <th>卡券封面</th>
+            <th>卡券名称</th>
+            <th>满减金额</th>
+            <th>卡券类型</th>
+            <th>有效天数</th>
+            <th>品牌名称</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="data" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.name}</td>
+                <td><a href="{$vo.cover}" class="tooltip"><img src="{$vo.cover}" width="20" height="20"></a></td>
+                <td>{$vo.coupon_name}</td>
+                <td>满{$vo.satisfy_money}元减{$vo.coupon_money}元</td>
+                <td>{if condition="$vo.type eq 1"}门店卡券{else/}优惠券{/if}</td>
+                <td>{$vo.days}</td>
+                <td>{$vo.brand_name}</td>
+                <td>{$vo.create_time}</td>
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/card/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+                        <a href="{:url('admin/card/store_list',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-eye" aria-hidden="true"></i>查看可使用的商家</a>
+                        <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>删除</a>
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </form>
+        </tbody>
+    </table>
+
+    <div style="padding:0 20px;">{$data->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+
+        $('.delete').click(function(){
+            var id = $(this).attr('id');
+            layer.confirm('确定要删除?', function(index) {
+                $.ajax({
+                    url:"{:url('admin/card/delete')}",
+                    data:{id:id},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+</div>
+</body>
+</html>

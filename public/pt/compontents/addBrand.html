@@ -1,0 +1,55 @@
+<div class="model"><div class="model-box" id="addBrandModel"><div class="model-box-head"><span>新增品牌</span> <img src="./images/del.png" id="delModel"></div><div class="model-cont"><div class="select-box clear"><div class="public-label"><span style="color: #FF8080">*</span><span>所属类目</span></div><div class="public-select mr30"><span>请选择类目</span> <img src="./images/img8.png"><ul id="classifyUl_1"><!--<li>户外运动</li>--></ul></div><div class="public-select" id="publicSelect"><span>请选择</span> <img src="./images/img8.png"><ul id="classifyUl_2"><!--<li>模具费多少</li>--></ul></div><input type="hidden" name="cate_id"></div><div class="brand-name clear mb30"><div class="brand-name-inp-box"><div class="public-label"><span style="color: #FF8080">*</span><span>品牌名</span></div><div class="brand-name-inp"><div class="brand-name-inp-T"><input type="text" name="brand_name" id="textInp" placeholder="请输入品牌名称"></div><p class="public-p">* 品牌名称不超过30个字符，支持汉字、字母。</p></div></div></div><div class="logo-box clear" style="margin-top:30px"><div class="public-label"><span style="color: #FF8080">*</span><span>品牌Logo</span></div><div class="upload-logo-box"><div class="upload-logo-T"><div class="" id="noUploadBox"><label class="upload-logo curpo"><img src="./images/upload.png" style="cursor: pointer;"> <input type="file" id="fileBrandLogo" onchange="brandLogoChange()"></label> <span>请上传品牌Logo</span></div><div class="none" id="yesUploadBox"><img src="" id="addBrandLogoImg" style="width: 80px;height: 80px;display: block;"><div class="edit-logo hover" id="editBrandLogo" onclick="editBrandLogoFn()">更换</div></div></div><p class="public-p">* 品牌logo支持100*100的图片，支持格式为PNG、JPG、JPEG</p></div><input type="hidden" name="logo"></div></div><div class="submit hover" id="addBrandSubmit">添加</div></div></div><script>$(function(){
+        $('input').placeholder();
+        // 关闭layer
+        $('body').on('click','#delModel',function(){
+            $('.w-model').hide();
+            $("#noUploadBox").show();
+            $("#yesUploadBox").hide();
+            $("#addBrandLogoImg").attr('src', '');
+            $("#addBrandModel input[name=logo]").val('');
+            $("#addBrandModel input[name=brand_name]").val('');
+        });
+        // 添加品牌
+        $('body').on('click','#addBrandSubmit',function(){
+            var cate_id = $("#addBrandModel input[name=cate_id]").val();
+            var brand_name = $("#addBrandModel input[name=brand_name]").val();
+            var logo = $("#addBrandModel input[name=logo]").val();
+            if (!cate_id) {
+                layer.msg('请选择类目');
+                return false
+            }
+            if (!brand_name ) {
+                layer.msg('请输入品牌名称');
+                return false
+            }
+            if (brand_name.length > 30) {
+                layer.msg('品牌名称不超过30个字符');
+                return false
+            }
+            if(!logo) {
+                layer.msg('请上次品牌logo');
+                return false
+            }
+            var loadIndex = layer.load();
+            ajaxPost('/store_v1/enter/addBrand', {
+                cate_id: cate_id,
+                brand_name: brand_name,
+                logo: logo,
+                token: token
+            }, function(res) {
+                layer.close(loadIndex);
+                if(res.status == 1) {
+                    // res.data.brand_id
+                    var str = '<div class="cont-imgItem active brand-type" id="'+res.data.brand_id+'" logo="'+logo+'">\n' +
+                        '       <img src="'+base+logo+'" class="innerImg">\n' +
+                        '       <img src="./images/img7.png" class="positionImg">\n' +
+                        '       <input type="hidden" name="brand_id" value="'+res.data.brand_id+'"/>\n' +
+                        '   </div>';
+                    $("#brandContHtml").html(str);
+                    $("#delModel").click();
+                } else {
+                    layer.msg(res.msg)
+                }
+            })
+        })
+    })</script>

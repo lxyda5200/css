@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>时尚新潮</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" style="padding: 15px;">
+    <div class="layui-tab" lay-filter="classifyTabList">
+        <ul class="layui-tab-title" id="tabTitle">
+            <li lay-id="111" class="layui-this">时尚新潮</li>
+            <li lay-id="222">新增</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>主题</th>
+                        <th>浏览量</th>
+                        <th>显示</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="classifyTbody">
+
+                    </tbody>
+                </table>
+                <div class="page-box">
+                    <div id="page"></div>
+                    <div class="page-info">
+                        共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+                        <span class="totaldata"></span>&nbsp;条数据
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item">
+                <form class="layui-form" style="margin-top: 15px;">
+                    <div class="layui-form-item">
+                        <input type="hidden" name="id">
+                        <label class="layui-form-label">主题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" required  lay-verify="required" placeholder="2-16个字符" autocomplete="off" class="layui-input" style="max-width: 500px;">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">封面</label>
+                        <div class="layui-input-block">
+                            <button type="button" class="layui-btn addbg" id="backgroundImg">
+                                <i class="layui-icon" style="font-size: 45px;">&#xe654;</i>
+                            </button>
+                            <input type="hidden" name="bg_img" value="">
+                            <div class="showimg-box" style="display: none;">
+                                <img src="" alt="" class="showbgimg" id="bgImg">
+                                <button type="button" class="layui-btn closebtn">
+                                    <i class="layui-icon">&#x1006;</i>
+                                </button>
+                            </div>
+                            <span style="vertical-align: bottom;color: #333;margin-left: 15px;">规格：300x300</span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <input type="hidden" name="id">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-block">
+                            <textarea name="desc" id="layEditDesc"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-connect">
+                        <label class="layui-form-label">关联门店</label>
+                        <div class="layui-input-block-danping">
+                            <div class="layui-input-block-right">
+                                <div class="top-btn-box-tips">
+                                    <i class="layui-icon">&#xe620;</i>
+                                    <span>最多设置6个门店</span>
+                                </div>
+                                <ul class="item-ul" id="connectShop">
+
+                                    <li class="add-li"  onclick="showStoreListFn(this)" data-id="wang"><i class="layui-icon">&#xe608;</i></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-connect">
+                        <label class="layui-form-label">关联商品</label>
+                        <div class="layui-input-block-danping">
+                            <div class="layui-input-block-right">
+                                <div class="top-btn-box-tips">
+                                    <i class="layui-icon">&#xe620;</i>
+                                    <span>最多设置6个商品</span>
+                                </div>
+                                <ul class="item-ul" id="connectGoods">
+
+                                    <li class="add-li" onclick="showGoodsListFn(this)"><i class="layui-icon">&#xe608;</i></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-connect">
+                        <label class="layui-form-label">关联标签</label>
+                        <div class="layui-input-block-danping">
+                            <div class="layui-input-block-right">
+                                <div class="top-btn-box-tips">
+                                    <i class="layui-icon">&#xe620;</i>
+                                    <span>最多设置4个标签</span>
+                                </div>
+                                <div class="item-ul" id="connectLabel" style="width: auto">
+                                    <ul class="item-ul" id="labelLi" style="width: auto;margin-top: 0;">
+                                        <!--<li class="item-li">
+                                            <div class="close" onclick="removeLabel(this)">
+                                                <button type="button" class="layui-btn closebtn">
+                                                    <i class="layui-icon">&#x1006;</i>
+                                                </button>
+                                            </div>
+                                            <div class="gl-goods-item">
+                                                嘻哈哈
+                                            </div>
+                                        </li>-->
+                                    </ul>
+                                    <ul class="item-ul" id="topicLi" style="width: auto;margin-top: 0">
+                                        <li class="add-li" onclick="showLabelListFn(this)"><i class="layui-icon">&#xe608;</i></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 门店列表layer -->
+<div class="list-layer" id="shopListLayer" style="display: none;">
+    <div class="layer-box">
+        <div class="layer-header-search">
+            <form class="layui-form" lay-filter="shopSearchForm">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">主营分类</label>
+                        <div class="layui-input-block">
+                            <select name="cate_id" lay-filter="cate_id">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">主营风格</label>
+                        <div class="layui-input-block">
+                            <select name="style_id" lay-filter="style_id">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-block" style="margin-left: 0;">
+                            <input type="text" name="keywords" class="layui-input ipt" placeholder="门店名称/门店帐号">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-block" style="margin-left: 0;">
+                            <button type="button" class="layui-btn" onclick="searchStorelist()">搜索</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+        <ul class="goodslist-ul" id="storelistUl">
+            <!--<li>
+                <div class="gl-goods-item">
+                    <i class="layui-icon radio-i active">&#xe643;</i>
+                    <div class="imgbox">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572523097341&di=501f0f828c82de2094720aa3093a3847&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F14%2F20171014201130_HTnmN.jpeg" alt="">
+                        <span class="phone">
+                            <i class="fa fa-phone fa-lg"></i>
+                            18200376228
+                        </span>
+                    </div>
+                    <div class="goodsinfo">
+                        <div class="goodsname textSplit2">品名称商品名称名称名称</div>
+                        <div class="goodsaddr">
+                            <i class="fa fa-map-marker fa-lg"></i>
+                            希顿国际广场123号
+                        </div>
+                    </div>
+                </div>
+            </li>-->
+
+        </ul>
+        <div id="shopPage"></div>
+    </div>
+</div>
+<!-- 商品列表layer -->
+<div class="list-layer" id="goodsListLayer" style="display: none;">
+    <div class="layer-box">
+        <div class="layer-header-search">
+            <input type="text" name="keywords_store" class="layui-input ipt" placeholder="门店名称/门店帐号">
+            <input type="text" name="keywords_product" class="layui-input ipt" placeholder="商品名称">
+            <button class="layui-btn" onclick="searchGoodslist()">搜索</button>
+        </div>
+        <ul class="goodslist-ul" id="goodslistUl">
+            <!--<li>
+                <div class="gl-goods-item">
+                    <i class="layui-icon radio-i active">&#xe643;</i>
+                    <div class="imgbox">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572523097341&di=501f0f828c82de2094720aa3093a3847&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F14%2F20171014201130_HTnmN.jpeg" alt="">
+                        <span class="phone">
+                            <i class="fa fa-phone fa-lg"></i>
+                            18200376228
+                        </span>
+                    </div>
+                    <div class="goodsinfo">
+                        <div class="goodsname textSplit2">品名称商品名称名称名称</div>
+                        <div class="goodsdesc textSplit2">
+                            描述描述描述描述描述描述描述描述描述描述描述
+                        </div>
+                        <div class="goodsaddr textSplit1">
+                            <i class="fa fa-map-marker fa-lg"></i>
+                            希顿国际广场123号
+                        </div>
+                    </div>
+                </div>
+            </li>-->
+
+        </ul>
+        <div id="goodsPage"></div>
+    </div>
+</div>
+<!-- 关联标签layer -->
+<div class="list-tab" id="labelListLayer" style="padding: 15px;display: none;">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">门店主营风格</li>
+            <li>商品风格</li>
+            <li>话题</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;">
+            <div class="layui-tab-item layui-show">
+                <ul class="label-ul" id="shopStyleUl">
+                    <!--<li>
+                        <i class="layui-icon">&#xe63f;</i>
+                        男装
+                    </li>-->
+                </ul>
+            </div>
+            <div class="layui-tab-item">
+                <ul class="label-ul" id="goodsStyleUl">
+
+                </ul>
+            </div>
+            <div class="layui-tab-item">
+                <ul class="label-ul" id="topicUl">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script src="__WZH__/js/Sortable.min.js"></script>
+<script>
+    var elementTab;
+    var form;
+    var upload;
+    var now_page = 1;
+    var layedit = null;
+    var layeditContent = null;
+    function getDataList(page, isPage) {
+        ajaxPost('/admin/operate/newTrendList',{
+            page: page
+        }).then(function(data){
+            // console.log(data)
+            let dataList = data.data;
+            let html = '';
+            if (dataList.length>0) {
+                for(let i = 0 ; i < dataList.length ; i++){
+                    let isChecked = dataList[i].status==1?"checked":"";
+                    html += '<tr class="product" data-index="'+i+'" data-id="'+dataList[i].id+'" data-sort="'+dataList[i].sort+'">\n' +
+                        '                        <td>'+dataList[i].id+'</td>\n' +
+                        '                        <td>'+dataList[i].title+'</td>\n' +
+                        '                        <td>'+dataList[i].visit_number+'</td>\n' +
+                        '                        <td><form class="layui-form" action="" lay-filter="checkboxForm">\n' +
+                        '                                       <div class="layui-input-block" style="margin-left: 0;">\n' +
+                        '                                       <input type="checkbox" name="switch" lay-filter="showHide" value="'+dataList[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                        '                                   </div>\n' +
+                        '                            </form>' +
+                        '                        </td>\n' +
+                        '                        <td width="220px">\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft editBtn" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'"  onclick="editData(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe642;</i> 编辑\n' +
+                        '                                </button>\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'" onclick="delDatalist(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe640;</i> 删除\n' +
+                        '                                </button>\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'" onclick="dataTop(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe604;</i> 置顶\n' +
+                        '                                </button>\n' +
+                        '                        </td>\n' +
+                        '                    </tr>';
+                }
+                $(".page-box").show();
+                $(".totalpage").html(Math.ceil((data.total)/15));
+                $(".totaldata").html(data.total);
+                // 点击分页时，不在实例化分页page
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: data.total //数据总数，从服务端得到
+                            ,groups: 8
+                            ,limit: 10
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    now_page = obj.curr;
+                                    getDataList(obj.curr, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                html = '<td colspan="5" class="no-data">暂无数据</td>';
+                $(".page-box").hide()
+            }
+            $("#classifyTbody").html(html)
+            // 拖拽
+            var list = document.getElementById("classifyTbody");
+            Sortable.create(list, {
+                onUpdate: function(evt){
+                    // console.log(evt.item)
+                    let index = $(evt.item).attr('data-index');
+                    let id = $(evt.item).attr('data-id');
+                    let sort = $(evt.item).attr('data-sort');
+                    let jIndex = 0;
+                    for(let j = 0 ; j < $("#classifyTbody>.product").length ; j++) {
+                        if ($("#classifyTbody>.product").eq(j).attr('data-index') == index) {
+                            // console.log(j); // 当前元素已拖拽到了 这个下标位置
+                            jIndex = j;
+                            break
+                        }
+                    }
+                    // console.log('拖拽前位置：', sort);
+                    // console.log('拖拽后位置：', dataList[jIndex].sort)
+                    ajaxPost('/admin/operate/sortNewTrend', {
+                        id: id ,
+                        sort: dataList[jIndex].sort
+                    }).then((res) => {
+                        getDataList(now_page, false)
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                }
+            }); // That's all.
+            // checkbox
+            form.render('checkbox', 'checkboxForm');
+            form.on('switch(showHide)', function(data){
+                // let load = layer.load()
+                ajaxPost('/admin/operate/editNewTrendStatus', {
+                    id: data.value,
+                    status: !data.elem.checked ? 1 : 2
+                }).then((res) => {
+                    // layer.close(load);
+                }).catch((err) => {
+                    console.log(err);
+                })
+            });
+        }).catch(function(err){
+            console.log(err)
+        })
+    }
+    function editData(_this) {
+        let id = $(_this).attr('data-id');
+
+        ajaxPost('/admin/operate/newTrendInfo', {
+            id: id
+        }).then(res => {
+            let title = $(_this).attr('data-title');
+            elementTab.tabChange('classifyTabList', '222');
+            $("#tabTitle>li:nth-child(2)").text("编辑");
+            // title
+            $("input[name=id]").val(id);
+            $("input[name=title]").val(title);
+            // 封面
+            $(".showimg-box").show();
+            $("#bgImg").attr('src', httpUrl + res.cover);
+            $("#backgroundImg").hide();
+            $("input[name=bg_img]").val(res.cover);
+            // 富文本
+            layedit.setContent(layeditContent, res.content);
+            // 关联门店
+            let store_list = res.store_list;
+            if (store_list.length > 0) {
+                let store_str = '';
+                for(let i in store_list) {
+                    store_str += '<li class="item-li" id="'+store_list[i].store_id+'">\n' +
+                        '              <div class="close" onclick="removeLi(this)">\n' +
+                        '                  <button type="button" class="layui-btn closebtn">\n' +
+                        '                      <i class="layui-icon">&#x1006;</i>\n' +
+                        '                  </button>\n' +
+                        '              </div>\n' +
+                        '              <div class="gl-goods-item">\n' +
+                        '                  <div class="imgbox">\n' +
+                        '                      <img src="'+httpUrl+store_list[i].cover+'" alt="">\n' +
+                        '                  </div>\n' +
+                        '                  <div class="goodsinfo">\n' +
+                        '                      <div class="goodsname textSplit2">'+store_list[i].store_name+'</div>\n' +
+                        '                      <div class="goodsaddr">\n' +
+                        '                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                          '+store_list[i].address+'\n' +
+                        '                      </div>\n' +
+                        '                      <div class="mgt">\n' +
+                        '                          <span class="phone">\n' +
+                        '                              <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                              '+store_list[i].mobile+'\n' +
+                        '                          </span>\n' +
+                        '                      </div>\n' +
+                        '                  </div>\n' +
+                        '              </div>\n' +
+                        '          </li>'
+                }
+                if (store_list.length >= 6) {
+                    $("#connectShop li.add-li").hide()
+                }
+                $("#connectShop").prepend(store_str)
+            }
+            // 关联商品
+            let product_list = res.product_list;
+            if (product_list.length > 0) {
+                let product_str = '';
+                for(let i in product_list) {
+                    product_str += '<li class="item-li" id="'+product_list[i].product_id+'">\n' +
+                        '              <div class="close" onclick="removeLi(this)">\n' +
+                        '                  <button type="button" class="layui-btn closebtn">\n' +
+                        '                      <i class="layui-icon">&#x1006;</i>\n' +
+                        '                  </button>\n' +
+                        '              </div>\n' +
+                        '              <div class="gl-goods-item">\n' +
+                        '                  <div class="imgbox">\n' +
+                        '                      <img src="'+httpUrl+product_list[i].cover+'" alt="">\n' +
+                        '                  </div>\n' +
+                        '                  <div class="goodsinfo">\n' +
+                        '                      <div class="goodsname textSplit2">'+product_list[i].product_name+'</div>\n' +
+                        '                      <div class="goodsaddr">\n' +
+                        '                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                          '+product_list[i].address+'\n' +
+                        '                      </div>\n' +
+                        '                      <div class="mgt">\n' +
+                        '                          <span class="phone">\n' +
+                        '                              <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                              '+product_list[i].mobile+'\n' +
+                        '                          </span>\n' +
+                        '                      </div>\n' +
+                        '                  </div>\n' +
+                        '              </div>\n' +
+                        '          </li>'
+                }
+                if (product_list.length >= 6) {
+                    $("#connectGoods li.add-li").hide()
+                }
+                $("#connectGoods").prepend(product_str)
+            }
+            // 关联标签、话题
+            let style_list = res.style_list;
+            let topic_id = res.topic_id;
+            let topic_title = res.topic_title;
+            if (style_list.length > 0) {
+                let style_str = '';
+                for(let i in style_list) {
+                    style_str += '<li class="item-li" id="'+style_list[i].style_id+'" type="'+style_list[i].type+'">\n' +
+                        '                <div class="close" onclick="removeLabel(this)">\n' +
+                        '                    <button type="button" class="layui-btn closebtn">\n' +
+                        '                        <i class="layui-icon">ဆ</i>\n' +
+                        '                    </button>\n' +
+                        '                </div>\n' +
+                        '                <div class="gl-goods-item">\n' +
+                        '                    '+style_list[i].title+'\n' +
+                        '                </div>\n' +
+                        '            </li>';
+                }
+                $("#labelLi").prepend(style_str)
+            }
+            if (topic_id) {
+                if (style_list.length >= 3) {
+                    $("#topicLi li.add-li").hide()
+                }
+                let topic_str = '<li class="item-li" id="'+topic_id+'">\n' +
+                    '                <div class="close" onclick="removeLabel(this)">\n' +
+                    '                    <button type="button" class="layui-btn closebtn">\n' +
+                    '                        <i class="layui-icon">ဆ</i>\n' +
+                    '                    </button>\n' +
+                    '                </div>\n' +
+                    '                <div class="gl-goods-item">\n' +
+                    '                    '+topic_title+'\n' +
+                    '                </div>\n' +
+                    '            </li>';
+                $("#topicLi").prepend(topic_str);
+            } else {
+                if (style_list.length >= 4) {
+                    $("#topicLi li.add-li").hide()
+                }
+            }
+        }).catch(err => {})
+    }
+    function delDatalist(_this) {
+        let id = $(_this).attr('data-id')
+        let title = $(_this).attr('data-title')
+        layer.confirm('确定要删除 “'+title+'” 吗？', {title: '提示'}, function(){
+            // 确认
+            ajaxPost('/admin/operate/delNewTrend', {
+                id: id
+            }).then((res) => {
+                layer.msg('删除成功', {time: 1500}, function(){
+                    getDataList(now_page, false)
+                })
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        },function(){
+            // 取消
+        })
+    }
+    // 排序置顶
+    function dataTop(_this) {
+        let id = $(_this).attr('data-id');
+        ajaxPost('/admin/operate/topNewTrend', {
+            id: id
+        }).then((res) => {
+            layer.msg('置顶成功', {time: 1500}, function(){
+                getDataList(now_page, false)
+            })
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    //=============================================================新增 编辑操作页
+    // get关联门店列表
+    function getGuanList(page, store_ids, style_id, cate_id, keywords, isPage) {
+        ajaxPost('/admin/operate/storeList', {
+            page: page,
+            store_ids: store_ids.join(','), // 需要排除的店铺id，多个用,连接
+            style_id: style_id,
+            cate_id: cate_id,
+            keywords: keywords
+        }).then((res) => {
+            let dataList = res.data
+            let liStr = ''
+            if (dataList.length > 0) {
+                for(let i = 0 ; i < dataList.length ; i++){
+                    liStr += '<li class="goodslistLi" cover="'+dataList[i].cover+'" mobile="'+dataList[i].mobile+'" store_name="'+dataList[i].store_name+'" address="'+dataList[i].address+'" read_number="'+dataList[i].read_number+'" id="'+dataList[i].id+'" onclick="selectedStoreFn(this)">\n' +
+                        '                <div class="gl-goods-item">\n' +
+                        '                    <i class="layui-icon radio-i">&#xe63f;</i>\n' +
+                        '                    <div class="imgbox">\n' +
+                        '                        <img src="'+httpUrl+dataList[i].cover+'" alt="">\n' +
+                        '                        <span class="phone">\n' +
+                        '                            <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                            '+dataList[i].mobile+'\n' +
+                        '                        </span>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="goodsinfo">\n' +
+                        '                        <div class="goodsname textSplit2">'+dataList[i].store_name+'</div>\n' +
+                        '                        <div class="goodsaddr">\n' +
+                        '                            <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                            '+dataList[i].address+'\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '            </li>'
+                }
+                $("#shopPage").show();
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'shopPage' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: res.total //数据总数，从服务端得到
+                            ,limit: 12
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    getGuanList(obj.curr, store_ids, style_id, cate_id, keywords, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                liStr = '<li class="no-data" style="width: 100%;color: #999;">暂无数据</li>'
+                $("#shopPage").hide()
+            }
+            $("#storelistUl").html(liStr)
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    // 搜索门店
+    function searchStorelist(){
+        keywords = $("input[name=keywords]").val();
+        getGuanList(1, store_ids, style_id, cate_id, keywords, true);
+    }
+    var style_id = '';
+    var cate_id = '';
+    var store_ids = [];
+    var keywords = '';
+    // 获取门店风格、分类
+    function getStyleCate() {
+        ajaxPost('/admin/operate/cateStoreAndStyleStore', '').then((res) => {
+            // console.log(res);
+            let styleList = res.style_list;
+            let cateList = res.cate_list;
+            let styleStr = '';
+            let cateStr = '';
+            for(let i in styleList){
+                styleStr += '<option value="'+styleList[i].id+'">'+styleList[i].title+'</option>'
+            }
+            for(let i in cateList){
+                cateStr += '<option value="'+cateList[i].id+'">'+cateList[i].title+'</option>'
+            }
+            $("select[name=style_id]").append(styleStr);
+            $("select[name=cate_id]").append(cateStr);
+            form.render(null, 'shopSearchForm')
+            //
+            form.on('select(style_id)', function(data){
+                style_id = data.value
+            });
+            form.on('select(cate_id)', function(data){
+                cate_id = data.value
+            });
+        }).catch((err) => {
+
+        })
+    }
+    // 选择门店
+    function selectedStoreFn(_this) {
+        // $(_this).find('.radio-i').addClass('active').parents('li').siblings().find('.radio-i').removeClass('active');
+        // $(_this).find('.radio-i').html('&#x1005;').parents('li').siblings().find('.radio-i').html('&#xe63f;');
+        //
+        let num = 0;
+        let activeNum = parseInt($("#connectShop>li.item-li").length);
+        $("#storelistUl>li").each(function(i, item){
+            if($(this).find('.radio-i').hasClass('active')) {
+                num +=1
+            }
+        });
+        if ($(_this).find('.radio-i').hasClass('active')) {
+            $(_this).find('.radio-i').removeClass('active');
+            $(_this).find('.radio-i').html('&#xe63f;');
+        } else {
+            if (num+activeNum >= 6) {
+                layer.msg('最多设置6个门店');
+                return
+            }
+            $(_this).find('.radio-i').addClass('active');
+            $(_this).find('.radio-i').html('&#x1005;');
+        }
+
+    }
+    // （show 门店列表）
+    function showStoreListFn(obj) {
+        store_ids = [];
+        if($("#connectShop>li.item-li").length > 0){
+            $("#connectShop>li.item-li").each(function(i, item){
+                let storeId = $(this).attr('id');
+                store_ids.push(storeId)
+            });
+        }
+        getGuanList(1, store_ids, style_id, cate_id, keywords, true);
+        let _this = $(obj);
+        let open = layer.open({
+            type: 1,
+            content: $('#shopListLayer'),
+            title: '选择关联门店',
+            btn: ['确认', '取消'],
+            area: ['90%', '75%'],
+            yes: function() {
+                // 确认
+                let isData = false;
+                let activeStore = ''
+                $("#storelistUl>li").each(function(i, item){
+                    if($(this).find('.radio-i').hasClass('active')) {
+                        isData = true;
+                        activeStore += '<li class="item-li" id="'+$(this).attr('id')+'">\n' +
+                            '              <div class="close" onclick="removeLi(this)">\n' +
+                            '                  <button type="button" class="layui-btn closebtn">\n' +
+                            '                      <i class="layui-icon">&#x1006;</i>\n' +
+                            '                  </button>\n' +
+                            '              </div>\n' +
+                            '              <div class="gl-goods-item">\n' +
+                            '                  <div class="imgbox">\n' +
+                            '                      <img src="'+httpUrl+$(this).attr('cover')+'" alt="">\n' +
+                            '                  </div>\n' +
+                            '                  <div class="goodsinfo">\n' +
+                            '                      <div class="goodsname textSplit2">'+$(this).attr('store_name')+'</div>\n' +
+                            '                      <div class="goodsaddr">\n' +
+                            '                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                            '                          '+$(this).attr('address')+'\n' +
+                            '                      </div>\n' +
+                            '                      <div class="mgt">\n' +
+                            '                          <span class="phone">\n' +
+                            '                              <i class="fa fa-phone fa-lg"></i>\n' +
+                            '                              '+$(this).attr('mobile')+'\n' +
+                            '                          </span>\n' +
+                            '                      </div>\n' +
+                            '                  </div>\n' +
+                            '              </div>\n' +
+                            '          </li>'
+                    }
+                });
+                if(isData){
+                    $("#connectShop").prepend(activeStore);
+                    if($("#connectShop>li.item-li").length >= 6){
+                        $("#connectShop>li.add-li").hide()
+                    }
+                    setTimeout(function(){
+                        getlabelList();
+                    }, 10);
+                    layer.close(open)
+                } else {
+                    layer.msg('请选择关联门店')
+                }
+            },
+            btn2: function() {
+                // // 取消
+
+            },
+            cancel: function(){
+
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        });
+    }
+    // 删除 列表list item
+    function removeLi(_this){
+        $(_this).parents('ul.item-ul').find('li.add-li').show();
+        $(_this).parents('li.item-li').remove();
+        setTimeout(function(){
+            getlabelList();
+        }, 10)
+    }
+    // get关联商品列表
+    function getGuanGoodsList(page, keywords_store, keywords_product, isPage) {
+        ajaxPost('/admin/operate/productList', {
+            page: page,
+            keywords_store: keywords_store,
+            keywords_product: keywords_product
+        }).then((res) => {
+            let dataList = res.data;
+            let liStr = '';
+            if (dataList.length > 0) {
+                for(let i = 0 ; i < dataList.length ; i++){
+                    liStr += '<li class="goodslistLi" cover="'+dataList[i].cover+'" mobile="'+dataList[i].mobile+'" store_name="'+dataList[i].store_name+'" product_name="'+dataList[i].product_name+'" address="'+dataList[i].address+'" read_number="'+dataList[i].read_number+'" id="'+dataList[i].id+'" onclick="selectedGoodsFn(this)">\n' +
+                        '                <div class="gl-goods-item">\n' +
+                        '                    <i class="layui-icon radio-i">&#xe63f;</i>\n' +
+                        '                    <div class="imgbox">\n' +
+                        '                        <img src="'+httpUrl+dataList[i].cover+'" alt="">\n' +
+                        '                        <span class="phone">\n' +
+                        '                            <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                            '+dataList[i].mobile+'\n' +
+                        '                        </span>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="goodsinfo">\n' +
+                        '                        <div class="goodsname textSplit2">'+dataList[i].store_name+'</div>\n' +
+                        '                        <div class="goodsdesc textSplit2">\n' +
+                        '                            '+dataList[i].product_name+'\n' +
+                        '                        </div>\n' +
+                        '                        <div class="goodsaddr textSplit1">\n' +
+                        '                            <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                            '+dataList[i].address+'\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '            </li>'
+                }
+                $("#goodsPage").show()
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'goodsPage' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: res.total //数据总数，从服务端得到
+                            ,limit: 10
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    getGuanGoodsList(obj.curr, keywords_store, keywords_product, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                liStr = '<li class="no-data" style="width: 100%">暂无数据</li>'
+                $("#goodsPage").hide()
+            }
+            $("#goodslistUl").html(liStr)
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    // 搜索商品
+    function searchGoodslist(){
+        let keywords_store = $("input[name=keywords_store]").val();
+        let keywords_product = $("input[name=keywords_product]").val();
+        getGuanGoodsList(1, keywords_store, keywords_product, true);
+        activeGoods = null
+    }
+    // 选择商品
+    function selectedGoodsFn(_this) {
+        let num = 0;
+        let activeNum = parseInt($("#connectGoods>li.item-li").length);
+        $("#goodslistUl>li").each(function(i, item){
+            if($(this).find('.radio-i').hasClass('active')) {
+                num +=1
+            }
+        });
+        if ($(_this).find('.radio-i').hasClass('active')) {
+            $(_this).find('.radio-i').removeClass('active');
+            $(_this).find('.radio-i').html('&#xe63f;');
+        } else {
+            if (num+activeNum >= 6) {
+                layer.msg('最多设置6个商品');
+                return
+            }
+            $(_this).find('.radio-i').addClass('active');
+            $(_this).find('.radio-i').html('&#x1005;');
+        }
+    }
+    // （show 商品列表）
+    function showGoodsListFn(obj) {
+        let _this = $(obj);
+        let open = layer.open({
+            type: 1,
+            content: $('#goodsListLayer'),
+            title: '搜索商品',
+            btn: ['确认', '取消'],
+            area: ['90%', '75%'],
+            yes: function() {
+                // 确认商品
+                let isData = false;
+                let str = '';
+                $("#goodslistUl>li").each(function(i, item){
+                    if($(this).find('.radio-i').hasClass('active')) {
+                        isData = true;
+                        str += '<li class="item-li" id="'+$(this).attr('id')+'">\n' +
+                            '              <div class="close" onclick="removeLi(this)">\n' +
+                            '                  <button type="button" class="layui-btn closebtn">\n' +
+                            '                      <i class="layui-icon">&#x1006;</i>\n' +
+                            '                  </button>\n' +
+                            '              </div>\n' +
+                            '              <div class="gl-goods-item">\n' +
+                            '                  <div class="imgbox">\n' +
+                            '                      <img src="'+httpUrl+$(this).attr('cover')+'" alt="">\n' +
+                            '                  </div>\n' +
+                            '                  <div class="goodsinfo">\n' +
+                            '                      <div class="goodsname textSplit2">'+$(this).attr('product_name')+'</div>\n' +
+                            '                      <div class="goodsaddr">\n' +
+                            '                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                            '                          '+$(this).attr('address')+'\n' +
+                            '                      </div>\n' +
+                            '                      <div class="mgt">\n' +
+                            '                          <span class="phone">\n' +
+                            '                              <i class="fa fa-phone fa-lg"></i>\n' +
+                            '                              '+$(this).attr('mobile')+'\n' +
+                            '                          </span>\n' +
+                            '                      </div>\n' +
+                            '                  </div>\n' +
+                            '              </div>\n' +
+                            '          </li>';
+                    }
+                });
+                if(isData){
+                    $("#connectGoods").prepend(str);
+                    if($("#connectGoods>li.item-li").length >= 6){
+                        $("#connectGoods>li.add-li").hide()
+                    }
+                    setTimeout(function(){
+                        getlabelList();
+                    }, 10)
+                    layer.close(open)
+                } else {
+                    layer.msg('请选择关联商品')
+                }
+            },
+            btn2: function() {
+                // // 取消
+            },
+            cancel: function(){
+                // activeGoods = null
+            }
+        });
+    }
+    // 获取关联标签数据
+    function getlabelList () {
+        let storeIds = [];
+        let productIds = [];
+        let showStyles = [];
+        $("#connectShop>li.item-li").each(function(i ,item){
+            storeIds.push($(this).attr("id"))
+        });
+        $("#connectGoods>li.item-li").each(function(i ,item){
+            productIds.push($(this).attr("id"))
+        });
+        $("#labelLi>li.item-li").each(function(i ,item){
+            showStyles.push({
+                type: $(this).attr("type"),
+                style_id: $(this).attr("id")
+            })
+        });
+        let param = {
+            store_ids: storeIds.join(','),
+            product_ids: productIds.join(','),
+            show_styles: showStyles
+        };
+        ajaxPost('/admin/operate/newTrendStyleAndTopic', JSON.stringify(param)).then(res => {
+            let style_store_list = res.style_store_list; // 门店风格
+            let style_product_list = res.style_product_list; // 商品风格
+            let topic_list = res.topic_list; // 话题
+            let show_style_list = res.show_style_list; // 显示的关联标签
+            let store_str = '';
+            let goods_str = '';
+            let topic_str = '';
+            if (style_store_list.length > 0) {
+                for(let i in style_store_list) {
+                    let code = '&#xe63f;';
+                    let active = '';
+                    if (style_store_list[i].is_checked) {
+                        code = '&#x1005;';
+                        active = 'active';
+                    }
+                    store_str += '<li onclick="selectLabelFn(this)" type="1" id="'+style_store_list[i].style_id+'" title="'+style_store_list[i].title+'">\n' +
+                        '           <i class="layui-icon radio-i '+active+'">'+code+'</i>\n' +
+                        '           '+style_store_list[i].title+'\n' +
+                        '       </li>';
+                }
+            } else {
+                store_str = '<div class="no-data">暂无数据</div>';
+            }
+            if (style_product_list.length > 0) {
+                for(let i in style_product_list) {
+                    let code = '&#xe63f;'; // 小皮果泥
+                    let active = '';
+                    if (style_product_list[i].is_checked) {
+                        code = '&#x1005;';
+                        active = 'active';
+                    }
+                    goods_str += '<li onclick="selectLabelFn(this)" type="2" id="'+style_product_list[i].style_id+'" title="'+style_product_list[i].title+'">\n' +
+                        '           <i class="layui-icon radio-i '+active+'">'+code+'</i>\n' +
+                        '           '+style_product_list[i].title+'\n' +
+                        '       </li>';
+                }
+            } else {
+                goods_str = '<div class="no-data">暂无数据</div>';
+            }
+            if (topic_list.length > 0) {
+                for(let i in topic_list) {
+                    topic_str += '<li onclick="selectTopicFn(this)" id="'+topic_list[i].id+'" title="'+topic_list[i].title+'">\n' +
+                        '           <i class="layui-icon radio-i">&#xe63f;</i>\n' +
+                        '           '+topic_list[i].title+'\n' +
+                        '       </li>';
+                }
+            } else {
+                topic_str = '<div class="no-data">暂无数据</div>';
+            }
+            $("#shopStyleUl").html(store_str);
+            $("#goodsStyleUl").html(goods_str);
+            $("#topicUl").html(topic_str);
+            // 显示的关联标签
+            if (show_style_list.length > 0) {
+                let show_str = '';
+                for(let i in show_style_list) {
+                    show_str += '<li class="item-li" id="'+show_style_list[i].style_id+'" type="'+show_style_list[i].type+'">\n' +
+                        '           <div class="close" onclick="removeLabel(this)">\n' +
+                        '               <button type="button" class="layui-btn closebtn">\n' +
+                        '                   <i class="layui-icon">&#x1006;</i>\n' +
+                        '               </button>\n' +
+                        '           </div>\n' +
+                        '           <div class="gl-goods-item">\n' +
+                        '               '+show_style_list[i].title+'\n' +
+                        '           </div>\n' +
+                        '       </li>';
+                }
+                $("#labelLi").html(show_str);
+            }else {
+                $("#labelLi").html("");
+            }
+
+        }).catch(err => {});
+    }
+    //（show 标签列表）
+    function showLabelListFn(_this) {
+        getlabelList();
+        let open = layer.open({
+            type: 1,
+            content: $('#labelListLayer'),
+            title: '关联标签',
+            btn: ['确认', '取消'],
+            area: ['90%', '75%'],
+            yes: function() {
+                // 确认
+                let isData = false;
+                let str = '';
+                $("#shopStyleUl>li").each(function(){
+                    if($(this).find('.radio-i').hasClass('active')) {
+                        isData = true;
+                        str += '<li class="item-li" id="'+$(this).attr('id')+'" type="'+$(this).attr('type')+'">\n' +
+                            '        <div class="close" onclick="removeLabel(this)">\n' +
+                            '            <button type="button" class="layui-btn closebtn">\n' +
+                            '                <i class="layui-icon">&#x1006;</i>\n' +
+                            '            </button>\n' +
+                            '        </div>\n' +
+                            '        <div class="gl-goods-item">\n' +
+                            '            '+$(this).attr('title')+'\n' +
+                            '        </div>\n' +
+                            '    </li>';
+                    }
+                });
+                $("#goodsStyleUl>li").each(function(){
+                    if($(this).find('.radio-i').hasClass('active')) {
+                        isData = true;
+                        str += '<li class="item-li" id="'+$(this).attr('id')+'" type="'+$(this).attr('type')+'">\n' +
+                            '        <div class="close" onclick="removeLabel(this)">\n' +
+                            '            <button type="button" class="layui-btn closebtn">\n' +
+                            '                <i class="layui-icon">&#x1006;</i>\n' +
+                            '            </button>\n' +
+                            '        </div>\n' +
+                            '        <div class="gl-goods-item">\n' +
+                            '            '+$(this).attr('title')+'\n' +
+                            '        </div>\n' +
+                            '    </li>';
+                    }
+                });
+                $("#topicUl>li").each(function(){
+                    if($(this).find('.radio-i').hasClass('active')) {
+                        isData = true;
+                        $("#topicLi").html('<li class="add-li" onclick="showLabelListFn(this)"><i class="layui-icon">&#xe608;</i></li>');
+                        let topic_str =  '<li class="item-li" id="'+$(this).attr('id')+'" >\n' +
+                            '                <div class="close" onclick="removeLabel(this)">\n' +
+                            '                    <button type="button" class="layui-btn closebtn">\n' +
+                            '                        <i class="layui-icon">&#x1006;</i>\n' +
+                            '                    </button>\n' +
+                            '                </div>\n' +
+                            '                <div class="gl-goods-item">\n' +
+                            '                    '+$(this).attr('title')+'\n' +
+                            '                </div>\n' +
+                            '            </li>';
+                        $("#topicLi").prepend(topic_str);
+                        return false
+                    }
+                });
+                if(isData){
+                    $("#labelLi").prepend(str);
+                    if(($("#labelLi>li.item-li").length + $("#topicLi>li.item-li").length) >= 4){
+                        $("#topicLi>li.add-li").hide()
+                    }
+                    layer.close(open)
+                } else {
+                    layer.msg('请选择关联标签')
+                }
+            },
+            btn2: function() {
+                // // 取消
+            },
+            cancel: function(){
+                // activeGoods = null
+            }
+        });
+    }
+    // 删除标签、话题
+    function removeLabel(_this) {
+        $("#topicLi>li.add-li").show();
+        $(_this).parent('li.item-li').remove();
+    }
+    // 检测当前选中的label
+    function selectLabelNum() {
+        let num = 0;
+        $("#labelLi>li.item-li").each(function(){
+            num += 1
+        });
+        $("#topicLi>li.item-li").each(function(){
+            num += 1
+        });
+        $("#shopStyleUl>li").each(function(){
+            if($(this).find('.radio-i').hasClass('active')) {
+                num += 1
+            }
+        });
+        $("#goodsStyleUl>li").each(function(){
+            if($(this).find('.radio-i').hasClass('active')) {
+                num += 1
+            }
+        });
+        $("#topicUl>li").each(function(){
+            if($(this).find('.radio-i').hasClass('active')) {
+                num += 1
+            }
+        });
+        return num
+    }
+    // 选择标签
+    function selectLabelFn(_this) {
+        let num = parseInt(selectLabelNum());
+        if ($(_this).find('.radio-i').hasClass('active')) {
+            $(_this).find('.radio-i').removeClass('active');
+            $(_this).find('.radio-i').html('&#xe63f;');
+        } else {
+            if (num >= 4) {
+                layer.msg('最多设置4个标签');
+                return
+            }
+            $(_this).find('.radio-i').addClass('active');
+            $(_this).find('.radio-i').html('&#x1005;');
+        }
+    }
+    // 选择换题
+    function selectTopicFn(_this) {
+        let num = parseInt(selectLabelNum());
+        if (num >= 4) {
+            layer.msg('最多设置4个标签');
+            return
+        }
+        $(_this).find('.radio-i').addClass("active").parent('li').siblings().find('.radio-i').removeClass('active');
+        $(_this).find('.radio-i').html("&#x1005;").parent('li').siblings().find('.radio-i').html('&#xe63f;');
+    }
+    $(function(){
+        getDataList(1, true);
+        getGuanList(1, [], '', '', '', true);
+        getGuanGoodsList(1, '', '', true);
+        getStyleCate();
+        // 新增编辑 (推荐列表) 拖拽
+        var connectShop = document.getElementById("connectShop");
+        var connectGoods = document.getElementById("connectGoods");
+        Sortable.create(connectShop, {
+            animation: 150
+        });
+        Sortable.create(connectGoods, {
+            animation: 150
+        });
+        // 内容 编辑富文本
+        layui.use('layedit', function(){
+            layedit = layui.layedit;
+            layedit.set({
+                uploadImage: {
+                    url: httpUrl + '/admin/api_base/layUpload' //接口url
+                    ,type: 'post' //默认post
+                }
+            });
+            layeditContent = layedit.build('layEditDesc'); //建立编辑器
+
+        });
+        //
+        layui.use(['form'], function() {
+            //
+            form = layui.form;
+            //监听提交
+            form.on('submit(formSubmit)', function(data){
+                let store_list = [];
+                let product_list = [];
+                let style_list = [];
+                let topic_id = '';
+                $("#connectShop>li.item-li").each(function(i, item){
+                    store_list.push({
+                        store_id: $(this).attr('id'),
+                        sort: i+1
+                    })
+                });
+                $("#connectGoods>li.item-li").each(function(i, item){
+                    product_list.push({
+                        product_id: $(this).attr('id'),
+                        sort: i+1
+                    })
+                });
+                $("#topicLi>li.item-li").each(function(){
+                    topic_id = $(this).attr('id')
+                });
+                $("#labelLi>li.item-li").each(function(){
+                    style_list.push({
+                        style_id: $(this).attr('id'),
+                        type: $(this).attr('type'),
+                    })
+                });
+                let ditContent = layedit.getContent(layeditContent);
+                if (data.field.bg_img == '') {
+                    layer.msg('请上传封面图');
+                    return false
+                }
+                if (ditContent == '') {
+                    layer.msg('请添加内容');
+                    return false
+                }
+                if (store_list.length <= 0) {
+                    layer.msg('请关联门店');
+                    return false
+                }
+                if (product_list.length <= 0) {
+                    layer.msg('请关联商品');
+                    return false
+                }
+
+                let param = {
+                    title: data.field.title,
+                    cover: data.field.bg_img,
+                    content: ditContent,
+                    topic_id: topic_id,
+                    store_list: store_list,
+                    product_list: product_list,
+                    style_list: style_list
+                };
+                let isAdd = $("input[name=id]").val();
+                if(!isAdd) {
+                    // 添加
+                    ajaxPost('/admin/operate/addNewTrend', JSON.stringify(param)).then((res) => {
+                        layer.msg('添加成功', {time: 1500}, function(){
+                            elementTab.tabChange('classifyTabList', '111');
+                            now_page = 1;
+                            getDataList(1, true)
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                } else {
+                    // 编辑
+                    param.id = isAdd;
+                    ajaxPost('/admin/operate/editNewTrend', JSON.stringify(param)).then((res) => {
+                        layer.msg('修改成功', {time: 1500}, function(){
+                            elementTab.tabChange('classifyTabList', '111');
+                            getDataList(now_page, false)
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                }
+                return false;
+            });
+        })
+        layui.use(['element', 'upload'], function() {
+            //
+            elementTab = layui.element;
+            //监听Tab切换
+            elementTab.on('tab(classifyTabList)', function(data){
+                // console.log(data.index)
+                // console.log(this.getAttribute('lay-id'));
+                if(data.index == 0) {
+                    $("input[name=id]").val('');
+                    $("input[name=title]").val('');
+                    $("#tabTitle>li:nth-child(2)").text("新增");
+                    $(".closebtn").click();
+                    layedit.setContent(layeditContent, "");
+                    $("#connectShop>li.item-li").each(function(){
+                        $(this).remove()
+                    });
+                    $("#connectGoods>li.item-li").each(function(){
+                        $(this).remove()
+                    });
+                    $("#labelLi>li.item-li").each(function(){
+                        $(this).remove()
+                    });
+                    $("#topicLi>li.item-li").each(function(){
+                        $(this).remove()
+                    });
+                }
+            });
+            //
+            upload = layui.upload;
+            //背景图片 执行实例
+            upload.render({
+                elem: '#backgroundImg' //绑定元素
+                ,url: httpUrl + '/admin/api_base/upload' //上传接口
+                ,data: {module:'new_trend', use:'cover'}
+                ,done: function(res){
+                    if(res.status == 1){
+                        $(".showimg-box").show()
+                        $("#bgImg").attr('src', httpUrl + res.data.src)
+                        $("#backgroundImg").hide()
+                        $("input[name=bg_img]").val(res.data.src)
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
+
+
+        })
+        // 删除背景图
+        $(".closebtn").click(function(){
+            $(".showimg-box").hide();
+            $("#backgroundImg").show();
+            $("#bgImg").attr('src', '');
+            $("input[name=bg_img]").val('');
+        })
+    })
+</script>
+</html>

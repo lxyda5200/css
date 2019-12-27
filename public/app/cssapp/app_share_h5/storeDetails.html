@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发现-店铺动态详情</title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1， user-scalable=no,minimal-ui" servergenerated="true">
+    <link rel="stylesheet" href="./js/swiper-4.5.1/css/swiper.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="../config/config.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/swiper-4.5.1/js/swiper.min.js"></script>
+    <script src="./js/rem.js"></script>
+    <script src="./js/com.js"></script>
+    <style>
+        .video-play-icon{
+            width: .7rem;
+            height: .7rem;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 5;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body id="storeDetails">
+<div class="swiper-container" id="swiper10">
+    <div class="swiper-wrapper" id="storeBanner">
+        <!--<div class="swiper-slide">
+            <img class="banner-img" src="./img/banner.png" alt="">
+        </div>-->
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
+<div class="page-box">
+    <div class="desc-info" id="storeDescInfo"></div>
+    <div class="details-con" id="detailsConBox">
+        <ul class="topic-label" id="topicLabel">
+        </ul>
+    </div>
+
+</div>
+<!-- -->
+<div class="content-box" id="goodsBox" style="background: #FCFCFC;">
+    <div class="row-stores flex-sb flex-ai-center" onclick="showLogin()">
+        <div class="flex-ai-center left" style="width: 80%;">
+            <img src="" class="store-img" id="storeLogo">
+            <div class="flex-col storesinfo">
+                <div class="store-name textSplit1" id="storeName"></div>
+                <div class="flex-ai-center addres">
+                    <span class="textSplit1 dizhi" id="storeAddress"></span>
+                </div>
+            </div>
+        </div>
+        <div class="guanzhu-btn">关注</div>
+    </div>
+    <div class="goods-box" id="storeGoodsBox">
+        <ul class="goods-list" id="goodsList">
+            <!--<li>
+                <div class="goods-img-box">
+                    <img src="./img/baby.jpg" class="goods-img">
+                </div>
+                <div class="goods-name textSplit1">哈哈哈哈</div>
+                <div class="price">￥68</div>
+            </li>-->
+        </ul>
+    </div>
+    <!--<div class="dabao-box flex-end">
+        <div class="dabao-right flex-row flex-ai-center">
+            <div class="yuan-price">原价￥68</div>
+            <div class="dabao-btn">打包￥68</div>
+        </div>
+    </div>-->
+</div>
+<div class="page-box" style="margin-bottom: .8rem;">
+    <div class="content-box">
+        <div class="right-title">评论</div>
+        <div class="comment-box">
+            <ul class="comment-ul" id="commentUl">
+                <!--<li class="item">
+                    <div class="ava-box">
+                        <img src="./img/baby.jpg" class="ava-img">
+                    </div>
+                    <div class="right-box">
+                        <div class="user-info">
+                            <div class="user-name">呵呵呵</div>
+                            <div class="user-time">19.10.29 14:02</div>
+                        </div>
+                        <div class="comment-info">留卡号弗兰科萨看见的阿里斯顿会计法了卡。加看拉升房价。近卡放大是否！</div>
+                        <div class="reply-box">
+                            <ul class="reply-ul">
+                                <li>
+                                    <span class="weight">小红&nbsp;</span>回复
+                                    <span class="weight">小明&nbsp;</span>返回了卡时代峰峻阿萨德附近
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>-->
+            </ul>
+            <div class="comment-total-num" id="commentTotalNumBox" onclick="showLogin()">
+                <div class="font">
+                    共&nbsp;<span class="num" id="commentTotalNum"></span>&nbsp;条评论
+                </div>
+                <img src="./img/geng.png" class="xia-icon">
+            </div>
+        </div>
+    </div>
+    <div class="content-box">
+        <div class="right-title">热门推荐</div>
+        <ul class="hot-goods-ul flex-wrap flex-sb" id="hotGoodsUl">
+            <!--<li>
+                <div class="img-box">
+                    <img src="./img/baby.jpg" >
+                </div>
+                <div class="desc-info flex-col">
+                    <div class="name textSplit2">MATERIAL GIRL 潮流时尚绑带运动鞋</div>
+                    <div class="brand-box-like flex-sb">
+                        <div class="brand-box flex-ai-center">
+                            <img src="./img/baby.jpg" class="brand-logo">
+                            <span class="brand-name textSplit1">防撒旦法safar爱的色放</span>
+                        </div>
+                        <div class="like-box flex-ai-center">
+                            <img src="./img/link.png" class="link-icon">
+                            <span class="num">78</span>
+                        </div>
+                    </div>
+                </div>
+            </li>-->
+        </ul>
+    </div>
+
+</div>
+<!--  -->
+<div class="fixed-bottom" onclick="showLogin()">
+    <div class="box">
+        <input type="text" name="comment" class="comment-input" placeholder="说点什么吧" disabled>
+        <div class="btm-c">
+            <div class="collect-icon icon" id="collectIcon"></div>
+            <span class="num" id="collectNum"></span>
+        </div>
+        <div class="btm-c">
+            <div class="link-icon icon " id="linkIcon"></div>
+            <span class="num" id="linkNum"></span>
+        </div>
+        <div class="btm-c">
+            <img src="./img/share.png" class="share-icon icon" id="shareIcon">
+            <span class="num" id="shareNum"></span>
+        </div>
+    </div>
+</div>
+<!-- logo reg -->
+<div class="w-model">
+    <div class="w-model-box">
+        <img src="./img/delOne.png" id="hiddenModel">
+        <div class="w-model-title">欢迎来到超神宿</div>
+        <div class="w-inp-box">
+            <div class="w-public-inp w-inpOne">
+                <input type="text" placeholder="请输入手机号" id="w-phone">
+            </div>
+            <div class="w-public-inp w-inpTwo">
+                <input type="text" placeholder="短信验证码" id="wCode">
+                <div class="w-code">获取验证码</div>
+            </div>
+        </div>
+        <div class="w-hint"></div>
+        <div class="w-logoIn-btn" id="loginBtn">登录</div>
+    </div>
+</div>
+</body>
+<script>
+    let id = getUrlParams('dynamic_id'); // 76 //
+    let scene_id =  getUrlParams('scene_id'); // 2 //
+    function getStoreDetails() {
+        ajaxPost('/user_v6/dynamic/DynamicDetail', {
+            id: id
+        }).then(res => {
+            if (res.status == 1) {
+                let info = res.data;
+                if(info.images.length > 0){
+                    let str = '';
+                    for(let i in info.images){
+                        let img_src = '';
+                        let isPlayIcon = 'none';
+                        if (info.images[i].type==1) {
+                            img_src = httpUrl+info.images[i].img_url;
+                            isPlayIcon = 'none';
+                        } else if (info.images[i].type==2) {
+                            img_src = info.images[i].cover;
+                            isPlayIcon = 'block'
+                        }
+                        str += `<div class="swiper-slide" style="position: relative;">
+                                    <img class="banner-img" src="`+img_src+`" style="width: 100%;">
+                                    <img src="./img/play_icon.png" class="video-play-icon" style="display: `+isPlayIcon+`" onclick="showLogin()">
+                                </div>`
+                    }
+                    $("#storeBanner").html(str);
+                    bannerSwiper();
+                } else {
+                    $("#swiper10").hide()
+                }
+                $("#storeDescInfo").text(info.description)
+                //
+                let tags_str = '';
+                if(info.topic_title){
+                    tags_str = '<li onclick="showLogin()">#'+info.topic_title+'#</li>'
+                }
+                if(info.tags.length > 0) {
+                    for(let i in info.tags) {
+                        let name = info.tags[i].product_style?info.tags[i].product_style:info.tags[i].store_style;
+                        tags_str += '<li onclick="showLogin()">'+name+'</li>'
+                    }
+                }
+                $("#topicLabel").html(tags_str)
+                //
+                $("#storeLogo").attr('src', httpUrl+info.store_logo);
+                $("#storeName").text(info.store_name);
+                $("#storeAddress").text(info.address);
+                //
+                if(info.product_info.length > 0) {
+                    let p_str = '';
+                    for(let i in info.product_info) {
+                        p_str += `<li onclick="showLogin()">
+                                    <div class="goods-img-box">
+                                        <img src="`+httpUrl+info.product_info[i].cover+`" class="goods-img">
+                                    </div>
+                                    <div class="goods-name textSplit1">`+info.product_info[i].product_name+`</div>
+                                    <div class="price">￥`+info.product_info[i].price+`</div>
+                                </li>`
+                    }
+                    $("#goodsList").html(p_str);
+                } else {
+                    $("#storeGoodsBox").hide()
+                }
+                // comment
+                let com_str = "";
+                if(info.comment.length > 0) {
+                    let list = info.comment;
+                    for(let i in list) {
+                        let avatar = (list[i].avatar).indexOf('http')>=0 ? list[i].avatar : httpUrl+list[i].avatar;
+                        let showNone = list[i].reply.length > 0 ? 'show' : 'none';
+                        let reply_str = '';
+                        if (showNone == 'show') {
+                            for(let j in list[i].reply) {
+                                reply_str += `<li class="flex-wrap">
+                                                    <span class="weight">`+list[i].reply[j].nickname+`&nbsp;</span>回复
+                                                    <span class="weight">`+list[i].nickname+`&nbsp;</span>`+list[i].reply[j].content+`
+                                                </li>`;
+                            }
+                        }
+                        com_str += `<li class="item">
+                                        <div class="ava-box">
+                                            <img src="`+avatar+`" class="ava-img">
+                                        </div>
+                                        <div class="right-box">
+                                            <div class="user-info">
+                                                <div class="user-name">`+list[i].nickname+`</div>
+                                                <div class="user-time">`+time(``+list[i].create_time+``)+`</div>
+                                            </div>
+                                            <div class="comment-info">`+list[i].content+`</div>
+                                            <div class="reply-box" style="display: `+showNone+`">
+                                                <ul class="reply-ul">
+                                                    `+reply_str+`
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>`;
+                    }
+                    $("#commentTotalNum").text(info.comment_number)
+                } else {
+                    com_str = '<li class="no-data">暂无评论</li>';
+                    $("#commentTotalNumBox").hide()
+                }
+                $("#commentUl").html(com_str);
+                //
+                $("#collectNum").text(info.collect_number);
+                $("#linkNum").text(info.like_number);
+                $("#shareNum").text(info.share_number);
+
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    // 热门推荐
+    function getData() {
+        ajaxPost('/user_v6/dynamic/DynamicRecommend', {
+            scene_id: scene_id // 场景id ?
+        }).then(res => {
+            if (res.status == 1) {
+                let list = res.data;
+                let str = '';
+                if (list.length > 0) {
+                    for(let i in list) {
+                        str += `<li onclick="showLogin()">
+                                    <div class="img-box">
+                                        <img src="`+httpUrl+list[i].cover+`" >
+                                    </div>
+                                    <div class="desc-info flex-col">
+                                        <div class="name textSplit2">`+list[i].title+`</div>
+                                        <div class="brand-box-like flex-sb">
+                                            <div class="brand-box flex-ai-center">
+                                                <img src="`+httpUrl+list[i].store_logo+`" class="brand-logo">
+                                                <span class="brand-name textSplit1">`+list[i].store_name+`</span>
+                                            </div>
+                                            <div class="like-box flex-ai-center">
+                                                <img src="./img/link.png" class="link-icon">
+                                                <span class="num">`+list[i].like_number+`</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>`;
+                    }
+                } else {
+                    str = '<div class="no-data">暂无推荐</div>'
+                }
+                $("#hotGoodsUl").html(str);
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    $(function(){
+        getStoreDetails();
+        getData();
+    })
+</script>
+</html>

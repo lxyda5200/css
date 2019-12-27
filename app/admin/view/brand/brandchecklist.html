@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>品牌列表</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/check.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+
+    <div class="today-table-header">
+        <form class="layui-form layui-inline" lay-filter="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">品牌名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="key" class="layui-input" placeholder="请输入营业执照上的名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">商家类型</label>
+                <div class="layui-input-inline">
+                    <select name="is_brand" lay-filter="">
+                        <option value="">全部类型</option>
+                        <option value="1">品牌商</option>
+                        <option value="2">代理商</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">申请时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="stime" lay-verify="date" placeholder="开始时间" autocomplete="off" id="starDate" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="etime" lay-verify="date" placeholder="结束时间" autocomplete="off" id="endDate" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>品牌名称</th>
+            <th>品牌logo</th>
+            <th>商家类型</th>
+            <th>申请时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>12</td>
+            <td>Nike中国商贸股份有限公司</td>
+            <td>
+                <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" class="w-img120">
+            </td>
+            <td>品牌商</td>
+            <td>2019-10-02 12:00:00</td>
+            <td>待审核</td>
+            <td style="width: 100px;">
+                &lt;!&ndash;<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>&ndash;&gt;
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.seeDetails(this)">
+                    <i class="layui-icon">&#xe60e;</i>查看
+                </button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 查看 -->
+<div class="layer-box-page" id="detailsLayer">
+    <div class="layer-texttit">品牌基础信息</div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md3 w-row">
+            <div class="">品牌名称：</div>
+            <div class="w-font-bold" id="brandName"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">品牌logo：</div>
+            <img src="" class="w-img120" id="brandLogo">
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">品牌序号：</div>
+            <div class="" id="brandXu"></div>
+        </div>
+        <div class="layui-col-md3 w-row">
+            <div class="">品牌分类：</div>
+            <div class="" id="brandClassify"></div>
+        </div>
+    </div>
+    <div class="layer-texttit">品牌资质信息</div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md12 w-row" style="align-items: center">
+            <div class="">是否是品牌商：</div>
+            <div class="" id="isBrands"></div>
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md12 w-row">
+            <div class="">商标证书：</div>
+            <ul id="certsUl" class="w-row">
+
+            </ul>
+        </div>
+    </div>
+    <div class="layui-row w-mb30 store_pu">
+        <div class="layui-col-md12 w-row">
+            <div class="">品牌授权书：</div>
+            <ul id="brandImgsUl" class="w-row">
+
+            </ul>
+        </div>
+    </div>
+    <div class="layui-row w-mb30 store_pu">
+        <div class="layui-col-md12 w-row">
+            <div class="">品牌授权链路：</div>
+            <ul class="w-row w-ml10" id="brandUrlUl">
+
+            </ul>
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md12 w-row">
+            <div class="">有效时间：</div>
+            <div class="" id="seTime"></div>
+        </div>
+    </div>
+    <div class="layui-row w-mb30">
+        <div class="layui-col-md12 w-row">
+            <div class="">品牌理念：</div>
+            <div class="" id="brandContent"></div>
+        </div>
+    </div>
+    <hr class="layui-bg-gray">
+    <div class="layer-texttit w-mt10">审核处理</div>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">审核结论</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sh_status" value="1" title="审核通过" checked>
+                <input type="radio" name="sh_status" value="2" title="审核不通过">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">不通过原因</label>
+            <div class="layui-input-block">
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="nopass1" lay-skin="primary" value="品牌商标证书无效" title="品牌商标证书无效">
+                <input type="checkbox" name="nopass2" lay-skin="primary" value="品牌授权书主体和品牌商标证书使用者不一致" title="品牌授权书主体和品牌商标证书使用者不一致">
+                <input type="checkbox" name="nopass3" lay-skin="primary" value="品牌授权书已过期" title="品牌授权书已过期">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea class="layui-textarea" name="reason" placeholder="添加审核备注说明" ></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 66px;">
+            <div class="layui-input-block">
+                <input type="hidden" name="brandId">
+                <button class="layui-btn" lay-submit lay-filter="formCheckSubmit">提交</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+</body>
+<script src="__WZH__/js/http.js"></script>
+
+<script>
+    let layer = null;
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let openLayer = null;
+    let cooperLayerOpen = null;
+    let obj = {
+        getDatalist: function(page, key, is_brand, time, isPage) {
+            ajaxPost('/admin/brand_api/reviewBrandList', {
+                page: page,
+                key: key,
+                is_brand: is_brand,
+                time: time
+            }).then(res => {
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let is_brand = datalist[i].is_brand==1 ? '品牌商': '代理商';
+                        tr += `<tr>
+                                <td>`+datalist[i].id+`</td>
+                                <td>`+datalist[i].brand_name+`</td>
+                                <td>
+                                    <img src="`+httpUrl+datalist[i].logo+`" class="w-img120">
+                                </td>
+                                <td>`+is_brand+`</td>
+                                <td>`+datalist[i].create_time+`</td>
+                                <td>`+datalist[i].status+`</td>
+                                <td style="width: 100px;">
+                                    <!--<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>-->
+                                    <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.seeDetails(`+datalist[i].id+`)">
+                                        <i class="layui-icon">&#xe60e;</i>查看
+                                    </button>
+                                </td>
+                            </tr>`;
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/10));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 10
+                                ,theme: '#FF5722'
+                                ,jump: function(objs, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = objs.curr;
+                                        obj.getDatalist(objs.curr, key, is_brand, time, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+
+            }).catch(err => {});
+
+        },
+        // 查看详情
+        seeDetails(id) {
+            ajaxPost('/admin/brand_api/brandReviewDetail', {
+                id: id
+            }).then(res => {
+                $("input[name=brandId]").val(id);
+                $("#brandXu").text(id);
+                $("#brandName").text(res.brand_name);
+                $("#brandLogo").attr('src', httpUrl+res.logo);
+                $("#brandClassify").text(res.cate_name);
+                $("#isBrands").text(res.is_brand==1?"是":"否");
+                let certs_str = '';
+                if (res.certs.length > 0) {
+                    for(let i in res.certs) {
+                        certs_str += `<li class="w-mr10 w-mb15">
+                                        <img layer-src="`+httpUrl+res.certs[i]+`" src="`+httpUrl+res.certs[i]+`" class="w-img120 w-hover">
+                                    </li>`
+                    }
+                }
+                $("#certsUl").html(certs_str);
+                $("#seTime").text(res.brand_time_start+' 至 '+ res.brand_time_end);
+                $("#brandContent").text(res.notion);
+
+                if (res.is_brand!=1) {
+                    // 不是品牌商(代理商)
+                    $(".store_pu").show();
+                    let imgs_str = '';
+                    let imgs_arr = (res.brand_img).split(',');
+                    if (imgs_arr.length > 0) {
+                        for(let i in imgs_arr) {
+                            imgs_str += `<li class="w-mr10 w-mb15">
+                                            <img layer-src="`+httpUrl+imgs_arr[i]+`" src="`+httpUrl+imgs_arr[i]+`" class="w-img120 w-hover">
+                                        </li>`
+                        }
+                    }
+                    $("#brandImgsUl").html(imgs_str);
+                    layer.photos({
+                        photos: '#brandImgsUl'
+                        ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                    });
+                    //
+                    let brand_str = '';
+                    if (res.brand_url.length > 0) {
+                        for(let i in res.brand_url){
+                            if (i >= res.brand_url.length-1) {
+                                brand_str += `<li> `+res.brand_url[i]+`</li>`
+                            } else {
+                                brand_str += `<li>`+res.brand_url[i]+` >></li>`
+                            }
+                        }
+                    }
+                    $("#brandUrlUl").html(brand_str)
+                }
+
+                layer.photos({
+                    photos: '#certsUl'
+                    ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+                });
+                openLayer = layer.open({
+                    type: 1,
+                    content: $('#detailsLayer'),
+                    title: '品牌资质审核',
+                    area: ['90%', '90%'],
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                        obj.closeDetailsLayer()
+                    }
+                })
+            })
+
+        },
+        closeDetailsLayer() {
+
+        },
+    };
+    $(function() {
+        obj.getDatalist(1, '', '', '', true);
+        layui.use(["layer", "form", "upload", "laydate"], function() {
+            layer = layui.layer;
+            form = layui.form;
+            upload = layui.upload;
+            let laydate = layui.laydate;
+            laydate.render({
+                elem: '#starDate'
+                , type: 'date'
+            });
+            laydate.render({
+                elem: '#endDate'
+                , type: 'date'
+            });
+            // 搜索
+            form.on('submit(formSearchList)', function(data) {
+                // console.log(data.field);
+                let param = data.field;
+                let time = '';
+                if (param.stime&&param.etime) {
+                    time = (param.stime).replace(/-/g,'/') + '-' + (param.etime).replace(/-/g,'/')
+                }
+                now_page = 1;
+                obj.getDatalist(1, param.key, param.is_brand, time, true);
+                return false;
+            });
+            // 审核提交
+            form.on('submit(formCheckSubmit)', function(data){
+                let param = data.field;
+                let content = param.reason;
+                if (param.sh_status == 1) {
+                    // 通过
+
+                } else {
+                    if(!param.nopass1&&!param.nopass2&&!param.nopass3&&!param.reason){
+                        layer.msg('请选择或输入不通过原因');
+                        return false
+                    }else{
+                        if (param.nopass1) {
+                            content =param.nopass1+','+ content
+                        }
+                        if (param.nopass2) {
+                            content = param.nopass2+','+ content
+                        }
+                        if (param.nopass3) {
+                            content = param.nopass3+','+ content
+                        }
+                    }
+                }
+                let subParam = {
+                    id: $("input[name=brandId]").val(),
+                    status: param.sh_status,
+                    review_note: content
+                };
+                ajaxPost('/admin/brand_api/brandReview', subParam).then(res => {
+                    layer.close(openLayer);
+                    layer.msg('审核成功', {time: 1500}, function(){
+                        let key = $("input[name=key]").val();
+                        let is_brand = $("select[name=is_brand]").val();
+                        let stime = $("input[name=stime]").val();
+                        let etime = $("input[name=etime]").val();
+                        let time = '';
+                        if (stime&&etime) {
+                            time = stime.replace(/-/g,'/') + '-' + etime.replace(/-/g,'/');
+                        }
+                        obj.getDatalist(now_page, key, is_brand, time, false);
+                    })
+
+                });
+                //
+                return false;
+            })
+
+        })
+
+
+
+    });
+</script>
+</html>

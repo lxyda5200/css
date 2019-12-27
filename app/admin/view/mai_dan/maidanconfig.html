@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工奖励机制</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="content-tit">员工奖励机制</div>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label auto-width">单新用户推广奖励</label>
+            <div class="layui-input-inline reward-input">
+                <input type="number" name="new_user_reward" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">元</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label auto-width">首个用户额外奖励</label>
+            <div class="layui-input-inline reward-input">
+                <input type="number" name="first_user_reward" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">元</div>
+        </div>
+        <div class="content-tit">阶梯奖励</div>
+        <div class="layui-form-item">
+            <label class="layui-form-label auto-width">单笔买单金额大于</label>
+            <div class="layui-input-block">
+                <div class="" style="height: 38px;">
+                    <div class="layui-input-inline reward-input">
+                        <input type="number" name="min_maidan_price" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">元</div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <div class="add-reward-btn" onclick="addData()"><i class="layui-icon">&#xe61f;</i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="jieT-ul" id="jieTiUl">
+            <!--<li>
+                <div class="l">
+                    <div class="layui-inline" style="padding-right: 5px;">且人数 ≥ </div>
+                    <div class="layui-input-inline reward-input">
+                        <input type="number" name="person_num" class="layui-input">
+                    </div>
+                    <div class="layui-inline layui-word-aux">人</div>
+                </div>
+                <div class="r">
+                    <div class="layui-inline" style="padding-right: 5px;">奖励</div>
+                    <div class="layui-input-inline reward-input">
+                        <input type="number" name="reward" class="layui-input">
+                    </div>
+                    <div class="layui-inline layui-word-aux">元</div>
+                    <div class="layui-inline close-btn" onclick="delData(this)"><i class="layui-icon">&#xe640;</i></div>
+                </div>
+            </li>-->
+        </ul>
+        <div class="layui-form-item" style="margin-top: 50px;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script>
+    let form = null;
+    let obj = {
+        getData: function() {
+            ajaxPost('/admin/mai_dan_api/rewardRuleInfo', {}).then(res => {
+                console.log(res);
+                $("input[name=new_user_reward]").val(res.new_user_reward);
+                $("input[name=first_user_reward]").val(res.first_user_reward);
+                $("input[name=min_maidan_price]").val(res.min_maidan_price);
+                let list = res.reword_rules;
+                let li = '';
+                if (list.length > 0) {
+                    for(let i in list) {
+                        li += '<li>\n' +
+                            '        <div class="l">\n' +
+                            '            <div class="layui-inline" style="padding-right: 5px;">且人数 ≥ </div>\n' +
+                            '            <div class="layui-input-inline reward-input">\n' +
+                            '                <input type="number" name="person_num" value="'+list[i].person_num+'" class="layui-input">\n' +
+                            '            </div>\n' +
+                            '            <div class="layui-inline layui-word-aux">人</div>\n' +
+                            '        </div>\n' +
+                            '        <div class="r">\n' +
+                            '            <div class="layui-inline" style="padding-right: 5px;">奖励</div>\n' +
+                            '            <div class="layui-input-inline reward-input">\n' +
+                            '                <input type="number" name="reward" value="'+list[i].reward+'" class="layui-input">\n' +
+                            '            </div>\n' +
+                            '            <div class="layui-inline layui-word-aux">元</div>\n' +
+                            '            <div class="layui-inline close-btn" onclick="delData(this)"><i class="layui-icon">&#xe640;</i></div>\n' +
+                            '        </div>\n' +
+                            '    </li>';
+                    }
+                    $("#jieTiUl").html(li);
+                }
+            }).catch(err => {});
+
+        }
+    };
+    //
+    function addData() {
+        let li = '<li>\n' +
+            '                <div class="l">\n' +
+            '                    <div class="layui-inline" style="padding-right: 5px;">且人数 ≥ </div>\n' +
+            '                    <div class="layui-input-inline reward-input">\n' +
+            '                        <input type="number" name="person_num" class="layui-input">\n' +
+            '                    </div>\n' +
+            '                    <div class="layui-inline layui-word-aux">人</div>\n' +
+            '                </div>\n' +
+            '                <div class="r">\n' +
+            '                    <div class="layui-inline" style="padding-right: 5px;">奖励</div>\n' +
+            '                    <div class="layui-input-inline reward-input">\n' +
+            '                        <input type="number" name="reward" class="layui-input">\n' +
+            '                    </div>\n' +
+            '                    <div class="layui-inline layui-word-aux">元</div>\n' +
+            '                    <div class="layui-inline close-btn" onclick="delData(this)"><i class="layui-icon">&#xe640;</i></div>\n' +
+            '                </div>\n' +
+            '            </li>';
+        $("#jieTiUl").append(li)
+    }
+    //
+    function delData(_this) {
+        $(_this).parents('li').remove()
+    }
+    $(function() {
+        obj.getData();
+        layui.use(["form"], function(){
+            form = layui.form;
+            // submit
+            form.on("submit(formSubmit)", function(data){
+                // console.log(data);
+                let param = data.field;
+                let reward_rule = [];
+                $("#jieTiUl>li").each(function(){
+                    let person_num = $(this).find('input[name=person_num]').val();
+                    let reward = $(this).find('input[name=reward]').val();
+                    reward_rule.push({
+                        person_num: person_num,
+                        reward: reward
+                    })
+                });
+                let subParam = {
+                    new_user_reward: param.new_user_reward,
+                    first_user_reward: param.first_user_reward,
+                    min_maidan_price: param.min_maidan_price,
+                    reward_rule: reward_rule
+                };
+                ajaxPost('/admin/mai_dan_api/editRewardRule', JSON.stringify(subParam)).then(res => {
+                    layer.msg('保存成功', {time: 1500}, function(){
+                        obj.getData();
+                    });
+                }).catch(err => {});
+                return false
+            });
+        })
+    })
+</script>
+</html>

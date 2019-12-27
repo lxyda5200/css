@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>生活剪影</title>
+    <link href="https://cdn.bootcss.com/Swiper/3.4.1/css/swiper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./life_silhouette.css">
+    <link rel="stylesheet" href="./logoIn.css">
+</head>
+
+<body>
+    <div class="main-site">
+        <div class="main-content space-top wrapper" role="main" id="mainContent">
+            <div class="loader loader-black loader-5"></div>
+            <p>拼命加载中...</p>
+        </div>
+    </div>
+    <div class="w-wrap">
+        <div class="swiper-box">
+            <div class="swiper-container" id="swiper1">
+                <div class="swiper-wrapper"></div>
+            </div>
+            <div class="asideImg">
+                <div class="asideImg-item">
+                    <img src="./img1.png">
+                    <span></span>
+                </div>
+                <div class="asideImg-item">
+                    <img src="./img2.png">
+                    <span></span>
+                </div>
+                <div class="asideImg-item">
+                    <img src="./img3.png">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="cont-box">
+            <h3 class="str"></h3>
+            <div class="correlation">
+                <div class="correlation-title">相关商圈</div>
+                <div class="swiper-box2">
+                    <div class="swiper-container" id="swiper2">
+                        <div class="swiper-wrapper"></div>
+                    </div>
+                </div>
+                <ul class="swiper-point"></ul>
+            </div>
+            <div class="wz-wrap"></div>
+        </div>
+    </div>
+    <!-- 模态框 -->
+    <div class="w-model">
+        <div class="w-model-box">
+            <img src="./delOne.png" id="hiddenModel">
+            <div class="w-model-title">欢迎来到超神宿</div>
+            <div class="w-inp-box">
+                <div class="w-public-inp w-inpOne">
+                    <input type="text" placeholder="请输入手机号" id="w-phone">
+                </div>
+                <div class="w-public-inp w-inpTwo">
+                    <input type="text" placeholder="短信验证码" id="wCode">
+                    <div class="w-code">获取验证码</div>
+                </div>
+            </div>
+            <div class="w-hint"></div>
+            <div class="w-logoIn-btn" id="loginBtn">登录</div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.10.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/Swiper/3.4.1/js/swiper.min.js"></script>
+<script src="./life_silhouette.js"></script>
+<script>
+    let timer = ''
+    let canClick = true
+    let cansubmit = true
+    //点击取消模态框
+    $('#hiddenModel').click(function () {
+        $('.w-model').hide()
+        clearTimeout(timer)
+        $('.w-code').html("获取验证码")
+    })
+    //点击发送验证码
+    $('.w-code').click(function () {
+        if ($('#w-phone').val().trim() == '') {
+            $('.w-hint').html('手机号不能为空')
+            return
+        } else {
+            $('.w-hint').html('')
+            if (canClick == true) {
+                canClick = false
+                $.post(base + "/user_v6/user/getVerifyCodeNew", {
+                    mobile: $('#w-phone').val()
+                }, function (resp) {
+                    if (resp.status == 0) {
+                        $('.w-hint').html(resp.msg)
+                    } else {
+                        let codeDom = $('.w-code')
+                        let time = 60
+                        codeDom.html(time + 's后可再次获取')
+                        timer = setInterval(() => {
+                            if (time > 1) {
+                                time--;
+                                codeDom.html(time + "s后可再次获取")
+                            } else {
+                                clearInterval(timer);
+                                canClick = true
+                                codeDom.html("获取验证码")
+                            }
+                        }, 1000);
+                    }
+                })
+            }
+        }
+    })
+    function downLoadApp() {
+        const u = navigator.userAgent
+        let ua = u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) ? 'ios' : 'android'
+        if (ua === 'ios') {
+            window.location.href = 'itms-apps://itunes.apple.com/app/id1440450216?mt=8'
+        }
+        if (ua === 'android') {
+            window.location.href = 'https://a.app.qq.com/o/simple.jsp?pkgname=com.bingfor.cxs'
+        }
+    }
+    //点击登录
+    $('#loginBtn').click(function () {
+        if ($('#w-phone').val().trim() == '') {
+            $('.w-hint').html('手机号不能为空')
+            return
+        }
+        if ($('#wCode').val().trim() == '') {
+            $('.w-hint').html('验证码不能为空')
+            return
+        }
+        if (cansubmit == true) {
+            cansubmit = false
+            setTimeout(() => {
+                cansubmit = true
+            }, 2000)
+            $.post(base + "/user_v6/user/verifyCodeLogin", {
+                mobile: $('#w-phone').val(),
+                code: $('#wCode').val(),
+                invitation_user_id: getQueryString('user_id'),
+                type: 1
+            }, function (resp) {
+                if (resp.status == 0) {
+                    $('.w-hint').html(resp.msg)
+                } else {
+                    //登录成功
+                    downLoadApp()
+                }
+            })
+        }
+    })
+</script>
+</html>

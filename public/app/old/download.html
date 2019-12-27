@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超神宿APP 爱生活 爱实体</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        #app {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: url('./images/chahua@2x.jpg') no-repeat;
+            background-size: 100% 100%;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        * {
+            padding: 0;
+            margin: 0
+        }
+
+        .title {
+            position: fixed;
+            bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" onclick="open_app()">
+        <!-- <img src="./images/chahua@2x.jpg" alt=""
+            style="width:93.3333%;height: 320px;margin-top: 45px; margin-bottom: 44px;"> -->
+        <img src="./images/anniu@2x.png" alt="" style="width: 251px;height:40px;position: fixed;left: calc(50% - 125.5px); bottom:175px;">
+        <div class="title">
+            <!-- <div style="margin-top: 80px;margin-bottom: 10px;">
+                超神宿APP 爱生活 爱实体
+            </div> -->
+            <div>
+                <!-- 赶快点击上方下载，了解终身会员更多特权 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        open_app()
+
+        function open_app() {
+            if (navigator.userAgent.match(/Android/)) { //android
+                if (navigator.userAgent.match(/Chrome/)) { //chrome
+                    setTimeout(function () {
+                        if (!document.webkitHidden)
+                            window.location.href = 'http://appwx.supersg.cn/static/app/css.apk';
+                    }, 1000);
+                    window.location = "chaoshensu://sgkj.css.com"; //打开自己的应用
+                } else {
+                    // 通用的方式
+                    var iframe = document.createElement("iframe");
+                    iframe.style.border = "none";
+                    iframe.style.width = "1px";
+                    iframe.style.height = "1px";
+                    var t = setTimeout(function () {
+                        window.location = "http://appwx.supersg.cn/static/app/css.apk"; //打开市场
+                    }, 1000);
+                    iframe.onload = function () {
+                        clearTimeout(t)
+                    };
+                    iframe.src = "chaoshensu://sgkj.css.com"; //打开自己的应用
+                    document.body.appendChild(iframe);
+                }
+            } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) { // IOS
+                setTimeout(function () {
+                    if (!document.webkitHidden) //判断是不是可见
+                        window.location = "https://apps.apple.com/cn/app/%E8%B6%85%E7%A5%9E%E5%AE%BF-%E6%96%B0%E9%9B%B6%E5%94%AE%E8%B4%AD%E7%89%A9%E5%B9%B3%E5%8F%B0/id1440450216?from=singlemessage&isappinstalled=0"; //到苹果的商店...
+                }, 1000);
+                window.location = "chaoshensu://sgkj.css.com"; //打开自己的应用
+            } else { //非手机活pad端
+                alert("请在手机端打开"); //或者弄个其他连接什么的
+            }
+        }
+    </script>
+</body>
+
+</html>

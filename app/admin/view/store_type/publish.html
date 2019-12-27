@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+  <div class="layui-tab">
+    <ul class="layui-tab-title">
+      <li><a href="{:url('admin/store_type/index')}" class="a_menu">分类轮播图</a></li>
+      <li class="layui-this">{$title}</li>
+    </ul>
+  </div>
+  <div style="margin-top: 20px;">
+  </div>
+  <form class="layui-form" id="admin">
+
+
+
+    <div class="layui-form-item store_type"  >
+      <label class="layui-form-label">分类</label>
+      <div class="layui-input-inline">
+        <select name="category_id" lay-search="" lay-filter="cate" lay-verify="required">
+          {empty name="$data"}
+          <option value="">请选择</option>
+          {/empty}
+          <option value="0" {notempty name="$data.category_id"}{eq name="$data.category_id" value="0"} selected=""{/eq}{/notempty}>全部(小程序)</option>
+          {volist name="$category" id="vo"}
+          <option value="{$vo.id}" {notempty name="$data.category_id"}{eq name="$data.category_id" value="$vo.id"} selected=""{/eq}{/notempty}>{$vo.category_name}</option>
+          {/volist}
+        </select>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label">跳转类型{$data.type}</label>
+      <div class="layui-input-inline">
+        <select name="type" lay-search="" lay-filter="test" lay-verify="required">
+          <option value="1" {if condition="$data.type eq 1"} selected="selected"{/if}>商品</option>
+          <option value="2" {if condition="$data.type eq 2"} selected="selected"{/if}>外链接</option>
+          <option value="3" {if condition="$data.type eq 3"} selected="selected"{/if}>富文本</option>
+          <option value="4" {if condition="$data.type eq 4"} selected="selected"{/if}>店铺</option>
+          <option value="5" {if condition="$data.type eq 5"} selected="selected"{/if}>登录</option>
+          <!--<option value="6" {if condition="$data.type eq 6"} selected="selected"{/if}>注册</option>-->
+          <option value="8" {if condition="$data.type eq 8"} selected="selected"{/if}>潮搭</option>
+          <option value="9" {if condition="$data.type eq 9"} selected="selected"{/if}>活动跳转商品</option>
+          <option value="10" {if condition="$data.type eq 10"} selected="selected"{/if}>活动跳转店铺</option>
+          <option value="11" {if condition="$data.type eq 11"} selected="selected"{/if}>活动跳转抽奖</option>
+          <option value="0" {if condition="$data.type eq 0"} selected="selected"{/if}>无跳转</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="layui-upload" id="upload-thumb">
+      <label class="layui-form-label">轮播图</label>
+      <button type="button" class="layui-btn" id="thumb">上传图片</button>
+      <div class="layui-upload-list">
+        <label class="layui-form-label"></label>
+        <img class="layui-upload-img" id="demo1" width="150" height="150" {notempty name="$data.img_url"}src="{$data.img_url}"{/notempty}>{notempty name="$data.img_url"}<input type="hidden" name="img_url" value="{$data.img_url}">{/notempty}
+        <p id="demoText"></p>
+      </div>
+    </div>
+
+    <div id="other" {if $data.type==11}style="display:none;"{/if}>
+      <div class="layui-form-item ">
+        <label class="layui-form-label">商品ID</label>
+        <div class="layui-input-inline">
+          <input name="product_id" style="width: 500px" placeholder="请输入" autocomplete="off" class="layui-input" type="text" {notempty name="$data.product_id"} value="{$data.product_id}"{/notempty}>
+        </div>
+      </div>
+      <div class="layui-form-item ">
+        <label class="layui-form-label">潮搭ID</label>
+        <div class="layui-input-inline">
+          <input name="chaoda_id" style="width: 500px" placeholder="请输入" autocomplete="off" class="layui-input" type="text" {notempty name="$data.chaoda_id"} value="{$data.chaoda_id}"{/notempty}>
+        </div>
+      </div>
+      <div class="layui-form-item ">
+        <label class="layui-form-label ceshi">普通店铺ID</label>
+        <div class="layui-input-inline">
+          <input name="store_id" style="width: 500px" placeholder="请输入" autocomplete="off" class="layui-input" type="text" {notempty name="$data.store_id"} value="{$data.store_id}"{/notempty}>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">外链接地址</label>
+        <div class="layui-input-inline">
+          <input name="link" style="width: 500px"  placeholder="请输入" autocomplete="off" class="layui-input" type="url" {notempty name="$data.link"} value="{$data.link}"{/notempty}>
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">文本内容</label>
+        <div class="layui-input-block" style="max-width:1000px;">
+          <textarea placeholder="请输入内容" class="layui-textarea" name="content" id="container" style="min-height: 300px;border:0;padding:0">{notempty name="$data.content"}{$data.content}{/notempty}</textarea>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="lottery" {if $data.type!=11}style="display: none;"{/if}>
+      <div class="layui-form-item">
+        <label class="layui-form-label">抽奖活动</label>
+        <div class="layui-input-inline">
+          <select name="lottery_id" lay-search lay-filter="lottery_id">
+            <option value="">请选择抽奖活动</option>
+            {volist name="lottery" id="vo"}
+            {if $data.lottery_id==$vo.id}
+            <option value="{$vo.id}" selected>{$vo.title}</option>
+            {else/}<option value="{$vo.id}">{$vo.title}</option>
+            {/if}
+            {/volist}
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+    {notempty name="$data"}
+    <input type="hidden" name="id" value="{$data.id}">
+    {/notempty}
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="admin">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+
+  </form>
+
+
+  <script src="__PUBLIC__/layui/layui.js"></script>
+  <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+  <!-- <script>
+      var message;
+      layui.config({
+          base: '__JS__/',
+          version: '1.0.1'
+      }).use(['app', 'message'], function() {
+          var app = layui.app,
+              $ = layui.jquery,
+              layer = layui.layer;
+          //将message设置为全局以便子页面调用
+          message = layui.message;
+          //主入口
+          app.set({
+              type: 'iframe'
+          }).init();
+      });
+  </script> -->
+
+  <script>
+      layui.use('upload', function(){
+
+          var upload = layui.upload;
+          //执行实例
+          var uploadInst = upload.render({
+              elem: '#thumb' //绑定元素
+              ,url: "{:url('common/upload')}" //上传接口
+              ,data:{module:'user',use:'category'}
+              ,done: function(res){
+                  //上传完毕回调
+                  if(res.code == 2) {
+                      $('#demo1').attr('src',res.src);
+                      $('#upload-thumb').append('<input type="hidden" name="img_url" value="'+ res.src +'">');
+                  } else {
+                      layer.msg(res.msg);
+                  }
+              }
+              ,error: function(){
+                  //请求异常回调
+                  //演示失败状态，并实现重传
+                  var demoText = $('#demoText');
+                  demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+                  demoText.find('.demo-reload').on('click', function(){
+                      uploadInst.upload();
+                  });
+              }
+          });
+      });
+  </script>
+  <script>
+      layui.use(['layer', 'form'], function() {
+
+          var layer = layui.layer,
+              $ = layui.jquery,
+              form = layui.form;
+        $('.store_client').hide();
+        form.on('radio(client_type)', function (type) {
+          var client_type=type.value;
+          if(client_type == 1){
+            $('.store_type').hide();
+
+            $('.store_client').show();
+            // $('.wrap-product').hide();
+            // $('.wrap-store-name').hide();
+          }else if(client_type == 2){
+            $('.store_type').show();
+
+            $('.store_client').hide();
+            // $('.wrap-store-name').show();
+            // $('.wrap-product').show();
+            // $('.wrap-stores').hide();
+
+          }else{
+            layer.msg('参数错误');
+          }
+
+        });
+
+
+        form.on('select(test)', function (data) {
+          var val = data.value
+          if(val == 11) {
+            $('#other').hide()
+            $('#lottery').show()
+          }else {
+            $('#other').show()
+            $('#lottery').hide()
+          }
+        })
+
+
+        $(window).on('load', function() {
+              form.on('submit(admin)', function(data) {
+                  $.ajax({
+                      url:"{:url('admin/store_type/publish')}",
+                      data:$('#admin').serialize(),
+                      type:'post',
+                      async: false,
+                      success:function(res) {
+                          if(res.code == 1) {
+                              layer.alert(res.msg, function(index){
+                                  location.href = res.url;
+                              })
+                          } else {
+                              layer.msg(res.msg);
+                          }
+                      }
+                  })
+                  return false;
+              });
+          });
+      });
+  </script>
+  <!-- 加载编辑器的容器 -->
+  <script id="container" name="content" type="text/plain">
+        这里写你的初始化内容
+    </script>
+  <!-- 配置文件 -->
+  <script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.config.js"></script>
+  <!-- 编辑器源码文件 -->
+  <script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.all.js"></script>
+  <!-- 实例化编辑器 -->
+  <script type="text/javascript">
+      var ue = UE.getEditor('container');
+  </script>
+</div>
+</body>
+</html>

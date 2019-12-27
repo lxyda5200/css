@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('Coupon/index')}" class="a_menu">平台优惠券列表</a></li>
+
+        </ul>
+    </div>
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券类型</label>
+            <div class="layui-input-inline">
+
+                <select name="coupon_type" lay-filter="coupon_type" {if condition="$data.id"}disabled{/if}>
+                    <option value=""></option>
+                    <option value="1" {if condition="$data.coupon_type eq 1"}selected{/if}>新人优惠券</option>
+                    <option value="2" {if condition="$data.coupon_type eq 2"}selected{/if}>会员优惠券</option>
+                    <option value="5" {if condition="$data.coupon_type eq 5"}selected{/if}>合作券</option>
+                    <option value="6" {if condition="$data.coupon_type eq 6"}selected{/if}>推广券</option>
+                    <option value="7" {if condition="$data.coupon_type eq 7"}selected{/if}>邀请码券</option>
+                    <option value="8" {if condition="$data.coupon_type eq 8"}selected{/if}>促销活动优惠券</option>
+                    <option value="9" {if condition="$data.coupon_type eq 9"}selected{/if}>满返优惠券</option>
+                    <option value="10" {if condition="$data.coupon_type eq 10"}selected{/if}>线下优惠券</option>
+                    <option value="11" {if condition="$data.coupon_type eq 11"}selected{/if}>抽奖线下优惠券</option>
+                    <option value="12" {if condition="$data.coupon_type eq 12"}selected{/if}>抽奖线上优惠券</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券名称</label>
+            <div class="layui-input-inline">
+                <input name="coupon_name" style="width: 400px;" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" type="text" value="{$data.coupon_name}">
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-kind" style="display:{if condition='$data.coupon_type EQ 10 || $data.coupon_type EQ 11'}block{else /}none{/if};">
+            <label class="layui-form-label">优惠券种类</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input {if condition="$data"}disabled{/if} lay-filter="kind" type="radio" name="kind" value="1" title="实物礼品券" {if condition="$data.type eq 1"}checked="checked"{/if}>
+                <input {if condition="$data"}disabled{/if} lay-filter="kind" type="radio" name="kind" value="2" title="满减券" {if condition="$data.type eq 2"}checked="checked"{/if}>
+                <input {if condition="$data"}disabled{/if} lay-filter="kind" type="radio" name="kind" value="3" title="体验券" {if condition="$data.type eq 3"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-type" style="display:{if condition='$data.coupon_type eq 10  || $data.coupon_type EQ 11'}none{else /}block{/if};">
+            <label class="layui-form-label">优惠券类别</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input {if condition="$data"}disabled{/if} lay-filter="store_types" type="radio" name="type" value="1" title="平台" {if condition="$data.type eq 1"}checked="checked"{/if}>
+                <input {if condition="$data"}disabled{/if} lay-filter="store_types" type="radio" name="type" value="2" title="店铺" {if condition="$data.type eq 2"}checked="checked"{/if}>
+                <input {if condition="$data"}disabled{/if} lay-filter="store_types" type="radio" name="type" value="3" title="商品" {if condition="$data.type eq 3"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-type2" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 11'}block{else /}none{/if};">
+            <label class="layui-form-label">优惠券类别</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input {if condition="$data"}disabled{/if} lay-filter="store_types" type="radio" name="type" value="2" title="店铺" {if condition="$data.type eq 2"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-extend" style="display:{if condition='$data.coupon_type eq 6'}block{else /}none{/if};">
+            <label class="layui-form-label">推广人</label>
+            <div class="layui-input-block" id="extend_id">
+                {foreach name="extends" item="vo"}
+                <input type="checkbox" name="extend_id[]" value="{$vo.id}" title="{$vo.extend_name}" {if condition="$vo.status eq 1"}checked{/if}>
+                {/foreach}
+                <button type="button" class="layui-btn layui-btn-warm btn-extend" id="extend_ids" data-val="{$extend_ids}">选择推广人</button>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-stores" style="display:{if condition='$data.type eq 2'}block{else /}none{/if};">
+            <label class="layui-form-label">店铺</label>
+            <div class="layui-input-block" id="stores">
+                {if condition="$data && $data.type eq 2"}
+                <input lay-filter='store_off' disabled class="per-store" type="checkbox" name="store_ids[]" value="{data.store_id}" title="{$data.store_name}" checked>
+                {/if}
+                {if condition="!$data"}
+                <button type="button" class="layui-btn layui-btn-warm btn-stores" id="store_ids" data-val="{$data.store_ids}">选择店铺</button>
+                {/if}
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-store-name" style="display:{if condition='$data.type eq 3'}block{else /}none{/if};">
+            <label class="layui-form-label">店铺</label>
+            <div class="layui-input-inline">
+                <input {if condition="$data"}disabled{/if} id="store_name" name="store_name" style="width: 400px;" lay-verify="" placeholder="" autocomplete="off" class="layui-input" type="text" value="{$data.store_name}">
+                <input type="hidden" id="store_id" name="store_id" value="{$data.store_id}">
+                {if condition="!$data"}
+                <button type="button" class="layui-btn layui-btn-warm btn-store" id="store_id2" data-val="{$data.store_id}">选择店铺</button>
+                {/if}
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-product" style="display:{if condition='$data.type eq 3'}block{else /}none{/if};">
+            <label class="layui-form-label">商品</label>
+            <div class="layui-input-block" id="product">
+                {foreach name="products" item="vo"}
+                <input lay-filter='product_off' class="per-pro" type="checkbox" name="product_id[]" value="{$vo.id}" title="{$vo.product_name}" checked>
+                {/foreach}
+                <button type="button" class="layui-btn layui-btn-warm btn-product" id="product_ids" data-val="{$data.product_ids}">选择商品</button>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-store-coupon" style="display:{if condition='$data.coupon_type eq 5 && $data.type eq 1'}block{else /}none{/if};">
+            <label class="layui-form-label">合作平台名称</label>
+            <div class="layui-input-inline">
+                <input id="cooperate_name" name="cooperate_name" style="width: 400px;" lay-verify="" placeholder="请输入" autocomplete="off" class="layui-input ipt-store-coupon" type="text" value="{$data.cooperate_name}">
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-check-num" style="display:{if condition='($data.coupon_type eq 10 || $data.coupon_type EQ 11) && $data.kind eq 2'}block{else /}none{/if};">
+            <label class="layui-form-label">日核销上限</label>
+            <div class="layui-input-inline">
+                <input id="check_num" name="check_num" style="width: 400px;" lay-verify="" placeholder="请输入" autocomplete="off" class="layui-input ipt-store-coupon" type="number" value="{$data.check_num}">张
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-discount">
+            <label class="layui-form-label">优惠券满减</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <span class="coupon_space">{if condition='$data.type eq 1'}全场{elseif condition='$data.type eq 2'}店铺{else/}商品{/if}</span>满 <input type="text" class="layui-input" name="satisfy_money" lay-verify=""  value="{$data.satisfy_money}" style="width:68px;text-align: center"> 元 减
+                <input type="text" name="coupon_money" class="layui-input" lay-verify=""  value="{$data.coupon_money}" style="width:68px;text-align: center"> 元
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-time-type" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 11'}block{else /}none{/if};">
+            <label class="layui-form-label">有效时间</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="time_type" lay-filter="time_type" value="1" title="固定起止时间" {if condition="$data.days EQ 0"}checked="checked"{/if}>
+                <input type="radio" name="time_type" lay-filter="time_type" value="2" title="有效天数" {if condition="$data.days GT 0"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-time" style="display:{if condition='$data.coupon_type eq 1 || $data.coupon_type eq 7 || $data.coupon_type eq 2 || (($data.coupon_type eq 10 || $data.coupon_type EQ 11) && $data.days GT 0)'}none{else /}block{/if};">
+            <label class="layui-form-label">开始时间</label>
+            <div class="layui-input-inline">
+                {if condition="$data"}
+                <input name="start_time" style="width: 150px;text-align: center" lay-verify="required" class="layui-input" type="text" id="test" value="{$data.start_time}">
+                {else /}
+                <input name="start_time" style="width: 150px;text-align: center" lay-verify="required" class="layui-input" type="text" id="test" value="{:date('Y-m-d H:i:s',time())}">
+                {/if}
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-time" style="display:{if condition='$data.coupon_type eq 1 || $data.coupon_type eq 7 || $data.coupon_type eq 2 || (($data.coupon_type eq 10 || $data.coupon_type EQ 11) && $data.days GT 0)'}none{else /}block{/if};">
+            <label class="layui-form-label">结束时间</label>
+            <div class="layui-input-inline">
+                {if condition="$data"}
+                <input name="end_time" style="width: 150px;text-align: center" lay-verify="required" class="layui-input" type="text" id="test1" value="{$data.end_time}">
+                {else /}
+                <input name="end_time" style="width: 150px;text-align: center" lay-verify="required" class="layui-input" type="text" id="test1" value="{:date('Y-m-d H:i:s',time()+ 14400)}">
+                {/if}
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-days" style="display:{if condition='$data.coupon_type eq 1 || $data.coupon_type eq 7 || $data.coupon_type eq 2 || (($data.coupon_type eq 10 || $data.coupon_type EQ 11) && $data.days GT 0)'}block{else /}none{/if};">
+            <label class="layui-form-label">有效天数(天)</label>
+            <div class="layui-input-inline">
+                <input name="days" style="width: 400px;" lay-verify="" placeholder="请输入有效时间" autocomplete="off" class="layui-input" type="text" value="{$data.days}">
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-nums" style="display:{if condition='$data.coupon_type eq 5 || $data.coupon_type eq 6 || $data.coupon_type eq 8 || $data.coupon_type eq 9 || $data.coupon_type eq 10 || $data.coupon_type EQ 11 || $data.coupon_type EQ 12'}block{else /}none{/if};">
+            <label class="layui-form-label">优惠券数量</label>
+            <div class="layui-input-inline">
+                <input name="total_number" {if condition="$data.coupon_type eq 5"}disabled{/if} style="width: 400px;" lay-verify="" placeholder="请输入数量" autocomplete="off" class="layui-input" type="text" value="{$data.total_number}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">每人最多可领取数量</label>
+            <div class="layui-input-inline">
+                <input name="get_number" style="width: 400px;" lay-verify="required|number" placeholder="请输入每人最多可领取数量" autocomplete="off" class="layui-input" type="text" value="{$data.zengsong_number}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="status"  value="1" title="启用" {if condition="$data.is_open eq 1"}checked="checked"{/if}>
+                <input type="radio" name="status" value="-1" title="禁用" {if condition="$data.is_open eq -1"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-use-type" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 11'}none{else /}block{/if};">
+            <label class="layui-form-label">使用类型</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="use_type"  value="1" title="线上" {if condition="$data.use_type eq 1"}checked="checked"{/if}>
+                <input type="radio" name="use_type" value="2" title="线下" {if condition="$data.use_type eq 2"}checked="checked"{/if}>
+                <input type="radio" name="use_type" value="3" title="线上和线下" {if condition="$data.use_type eq 3"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-client" style="display:{if condition='$data.coupon_type eq 1'}block{else /}none{/if};">
+            <label class="layui-form-label">可领用平台</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="client_type"  value="1" title="小程序" {if condition="$data.client_type eq 1"}checked="checked"{/if}>
+                <input type="radio" name="client_type" value="2" title="APP" {if condition="$data.client_type eq 2"}checked="checked"{/if}>
+                <input type="radio" name="client_type" value="0" title="均可领用" {if condition="$data.client_type eq 0"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-member-type" style="display:{if condition='$data.coupon_type eq 2'}block{else /}none{/if};">
+            <label class="layui-form-label">会员类型</label>
+            <div class="layui-input-inline" style="width: 500px">
+                {foreach name="memberLists" item="vo"}
+                <input type="radio" name="member_card_id"  value="{$vo.id}" title="{$vo.card_name}" {if condition="$vo.id eq $data.member_card_id"}checked="checked"{/if}>
+                {/foreach}
+                <input type="radio" name="member_card_id" value="0" title="所有会员" {if condition="$data.member_card_id eq 0"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-grant" style="display:{if condition='$data.coupon_type eq 7'}block{else /}none{/if};">
+            <label class="layui-form-label">发放对象</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="grant_object"  value="2" title="邀请人" {if condition="$data.grant_object eq 2"}checked="checked"{/if}>
+                <input type="radio" name="grant_object" value="1" title="被邀请人" {if condition="$data.grant_object eq 1"}checked="checked"{/if}>
+                <input type="radio" name="grant_object" value="3" title="均发放" {if condition="$data.grant_object eq 3"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-maidan-stack" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 11'}none{else /}block{/if};">
+            <label class="layui-form-label">买单可用</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" lay-filter="maidan_stack" name="can_stacked" value="1" title="可用" {if condition="$data.can_stacked eq 1"}checked="checked"{/if}>
+                <input type="radio" lay-filter="maidan_stack" name="can_stacked" value="-1" title="不可用" {if condition="$data.can_stacked eq -1"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-mall-stacked" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 11'}none{else /}block{/if};">
+            <label class="layui-form-label">商城可用</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" lay-filter="mall_stack" name="mall_stacked" value="1" title="可用" {if condition="$data.mall_stacked eq 1"}checked="checked"{/if}>
+                <input type="radio" lay-filter="mall_stack" name="mall_stacked" value="-1" title="不可用" {if condition="$data.mall_stacked eq -1"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-is-superposition" style="display:{if condition='$data.coupon_type eq 10 || $data.coupon_type EQ 1 || $data.mall_stacked neq 1'}none{else /}block{/if};">
+            <label class="layui-form-label" id="superposition">{if condition="$data.type eq 1"}与商家券叠加{else /}与平台券叠加使用{/if}</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="is_superposition" value="1" title="不叠加" {if condition="$data.is_superposition eq 1"}checked="checked"{/if}>
+                <input type="radio" name="is_superposition"  value="2" title="叠加" {if condition="$data.is_superposition eq 2"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券使用规则</label>
+            <div class="layui-input-block">
+                {foreach name="ruleLists" item="vo"}
+                <input lay-filter="common_rule" {if condition="in_array($vo.id,$rule_model_id)"}checked{/if} type="checkbox" value="{$vo.id}" lay-skin="primary" title="{$vo.title}">
+                {/foreach}
+            </div>
+            <div class="layui-input-inline">
+                <div id="wrap-rule">
+                    {foreach name="rule_models" item="vo"}
+                    <p class="per-rule" style="border-bottom: 1px solid #ddd;margin-bottom: 4px;width:600px;">
+                        <input name="rule_model_id[]" hidden style="width: 60px;text-align: center;" placeholder="" autocomplete="off" class="layui-input" type="text" value="{$vo.id}">
+                        <span>{$vo.title}</span>
+                        {if condition="in_array($vo.id,$ruleCommon) == false"}
+                        <span class="del-rule" style="display: inline-block;width:50px;height:30px;text-align: center;line-height: 30px;color:red;cursor: pointer;">删除</span>
+                        {/if}
+                    </p>
+                    {/foreach}
+                </div>
+                <input style="width: 200px;" placeholder="输入自定义规则" autocomplete="off" class="layui-input ipt-diy-rule" type="text" value="">
+                <button type="button" class="layui-btn layui-btn-warm btn-rule-model">自定义模板</button>
+            </div>
+        </div>
+
+        <div class="layui-form-item wrap-platform-bear" style="display:{if condition='$data.can_stacked eq 1 || (($data.coupon_type eq 10 || $data.coupon_type EQ 11) && ($data.kind eq 1 || $data.kind eq 3))'}none{else /}block{/if};">
+            <label class="layui-form-label">平台承担比例</label>
+            <div class="layui-input-inline" style="width:400px;">
+                <input name="platform_bear" style="width: 60px;text-align: center;" lay-verify="" placeholder="" autocomplete="off" class="layui-input" type="text" value="{$data.platform_bear}">%
+                <span style="color: red;">(100为全部平台承担,0为全部店铺承担)</span>
+            </div>
+        </div>
+
+        <div style="display:none;" id="btn_hide_iframe"></div>
+        {notempty name="$data"}
+        <input type="hidden" name="id" value="{$data.id}">
+        {/notempty}
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="admin">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#test'
+                ,type: 'datetime'
+            });
+            laydate.render({
+                elem: '#test1'
+                ,type: 'datetime'
+            });
+        });
+    </script>
+    <script>
+        var message;
+        layui.config({
+            base: '__JS__/',
+            version: '1.0.1'
+        }).use(['app', 'message'], function() {
+            var app = layui.app,
+                $ = layui.jquery,
+                layer = layui.layer;
+            //将message设置为全局以便子页面调用
+            message = layui.message;
+            //主入口
+            app.set({
+                type: 'iframe'
+            }).init();
+        });
+    </script>
+
+    <script>
+
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form;
+
+            // form.on('radio(store_type)', function(data){
+            //     let val = data.value;
+            //     if(val == 2){
+            //         layer.open({
+            //             id:1314,
+            //             type: 2,
+            //             title: false,
+            //             closeBtn: 1, //不显示关闭按钮
+            //             shade: [0.4],
+            //             area: ['1000px', '900px'],
+            //             offset: 'auto', //右下角弹出
+            //             anim: 2,
+            //             scrollbar: false,
+            //             shadeClose:true,
+            //             content: ["{:url('Coupon/storeList')}?from=products", 'no'], //iframe的url，no代表不显示滚动条
+            //             end: function(e){ //此处用于演示
+            //
+            //             }
+            //         });
+            //
+            //         //修改叠加
+            //         $('#superposition').text('与平台券叠加使用');
+            //         $('.wrap-store-name').show();
+            //     }else{
+            //         $("#store_id").val(0);
+            //         $("#store_name").val('');
+            //         //修改叠加
+            //         $('#superposition').text('与商家券叠加使用');
+            //         $('.wrap-store-name').hide();
+            //     }
+            // })
+
+            form.on('radio(maidan_stack)', function(data){
+                if(data.value == 1){  //叠加
+                    $('.wrap-platform-bear').hide();
+                }else{  //不叠加
+                    $('.wrap-platform-bear').show();
+                }
+            })
+
+            form.on('radio(mall_stack)', function(data){
+                if(data.value == 1){  //叠加
+                    $('.wrap-is-superposition').show();
+                }else{  //不叠加
+                    $('.wrap-is-superposition').hide();
+                }
+            })
+
+            form.on('radio(kind)', function(data){
+                let val = data.value;
+                if(val == 2){
+                    $('.wrap-platform-bear').show();
+                    $('.wrap-check-num').show();
+                    $('.wrap-discount').show();
+                }else{
+                    $('.wrap-platform-bear').hide();
+                    $('.wrap-check-num').hide();
+                    $('.wrap-discount').hide();
+                }
+            })
+
+            form.on('radio(store_types)', function(data){
+                let coupon_type = $('select[name=coupon_type]').val();
+                let val = data.value;
+                if(val == 2){
+                    $('.wrap-stores').show();
+                    $('.wrap-product').hide();
+                    $('.wrap-store-name').hide();
+                }else if(val == 3){
+                    $('.wrap-store-name').show();
+                    $('.wrap-product').show();
+                    $('.wrap-stores').hide();
+
+                }else{
+                    $('.wrap-stores').hide();
+                    $('.wrap-store-name').hide();
+                    $('.wrap-product').hide();
+                }
+                if(val == 1){
+                    $('#superposition').text('与商家券叠加使用');
+                }else{
+                    $('#superposition').text('与平台券叠加使用');
+                }
+                if(val == 1){
+                    $('.coupon_space').text('平台');
+                }else if(val ==2){
+                    $('.coupon_space').text('店铺');
+                }else{
+                    $('.coupon_space').text('商品');
+                }
+
+                if(val == 1 && coupon_type == 5){
+                    $('.wrap-store-coupon').show();
+                }else{
+                    $('.wrap-store-coupon').hide();
+                }
+            })
+
+            form.on('radio(time_type)', function(data){
+                let val = data.value;
+                if(val == 1){
+                    $('.wrap-time').show();
+                    $('.wrap-days').hide();
+                }else{
+                    $('.wrap-time').hide();
+                    $('.wrap-days').show();
+                }
+            })
+
+            form.on('select(coupon_type)', function(data){
+                let val = data.value;
+                let type = $('input[name=type]:checked').val();
+                if(val == 5 && type==1){
+                    $(".wrap-store-coupon").show()
+                }else{
+                    $(".ipt-store-coupon").val("");
+                    $(".wrap-store-coupon").hide();
+                }
+                if(val == 6 || val ==5){
+                    $(".wrap-store-coupon2").show()
+                }else{
+                    $(".wrap-store-coupon2").hide()
+                }
+                if(val == 2){
+                    $(".wrap-member-type").show();
+                }else{
+                    $(".wrap-member-type").hide();
+                }
+                if(val == 6){
+                    $(".wrap-extend").show();
+                }else{
+                    $(".wrap-extend").hide();
+                }
+                if(val == 1){
+                    $(".wrap-client").show();
+                }else{
+                    $(".wrap-client").hide();
+                }
+                if(val == 7 || val ==1 || val == 2){
+                    $(".wrap-days").show();
+                    $('.wrap-time').hide();
+                }else{
+                    $(".wrap-days").hide();
+                    $(".wrap-time").show();
+                }
+                if(val == 7){
+                    $(".wrap-grant").show();
+                }else{
+                    $(".wrap-grant").hide();
+                }
+                if(val == 5 || val == 6 || val == 8 || val == 9 || val == 10 || val == 11 || val == 12){
+                    $('.wrap-nums').show();
+                }else{
+                    $('.wrap-nums').hide();
+                }
+                if(val == 10 || val == 11){
+                    $('.wrap-kind').show();
+                    $('.wrap-type2').show();
+                    $('.wrap-type').hide();
+                    $('.wrap-use-type').hide();
+                    $('.wrap-is-superposition').hide();
+                    $('.wrap-maidan-stack').hide();
+                    $('.wrap-discount').hide();
+                    $('.wrap-time-type').show();
+                    $('.wrap-mall-stacked').hide();
+                    if($('.wrap-kind input[name="kind"]:checked').val() == 2){
+                        $('.wrap-check-num').show();
+                    }else{
+                        $('.wrap-check-num').hide();
+                    }
+                }else{
+                    $('.wrap-kind').hide();
+                    $('.wrap-type2').hide();
+                    $('.wrap-type').show();
+                    $('.wrap-use-type').show();
+                    $('.wrap-is-superposition').show();
+                    $('.wrap-maidan-stack').show();
+                    $('.wrap-discount').show();
+                    $('.wrap-time-type').hide();
+                    $('.wrap-mall-stacked').show();
+                    $('.wrap-check-num').hide();
+                }
+            })
+
+            $(window).on('load', function() {
+                form.on('submit(admin)', function(data) {
+
+                    console.log(data)
+                    // return false;
+                    let [coupon_type,type,satisfy_money,coupon_money,status,use_type] = [data.field.coupon_type,data.field.type,data.field.satisfy_money,data.field.coupon_money,data.field.status,data.field.use_type];
+
+                    if(!coupon_type){
+                        layer.msg("请选择卡券类型",{icon: 5})
+                        return false;
+                    }
+
+                    if(!type){
+                        layer.msg("请选择卡券类别",{icon: 5})
+                        return false;
+                    }
+                    if(satisfy_money > 0 && (parseInt(coupon_money) >= parseInt(satisfy_money))){
+                        layer.msg("优惠券金额必须大于满减金额",{icon: 5})
+                        return false;
+                    }
+
+                    if(!status){
+                        layer.msg("请选择卡券状态",{icon: 5})
+                        return false;
+                    }
+
+                    if(!use_type && coupon_type != 10 && coupon_type != 11){
+                        layer.msg("请选择使用类型",{icon: 5})
+                        return false;
+                    }
+
+                    if(coupon_type == 10 || coupon_type == 11){  //线下优惠券
+                        let [kind, time_type] = [data.field.kind, data.field.time_type];
+                        if(!kind || !time_type){
+                            layer.msg("请选择将数据补充完整",{icon: 5})
+                            return false;
+                        }
+                    }
+
+                    $.ajax({
+                        url:"{:url('admin/coupon/publish')}",
+                        data:$('#admin').serialize(),
+                        type:'post',
+                        async: false,
+                        success:function(res) {
+                            if(res.code == 1) {
+                                layer.alert(res.msg, function(index){
+                                    location.href = res.url;
+                                })
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    })
+                    return false;
+                });
+
+            });
+
+            $("#btn_hide_iframe").click(function(){
+                form.render();
+                layer.closeAll();
+                $('.btn-extend').on('click',function(){
+                    layer.open({
+                        id:1314,
+                        type: 2,
+                        title: false,
+                        closeBtn: 1, //不显示关闭按钮
+                        shade: [0.4],
+                        area: ['1000px', '900px'],
+                        offset: 'auto', //右下角弹出
+                        anim: 2,
+                        scrollbar: false,
+                        shadeClose:true,
+                        content: ["{:url('Coupon/extendList')}", 'no'], //iframe的url，no代表不显示滚动条
+                        end: function(e){ //此处用于演示
+
+                        }
+                    });
+                })
+
+                $('.btn-stores').on('click',function(){
+                    let val = $(this).attr('data-val');
+                    layer.open({
+                        id:1314,
+                        type: 2,
+                        title: false,
+                        closeBtn: 1, //不显示关闭按钮
+                        shade: [0.4],
+                        area: ['1000px', '900px'],
+                        offset: 'auto', //右下角弹出
+                        anim: 2,
+                        scrollbar: false,
+                        shadeClose:true,
+                        content: ["{:url('Coupon/storeList')}?from=stores&val="+val, 'no'], //iframe的url，no代表不显示滚动条
+                        end: function(e){ //此处用于演示
+
+                        }
+                    });
+                })
+
+                $('.btn-store').on('click',function(){
+                    let val = $(this).attr('data-val');
+                    layer.open({
+                        id:1314,
+                        type: 2,
+                        title: false,
+                        closeBtn: 1, //不显示关闭按钮
+                        shade: [0.4],
+                        area: ['1000px', '900px'],
+                        offset: 'auto', //右下角弹出
+                        anim: 2,
+                        scrollbar: false,
+                        shadeClose:true,
+                        content: ["{:url('Coupon/storeList')}?from=products&val="+val, 'no'], //iframe的url，no代表不显示滚动条
+                        end: function(e){ //此处用于演示
+
+                        }
+                    });
+                })
+
+                $('.btn-product').on('click',function(){
+                    let store_id = $('#store_id').val();
+                    if(!store_id){
+                        layer.msg('请先选择店铺',{icon: 5});
+                        return false;
+                    }
+                    let product_ids = $('#product_ids').attr('data-val');
+                    layer.open({
+                        id:1314,
+                        type: 2,
+                        title: false,
+                        closeBtn: 1, //不显示关闭按钮
+                        shade: [0.4],
+                        area: ['1000px', '900px'],
+                        offset: 'auto', //右下角弹出
+                        anim: 2,
+                        scrollbar: false,
+                        shadeClose:true,
+                        content: ["{:url('Coupon/productList')}?store_id=" + store_id + '&product_ids=' + product_ids, 'no'], //iframe的url，no代表不显示滚动条
+                        end: function(e){ //此处用于演示
+
+                        }
+                    });
+                })
+
+                form.on('checkbox(product_off)', function(data){
+                    let val = $(this).val();
+                    let product_ids = $('#product_ids').attr('data-val');
+                    product_ids = product_ids.split(',');
+                    product_ids.splice(product_ids.indexOf(""+val), 1)
+                    product_ids = product_ids.join(',');
+                    $('#product_ids').attr('data-val',product_ids);
+                    $(this).next('div').remove();
+                    $(this).remove();
+                });
+
+                form.on('checkbox(store_off)', function(data){
+                    let val = $(this).val();
+                    let store_ids = $('#store_ids').attr('data-val');
+                    store_ids = store_ids.split(',');
+                    store_ids.splice(store_ids.indexOf(""+val), 1)
+                    store_ids = store_ids.join(',');
+                    $('#store_ids').attr('data-val',store_ids);
+                    $(this).next('div').remove();
+                    $(this).remove();
+                });
+
+            })
+
+            $('input[name=platform_bear]').on('change',function(){
+                let val = parseInt($(this).val());
+                if(isNaN(val) || val < 0)val = 0;
+                if(val > 100) val = 100;
+                $(this).val(val);
+            })
+
+            $('.btn-product').on('click',function(){
+                let store_id = $('#store_id').val();
+                if(!store_id){
+                    layer.msg('请先选择店铺',{icon: 5});
+                    return false;
+                }
+                let product_ids = $('#product_ids').attr('data-val');
+                layer.open({
+                    id:1314,
+                    type: 2,
+                    title: false,
+                    closeBtn: 1, //不显示关闭按钮
+                    shade: [0.4],
+                    area: ['1000px', '900px'],
+                    offset: 'auto', //右下角弹出
+                    anim: 2,
+                    scrollbar: false,
+                    shadeClose:true,
+                    content: ["{:url('Coupon/productList')}?store_id=" + store_id + '&product_ids=' + product_ids, 'no'], //iframe的url，no代表不显示滚动条
+                    end: function(e){ //此处用于演示
+
+                    }
+                });
+            })
+
+            form.on('checkbox(product_off)', function(data){
+                let val = $(this).val();
+                let product_ids = $('#product_ids').attr('data-val');
+                product_ids = product_ids.split(',');
+                product_ids.splice(product_ids.indexOf(""+val), 1)
+                product_ids = product_ids.join(',');
+                $('#product_ids').attr('data-val',product_ids);
+                $(this).next('div').remove();
+                $(this).remove();
+            });
+
+            form.on('checkbox(store_off)', function(data){
+                let val = $(this).val();
+                let store_ids = $('#store_ids').attr('data-val');
+                store_ids = store_ids.split(',');
+                store_ids.splice(store_ids.indexOf(""+val), 1)
+                store_ids = store_ids.join(',');
+                $('#store_ids').attr('data-val',store_ids);
+                $(this).next('div').remove();
+                $(this).remove();
+            });
+
+            form.on('checkbox(common_rule)',function(data){
+                let checked = $(this).prop('checked');
+                let id = $(this).val();
+                if(checked){
+                    let rules = $('.per-rule').size();
+                    if(rules >= 3){
+                        layer.msg("最多使用3条规则",{icon: 5})
+                        $(this).prop('checked',false)
+                        form.render();
+                        return false;
+                    }
+
+                    let title = $(this).attr('title');
+                    let html_ = '<p class="per-rule" style="border-bottom: 1px solid #ddd;margin-bottom: 4px;width:400px;">\n' +
+                        '<input name="rule_model_id[]" hidden style="width: 60px;text-align: center;" placeholder="" autocomplete="off" class="layui-input" type="text" value="'+ id +'">\n' +
+                        '<span>'+ title +'</span>\n' +
+                        '</p>';
+                    $('#wrap-rule').append(html_);
+                }else{
+                    $('.per-rule').each(function(k,v){
+                        if($(v).find('input').val() == id){
+                            $(v).remove();
+                        }
+                    })
+                }
+            })
+
+            $('.btn-stores').on('click',function(){
+                let val = $(this).attr('data-val');
+                layer.open({
+                    id:1314,
+                    type: 2,
+                    title: false,
+                    closeBtn: 1, //不显示关闭按钮
+                    shade: [0.4],
+                    area: ['1000px', '900px'],
+                    offset: 'auto', //右下角弹出
+                    anim: 2,
+                    scrollbar: false,
+                    shadeClose:true,
+                    content: ["{:url('Coupon/storeList')}?from=stores&val="+val, 'no'], //iframe的url，no代表不显示滚动条
+                    end: function(e){ //此处用于演示
+
+                    }
+                });
+            })
+
+            $('.btn-store').on('click',function(){
+                let val = $(this).attr('data-val');
+                layer.open({
+                    id:1314,
+                    type: 2,
+                    title: false,
+                    closeBtn: 1, //不显示关闭按钮
+                    shade: [0.4],
+                    area: ['1000px', '900px'],
+                    offset: 'auto', //右下角弹出
+                    anim: 2,
+                    scrollbar: false,
+                    shadeClose:true,
+                    content: ["{:url('Coupon/storeList')}?from=products&val="+val, 'no'], //iframe的url，no代表不显示滚动条
+                    end: function(e){ //此处用于演示
+
+                    }
+                });
+            })
+
+            $('.btn-extend').on('click',function(){
+                layer.open({
+                    id:1314,
+                    type: 2,
+                    title: false,
+                    closeBtn: 1, //不显示关闭按钮
+                    shade: [0.4],
+                    area: ['1000px', '900px'],
+                    offset: 'auto', //右下角弹出
+                    anim: 2,
+                    scrollbar: false,
+                    shadeClose:true,
+                    content: ["{:url('Coupon/extendList')}", 'no'], //iframe的url，no代表不显示滚动条
+                    end: function(e){ //此处用于演示
+
+                    }
+                });
+            })
+
+            $('.btn-rule-model').on('click',function(){
+
+                let title = $.trim($('.ipt-diy-rule').val());
+                if(!title){
+                    layer.msg('规则内容不能为空',{icon: 5});
+                    return false;
+                }
+                if(title.length > 25){
+                    layer.msg('规则内容最大长为25',{icon: 5});
+                    return false;
+                }
+                let rules = $('.per-rule').size();
+                if(rules >= 3){
+                    layer.msg("最多使用3条规则",{icon: 5})
+                    $('.ipt-diy-rule').val('')
+                    return false;
+                }
+
+                $.post("{:url('Coupon/addRuleModel')}", {title}, function(res){
+                    if(!res){
+                        layer.msg('请求失败',{icon: 5});
+                    }else{
+                        res = JSON.parse(res);
+                        if(res.status == 0){
+                            layer.msg(res.msg,{icon: 5});
+                        }else{
+                            let id = res.data.id
+                            let html_ = '<p class="per-rule" style="border-bottom: 1px solid #ddd;margin-bottom: 4px;width:400px;">\n' +
+                                '<input name="rule_model_id[]" hidden style="width: 60px;text-align: center;" placeholder="" autocomplete="off" class="layui-input" type="text" value="'+ id +'">\n' +
+                                '<span>'+ title +'</span>\n' +
+                                '<span class="del-rule" style="display: inline-block;width:50px;height:30px;text-align: center;line-height: 30px;color:red;cursor: pointer;">删除</span>' +
+                                '</p>';
+                            $('#wrap-rule').append(html_);
+                            $('.ipt-diy-rule').val('');
+
+                            $('.del-rule').on('click',function(){
+                                $(this).parent('.per-rule').remove();
+                            })
+                        }
+                    }
+                    return false;
+                }, 'json')
+
+            })
+
+            $('.del-rule').on('click',function(){
+                $(this).parent('.per-rule').remove();
+            })
+
+        });
+
+    </script>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+  <style type="text/css">
+
+/* tooltip */
+#tooltip{
+  position:absolute;
+  border:1px solid #ccc;
+  background:#333;
+  padding:2px;
+  display:none;
+  color:#fff;
+}
+</style>
+</head>
+<body style="padding:10px;">
+  <div class="tplay-body-div">
+    <div class="layui-tab">
+      <ul class="layui-tab-title">
+        <li class="layui-this">使用规则列表</li>
+        <li><a href="{:url('Coupon/index')}" class="a_menu">卡券列表</a></li>
+      </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>规则</th>
+          <th>创建时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr> 
+      </thead>
+      <tbody>
+        {volist name="lists" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{$vo.title}</td>
+          <td>{$vo.create_time}</td>
+          <td>{if condition="$vo.status eq 1"}<span class="layui-badge">启用</span>{else /}<span class="layui-badge layui-bg-gray">禁用</span>{/if}</td>
+
+          <td class="operation-menu">
+            <div class="layui-btn-group">
+              <a href="javascript:;" data-id="{$vo.id}" data-title="{$vo.title}" class="layui-btn layui-btn-xs a_menu layui-btn-primary edit" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+                <a class="layui-btn layui-btn-xs layui-btn-primary status" {if condition="$vo.status eq 1"}data-id="2"{else /}data-id="1"{/if} id="{$vo.id}" style="margin-right: 0;font-size:12px;" ><i class="fa {if condition="$vo.status eq 1"}fa-toggle-on{else /}fa-toggle-off{/if}"></i>启用/禁用</a>
+              <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i></a>
+            </div>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    <div>
+      <button type="button" class="layui-btn layui-btn-normal add">新增模板</button>
+    </div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+      $('.delete').click(function(){
+        var id = $(this).attr('id');
+        layer.confirm('确定要删除?', function(index) {
+          $.ajax({
+            url:"{:url('Coupon/delRuleModel')}",
+            data:{id:id},
+            method:'POST',
+            success:function(res) {
+              layer.msg(res.msg);
+              if(res.code == 1) {
+                setTimeout(function(){
+                  location.reload();
+                },1500)
+              }
+            }
+          })
+        })
+      })
+    </script>
+
+      <script type="text/javascript">
+          layui.use('layer', function(){
+              var layer = layui.layer;
+
+              $('.status').click(function(){
+                  var id = $(this).attr('id');
+                  var status = $(this).attr('data-id');
+                  layer.confirm('确定要设置?', function(index) {
+                      $.ajax({
+                          url:"{:url('Coupon/ruleModelStatus')}",
+                          type:'post',
+                          data:{id,status},
+                          success:function(res) {
+                              layer.msg(res.msg);
+                              if(res.code == 1) {
+                                  setTimeout(function(){
+                                      location.reload();
+                                  },1500)
+                              }
+                          }
+                      })
+                  })
+              });
+
+              $('.edit').on('click',function(){
+                let [id, title] = [$(this).attr('data-id'), $(this).attr('data-title')];
+                layer.open({
+                  title: '修改规则',
+                  type: 1,
+                  skin: 'layui-layer-rim', //加上边框
+                  area: ['580px', '200px'], //宽高
+                  content:
+                          '<div style="margin-top:20px;">\n' +
+                          '  <div class="layui-form-item">\n' +
+                          '  <label class="layui-form-label">规则内容</label>\n' +
+                          '            <div class="layui-input-inline">\n' +
+                          '                <input style="width: 400px;" placeholder="请输入规则内容" class="layui-input rule_title" type="text" value="'+ title +'">\n' +
+                          '            </div>\n' +
+                          '        </div>' +
+                          '  <div class="layui-form-item">'+
+                          '  <div class="layui-input-block">'+
+                          '<button type="button" class="layui-btn layui-btn-warm btn-add-rule">立即提交</button>' +
+                          '  </div>'+
+                          '  </div>'+
+                          '</div>'
+                });
+
+                $('.btn-add-rule').on('click',function(){
+                  let title = $.trim($('.rule_title').val());
+                  if(!title){
+                    layer.msg('规则内容不能为空',{icon: 5});
+                    return false;
+                  }
+                  $.post("{:url('Coupon/addRuleModel')}", {title,id,is_common:1}, function(res){
+                    if(!res){
+                      layer.msg('请求失败',{icon: 5});
+                    }else{
+                      res = JSON.parse(res);
+                      layer.msg(res.msg);
+                      if(res.status == 1){
+                        location.reload();
+                      }
+                    }
+                  }, 'json')
+                })
+              })
+
+            $('.add').on('click',function(){
+              layer.open({
+                title: '修改规则',
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['580px', '200px'], //宽高
+                content:
+                        '<div style="margin-top:20px;">\n' +
+                        '  <div class="layui-form-item">\n' +
+                        '  <label class="layui-form-label">规则内容</label>\n' +
+                        '            <div class="layui-input-inline">\n' +
+                        '                <input style="width: 400px;" placeholder="请输入规则内容" class="layui-input rule_title" type="text" value="">\n' +
+                        '            </div>\n' +
+                        '        </div>' +
+                        '  <div class="layui-form-item">'+
+                        '  <div class="layui-input-block">'+
+                        '<button type="button" class="layui-btn layui-btn-warm btn-add-rule">立即提交</button>' +
+                        '  </div>'+
+                        '  </div>'+
+                        '</div>'
+              });
+
+              $('.btn-add-rule').on('click',function(){
+                let title = $.trim($('.rule_title').val());
+                if(!title){
+                  layer.msg('规则内容不能为空',{icon: 5});
+                  return false;
+                }
+                $.post("{:url('Coupon/addRuleModel')}", {title,is_common:1}, function(res){
+                  if(!res){
+                    layer.msg('请求失败',{icon: 5});
+                  }else{
+                    res = JSON.parse(res);
+                    layer.msg(res.msg);
+                    if(res.status == 1){
+                      location.reload();
+                    }
+                  }
+                }, 'json')
+              })
+            })
+          });
+      </script>
+
+  </div>
+</body>
+</html>

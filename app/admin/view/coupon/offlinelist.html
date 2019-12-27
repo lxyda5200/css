@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('admin/coupon/index')}" class="a_menu">平台优惠券列表</a></li>
+            <li><a href="{:url('admin/coupon/publish')}" class="a_menu">新增平台优惠券</a></li>
+            <li class="layui-this">线下优惠券</li>
+        </ul>
+    </div>
+    <form class="layui-form serch" action="{:url('Coupon/offlineList')}" method="post">
+        <div class="layui-form-item" style="float: left;">
+            <div class="layui-input-inline">
+                <input type="text" name="keywords_coupon" lay-verify="title" value="{$param.keywords_coupon}" autocomplete="off" placeholder="按优惠券名称搜索" class="layui-input layui-btn-sm">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="keywords_store" lay-verify="title" value="{$param.keywords_store}" autocomplete="off" placeholder="按店铺名称搜索" class="layui-input layui-btn-sm">
+            </div>
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="is_open" id="is_open" lay-search="">
+                        <option value="-1">状态</option>
+                        <option value="0" {if condition="$param.is_open eq 0"} selected{/if}>禁用中</option>
+                        <option value="1" {if condition="$param.is_open eq 1"} selected{/if}>启用中</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="kind" id="kind" lay-search="">
+                        <option value="0">卡券种类</option>
+                        <option value="1" {if condition="$param.kind eq 1"} selected{/if}>实物礼品券</option>
+                        <option value="2" {if condition="$param.kind eq 2"} selected{/if}>满减券</option>
+                        <option value="3" {if condition="$param.kind eq 3"} selected{/if}>体验券</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="fb_user" id="fb_user" lay-search="">
+                        <option value="">设置平台</option>
+                        <option value="平台" {if condition="$param.fb_user eq 平台"} selected{/if}>超神宿后台</option>
+                        <option value="商家" {if condition="$param.fb_user eq 商家"} selected{/if}>商家后台</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-input-inline">
+                <input type="text" name="create_time" value="{$param.create_time}" autocomplete="off" placeholder="创建时间 如:2019-11-11" class="layui-input layui-btn-sm">
+            </div>
+
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">立即提交</button>
+        </div>
+    </form>
+    <table class="layui-table" lay-size="sm">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>优惠券名称</th>
+            <th>所属店铺</th>
+            <th>优惠券种类</th>
+            <th>有效期</th>
+            <th>优惠券总数量</th>
+            <th>实际领用数量</th>
+            <th>显示领用数量</th>
+            <th>剩余数量</th>
+            <th>使用规则</th>
+            <th>每人可领取数</th>
+            <th>状态</th>
+            <th>是否推荐到领券中心</th>
+            <th>创建时间</th>
+            <th>核销数量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+
+            {volist name="data" id="vo"}
+
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.coupon_name}{if condition="$vo.is_lottery eq 1"}【已绑定抽奖】{/if}</td>
+                <td>{$vo.store_name}</td>
+                <td>{if condition="$vo.kind eq 1"}实物礼品券{elseif condition="$vo.kind eq 2"}满减券{else /}体验券{/if}</td>
+
+                {if condition='$vo.coupon_type eq 5 || $vo.coupon_type eq 6 || $vo.coupon_type eq 8 || $vo.coupon_type eq 9 || ($vo.coupon_type eq 10 && $vo.days eq 0) || ($vo.coupon_type eq 11 && $vo.days eq 0)'}
+                <td>有效期 {$vo.start_time} -- {$vo.end_time}</td>
+                {else /}
+                <td>有效天数:{$vo.days}天</td>
+                {/if}
+                <td>{if condition="$vo.coupon_type eq 1 || $vo.coupon_type eq 2 || $vo.coupon_type eq 7"}∞
+                    {else /}
+                    {$vo.total_number}
+                    {/if}</td>
+                <td>{$vo.use_number}</td>
+                <td><input class="ipt-fake" data-id="{$vo.id}" data-field="fake_use_number" type="number" style="width:60px;" value="{$vo.fake_use_number}"/></td>
+                <td>{if condition="$vo.coupon_type eq 1 || $vo.coupon_type eq 2 || $vo.coupon_type eq 7"}∞{else /}{$vo.surplus_number}{/if}</td>
+                <td>
+                    {foreach name="$vo.rule" item="it"}
+                    <p>{$it}</p>
+                    {/foreach}
+                </td>
+                <td style="text-align: center;">
+
+<!--                    <input class="ipt-attr" data-id="{$vo.id}" data-field="zengsong_number" style="width:30px;text-align: center;" value="{$vo.zengsong_number}" type="text" min="1" />-->
+                    {$vo.zengsong_number}
+
+                </td>
+
+                <td>
+                    {if condition="$vo.is_open eq 1"}
+                    <i class="layui-icon status" id="{$vo.id}" data-id="0" style="font-size: 30px; color: #1E9FFF; cursor: pointer;">&#x1005;</i>
+                    {else /}
+                    <i class="layui-icon status" id="{$vo.id}" data-id="1" style="font-size: 30px; color: red; cursor: pointer;">&#x1007;</i>
+                    {/if}
+                </td>
+                <td>
+                    {if condition="$vo.is_show_coupon_center eq 1"}
+                    <i class="layui-icon is_show_coupon_center" id="{$vo.id}" data-id="1" style="font-size: 30px; color: #1E9FFF; cursor: pointer;">&#x1005;</i>
+                    {else /}
+                    <i class="layui-icon is_show_coupon_center" id="{$vo.id}" data-id="0" style="font-size: 30px; color: red; cursor: pointer;">&#x1007;</i>
+                    {/if}
+                </td>
+                <td>{$vo.create_time}</td>
+                <td>{$vo.finish_num}</td>
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/coupon/offlineDetail')}?id={$vo.id}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>查看详情</a>
+                        {if condition="$vo.show_total_handle"}
+                        <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>删除</a>
+                        {/if}
+                        {if condition="$vo.coupon_type eq 5"}
+                        <button data-id="{$vo.id}" type="button" class="layui-btn layui-btn-primary layui-btn-xs btn-export">导出推广码</button>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </form>
+        </tbody>
+    </table>
+
+    <div style="padding:0 20px;">{$data->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+
+        $('.delete').click(function(){
+            var id = $(this).attr('id');
+            layer.confirm('确定要删除?', function(index) {
+                $.ajax({
+                    url:"{:url('admin/coupon/delete')}",
+                    data:{id:id},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+        })
+
+        layui.use('layer', function(){
+            var layer = layui.layer;
+
+            $('.status').click(function(){
+                var id = $(this).attr('id');
+                var status = $(this).attr('data-id');
+                layer.confirm('确定要设置?', function(index) {
+                    $.ajax({
+                        url:"{:url('Coupon/status')}",
+                        type:'post',
+                        data:{id,status},
+                        success:function(res) {
+                            layer.msg(res.msg);
+                            if(res.code == 1) {
+                                setTimeout(function(){
+                                    location.href = res.url;
+                                },1500)
+                            }
+                        }
+                    })
+                })
+            })
+
+            $('.is_show_coupon_center').click(function(){
+                var id = $(this).attr('id');
+                var is_show_coupon_center = $(this).attr('data-id');
+                layer.confirm('确定要设置?', function(index) {
+                    $.ajax({
+                        url:"{:url('Coupon/isShowCouponCenter')}",
+                        type:'post',
+                        data:{id,is_show_coupon_center},
+                        success:function(res) {
+                            layer.msg(res.msg);
+                            if(res.code == 1) {
+                                setTimeout(function(){
+                                    location.href = res.url;
+                                },1500)
+                            }
+                        }
+                    })
+                })
+            })
+
+            $('.attr').on('click', function(){
+                let field = $(this).attr('data-field');
+                let id = $(this).attr('data-id');
+                let value = $(this).attr('data-val');
+                if(!field || !id){
+                    layer.msg("参数缺失",{icon: 5})
+                    return false;
+                }
+                layer.msg('操作中', {
+                    icon: 16
+                    ,shade: 0.02
+                });
+                $.ajax({
+                    url:"{:url('Coupon/setAttr')}",
+                    type:'post',
+                    data:{id,field,value},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.reload();
+                            },1500)
+                        }
+                    }
+                })
+            })
+
+            $('.btn-export').click(function(){
+                let coupon_id = $(this).data('id');
+                location.href="{:url('Coupon/excel')}?coupon_id=" + coupon_id;
+            })
+
+            $('.ipt-attr').on('change', function(){
+                let field = $(this).attr('data-field');
+                let id = $(this).attr('data-id');
+                let value = parseInt($(this).val());
+                if(value <= 0){
+                    layer.msg("数据错误",{icon: 5})
+                    return false;
+                }
+                if(!field || !id){
+                    layer.msg("参数缺失",{icon: 5})
+                    return false;
+                }
+                layer.msg('操作中', {
+                    icon: 16
+                    ,shade: 0.02
+                });
+                $.ajax({
+                    url:"{:url('Coupon/setAttr')}",
+                    type:'post',
+                    data:{id,field,value},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+
+            $('.ipt-fake').on('change', function(){
+                let field = $(this).attr('data-field');
+                let id = $(this).attr('data-id');
+                let value = parseInt($(this).val());
+                if(value < 0){
+                    layer.msg("数据错误",{icon: 5})
+                    return false;
+                }
+                if(!field || !id){
+                    layer.msg("参数缺失",{icon: 5})
+                    return false;
+                }
+                layer.msg('操作中', {
+                    icon: 16
+                    ,shade: 0.02
+                });
+                $.ajax({
+                    url:"{:url('Coupon/setAttr')}",
+                    type:'post',
+                    data:{id,field,value},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+
+        });
+    </script>
+</div>
+</body>
+</html>

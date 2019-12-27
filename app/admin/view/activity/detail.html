@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div style="margin-top: 20px;">
+        <fieldset class="layui-elem-field">
+            <legend>活动概要</legend>
+            <div class="layui-field-box">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠承担方：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled value="{if condition='$info[preferential_type] eq 1'}平台{else /}商家{/if}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">活动平台：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled value="{if condition='$info[client] eq 1'}App{elseif condition='$info[client] eq 2' /}小程序{else /}App & 小程序{/if}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">计划活动时段：</label>
+                    <div class="layui-input-inline" style="width:330px;">
+                        <input type="text" disabled value="{$info.start_time} ～ {$info.end_time}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled value="{$status_txt}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">创建时间：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled value="{$info.create_time}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">简介：</label>
+                    <div class="layui-input-block">
+                        <textarea disabled placeholder="请输入内容" class="layui-textarea">{$info.desc}</textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作：</label>
+                    <div class="layui-input-inline" style="width:400px;">
+                        {if condition="$status_type eq 1"}
+                        <button type="button" class="layui-btn layui-btn-primary btn-clock-line">定时上线</button>
+                        <button type="button" class="layui-btn layui-btn-normal btn-right-line">立即上线</button>
+                        {elseif condition="$status_type eq 2"}
+                        <button type="button" class="layui-btn layui-btn-primary btn-temp-not-line">暂不上线</button>
+                        <button type="button" class="layui-btn layui-btn-normal btn-right-line">立即上线</button>
+                        {elseif condition="$status_type eq 3"}
+                        <button type="button" class="layui-btn layui-btn-primary btn-off-line">下线</button>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <form class="layui-form" style="margin-top: 20px;">
+        <fieldset class="layui-elem-field">
+            <legend>活动内容</legend>
+            <div class="layui-field-box">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户筛选：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" disabled value="全部用户" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">活动规则说明：</label>
+                    <div class="layui-input-inline" style="width:500px;">
+                        <input disabled type="checkbox" {if condition="$info.is_show_rule eq 1"}checked{/if} lay-skin="switch" lay-text="ON|OFF">
+                        <textarea style="margin-top:10px;{if condition='$info.is_show_rule eq 2'}display:none;{/if}" disabled placeholder="请输入内容" class="layui-textarea">{$info.rule}</textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">活动封面：</label>
+                    <div class="layui-input-inline">
+                        <img style="width:300px;max-height:300px;" src="{$info.cover}" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">banner 及链接：</label>
+                    <div class="layui-input-inline" style="width:600px;">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="400">
+                                <col width="100">
+                                <col width="120">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>BANNER</th>
+                                <th>跳转类型</th>
+                                <th>商品ID/店铺ID</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach name='banners' item='vo'}
+                            <tr>
+                                <td>
+                                    <img style="max-width:300px;max-height:200px;" src="{$vo.banner}" />
+                                </td>
+                                <td>{if condition="$vo.type eq 1"}店铺{else /}商品{/if}</td>
+                                <td>{$vo.link_id}</td>
+                            </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">推荐的优惠券：</label>
+                    {foreach name='recom_coupons' item='vo'}
+                    <div class="layui-input-block" style="width:300px;margin-bottom:5px;">
+                        <input type="text" disabled value="{$vo.coupon_name}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                    {/foreach}
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">推送方式：</label>
+                    <div class="layui-input-block" style="width:300px;margin-bottom:5px;">
+                        <input type="text" disabled value="短信" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">推送内容：</label>
+                    <div class="layui-input-block" style="width:500px;margin-bottom:5px;">
+                        <textarea style="margin-top:10px;" disabled placeholder="请输入内容" class="layui-textarea">{$info.message_content}</textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">促销方式：</label>
+                    <div class="layui-input-block" style="width:300px;margin-bottom:5px;">
+                        <input type="text" disabled value="{if condition='$info[activity_type] eq 1'}无优惠{elseif condition='$info[activity_type] eq 2'}抵扣{elseif condition='$info[activity_type] eq 3'}满减{elseif condition='$info[activity_type] eq 4'}打折{elseif condition='$info[activity_type] eq 5'}返现{else}返还优惠券{/if}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-block" style="width:300px;margin-bottom:5px;">
+                        {if condition="$info.activity_type eq 2"}
+                        <input type="text" disabled value="抵扣{$info.deduction_money}元" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                        {/if}
+
+                        {if condition="$info.activity_type eq 3"}
+                        {foreach name="enough_rule" item="vo"}
+                        <input type="text" disabled value="满{$vo.satisfy_money}元 减 {$vo.discount_money}元" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                        {/foreach}
+                        {/if}
+
+                        {if condition="$info.activity_type eq 4"}
+                        <input type="text" disabled value="打 {$info.discount} 折，最高折扣金额 {$info.discount_max} 元" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                        {/if}
+
+                        {if condition="$info['activity_type'] eq 5"}
+                        <input type="text" disabled value="返现比例 {$info.return_prop} % ，最高返现金额 {$info.return_max} 元" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                        {/if}
+
+                        {if condition="$info.activity_type eq 6"}
+                        {foreach name="return_coupon" item="vo"}
+                        <input type="text" disabled value="满{$vo.satisfy_money}元 返优惠券 [{$vo.coupon_name}]" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                        {/foreach}
+                        {/if}
+                    </div>
+                    <div class="layui-input-block" style="width:300px;margin-bottom:5px;">
+                        <label class="layui-form-label">活动限时：</label>
+                        <div class="layui-input-block" style="width:500px;margin-bottom:5px;">
+                            <input type="text" disabled value="{if condition='$info[is_limit_time] eq 1'}开{else /}关{/if}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" />
+                            {if condition='$info[is_limit_time] eq 1'}
+                            <p style="margin:5px 0;">打开时，活动时段内每周指定日期的特定时间段开启活动。
+                                非指定时段内「立即抢购」按钮将会变为「提醒我」。</p>
+                            <input type="text" disabled value="{$limit_time_txt}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                            {/if}
+                        </div>	
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">活动商品选择方式：</label>
+                    <div class="layui-input-block" style="width:500px;margin-bottom:5px;">
+                        <input type="text" disabled value="{if condition='$info[activity_pro_type] eq 4'}店铺{elseif condition='$info[activity_pro_type] eq 5'}自定义{else /}未知{/if}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+
+                    <div class="layui-collapse layui-input-block" lay-filter="test" style="margin-top:10px;width:1000px;">
+                        {foreach name="pro_list" item="vo"}
+                        <div class="layui-colla-item">
+                            <h2 class="layui-colla-title">{$vo.name}  共有{$vo.count}个商品</h2>
+                            <div class="layui-colla-content">
+                                <table class="layui-table">
+                                    <colgroup>
+                                        <col width="200">
+                                        <col width="200">
+                                        <col width="120">
+                                        <col width="120">
+                                        <col width="120">
+                                    </colgroup>
+                                    <thead>
+                                    <tr>
+                                        <th>商品图</th>
+                                        <th>商品名称</th>
+                                        <th>商品ID</th>
+                                        <th>单价</th>
+                                        <th>活动价</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {foreach name="vo.pro_data" item="it"}
+                                    <tr>
+                                        <td>
+                                            <img style="max-width:200px;max-height:200px;" src="{$it.cover}" />
+                                        </td>
+                                        <td>{$it.product_name}</td>
+                                        <td>{$it.product_id}</td>
+                                        <td>{$it.price}</td>
+                                        <td>{if condition="$info['activity_type'] eq 2 || $info['activity_type'] eq 4"}{$it.price_activity_temp}{else /}{$it.price}{/if}</td>
+                                    </tr>
+                                    {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {/foreach}
+                    </div>
+
+                </div>
+
+            </div>
+        </fieldset>
+    </form>
+
+
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script>
+        let id = "{$info.id}";
+        layui.use(['layer', 'form', 'element', 'laydate'], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form;
+            var element = layui.element;
+            var laydate = layui.laydate;
+
+            $('.btn-clock-line').on('click', function(){
+                var alyerIdx = layui.layer.open({
+                    title: "上线设置",
+                    type: 1,
+                    skin: 'layui-layer-demo', //样式类名
+                    closeBtn: 1, //不显示关闭按钮
+                    anim: 2,
+                    area: ['500px', '300px'],
+                    shadeClose: false, //开启遮罩关闭
+                    content: '<div style="margin-top:20px;">' +
+
+                        '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label">上线时间</label>\n' +
+                        '<input type="text" style="width:190px;" class="layui-input" id="line_time" placeholder="请选择">' +
+                        '  </div>' +
+
+                        '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label">持续时长</label>\n' +
+                        '    <div class="layui-input-inline">\n' +
+                        '      <input type="text" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input ipt-keep-time">\n' +
+                        '    </div>\n' +
+                        '  </div>' +
+                        '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label"></label>\n' +
+                        '<button type="button" class="layui-btn layui-btn-normal btn-time-line">定时上线</button>' +
+                        '  </div>' +
+
+                        '</div>'
+                })
+
+                laydate.render({
+                    elem: '#line_time',
+                    type: 'datetime',
+                });
+
+                $('.btn-time-line').on('click', function(){
+                    let activity_long = parseInt($('.ipt-keep-time').val());
+                    let start_time = $('#line_time').val();
+                    $.post("{:url('Activity/editActivityStatus')}",{id,'type':2,activity_long,start_time}, function(res){
+                        layer.msg(res.msg);
+                        if(res.code == 1){
+                            layer.close(alyerIdx)
+                            location.reload();
+                        }
+                    },'json')
+                })
+            })
+
+            $('.btn-right-line').on('click', function(){
+                var alyerIdx = layui.layer.open({
+                    title: "上线设置",
+                    type: 1,
+                    skin: 'layui-layer-demo', //样式类名
+                    closeBtn: 1, //不显示关闭按钮
+                    anim: 2,
+                    area: ['500px', '180px'],
+                    shadeClose: false, //开启遮罩关闭
+                    content: '<div style="margin-top:20px;">' +
+                        '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label">持续时长</label>\n' +
+                        '    <div class="layui-input-inline">\n' +
+                        '      <input type="text" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input ipt-keep-time">\n' +
+                        '    </div>\n' +
+                        '  </div>' +
+                        '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label"></label>\n' +
+                        '<button type="button" class="layui-btn layui-btn-normal btn-right-line">立即上线</button>' +
+                        '  </div>' +
+
+                        '</div>'
+                })
+
+                $('.btn-right-line').on('click', function(){
+                    let activity_long = parseInt($('.ipt-keep-time').val());
+                    $.post("{:url('Activity/editActivityStatus')}",{id,'type':1,activity_long}, function(res){
+                        layer.msg(res.msg);
+                        if(res.code == 1){
+                            layer.close(alyerIdx)
+                            location.reload();
+                        }
+                    },'json')
+                })
+            })
+
+            $('.btn-temp-not-line').on('click', function(){
+                $.post("{:url('Activity/tempNotLineActivity')}", {id}, function(res){
+                    layer.msg(res.msg);
+                    if(res.code == 1){
+                        location.reload();
+                    }
+                }, 'json')
+            })
+
+            $('.btn-off-line').on('click', function(){
+                var layidx = layer.confirm('确定立即下线该活动吗', {
+                    btn: ['取消','确定'] //按钮
+                }, function(){
+                    layer.closeAll();
+                }, function(){
+                    $.post("{:url('Activity/offLineActivity')}",{id},function(res){
+                        layer.msg(res.msg);
+                        if(res.code == 1){
+                            layer.close(layidx);
+                            location.reload();
+                        }
+                    },'json')
+                });
+            })
+
+        });
+    </script>
+</div>
+</body>
+</html>

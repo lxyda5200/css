@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>时尚新潮详情</title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1， user-scalable=no,minimal-ui" servergenerated="true">
+    <link rel="stylesheet" href="./main.css">
+    <script src="../config/config.js"></script>
+    <script src="./fontSize-rem.js"></script>
+</head>
+<body>
+    <div class="container-box">
+        <div class="page-title-box">
+            <div class="title" id="title"></div>
+            <div class="hot">
+                <img src="./img/reqi.png" class="hot-icon">
+                <span class="hot-num" id="hotNum">0</span>
+            </div>
+        </div>
+        <div class="details-con" id="detailsConBox">
+            <div class="details" id="detailsContent"></div>
+            <ul class="topic-label" id="topicLabel">
+                <!--<li>潮流时尚</li>-->
+            </ul>
+            <img src="./img/mengban.png" class="mengban">
+        </div>
+        <!-- -->
+        <div class="more-details" id="moreDetailsBtn">
+            <span class="more-font">点击查看更多</span>
+            <img src="./img/geng.png" class="more-icon">
+        </div>
+        <div class="content-box" id="storeBox">
+            <div class="right-title">推荐店铺</div>
+            <ul class="store-list" id="storeList">
+                <!--<li>
+                    <img src="" class="store-logo">
+                    <span class="store-name textSplit2">劳力士 (春熙店)</span>
+                </li>-->
+            </ul>
+        </div>
+        <div class="content-box" id="goodsBox">
+            <div class="right-title">推荐商品</div>
+            <div class="goods-box">
+                <ul class="goods-list" id="goodsList">
+                    <!--<li>
+                        <div class="goods-img-box">
+                            <img src="" class="goods-img">
+                        </div>
+                        <div class="goods-name textSplit1">哈哈哈哈</div>
+                    </li>-->
+                </ul>
+                <!--<div class="scroll-box"><div class="scroll" id="goodsScroll"></div></div>-->
+            </div>
+        </div>
+        <div class="content-box">
+            <div class="right-title">评论</div>
+            <div class="comment-box">
+                <ul class="comment-ul" id="commentUl">
+                    <!--<li class="item">
+                        <div class="ava-box">
+                            <img src="" class="ava-img">
+                        </div>
+                        <div class="right-box">
+                            <div class="user-info">
+                                <div class="user-name">呵呵呵</div>
+                                <div class="user-time">19.10.29 14:02</div>
+                            </div>
+                            <div class="comment-info">留卡号弗兰科萨看见的阿里斯顿会计法了卡。加看拉升房价。近卡放大是否！</div>
+                            <div class="reply-box">
+                                <ul class="reply-ul">
+                                    <li>
+                                        <span class="weight">小红&nbsp;</span>回复
+                                        <span class="weight">小明&nbsp;</span>返回了卡时代峰峻阿萨德附近
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>-->
+                </ul>
+                <div class="comment-total-num" id="commentTotalNumBox" onclick="moreCommentFn()">
+                    <div class="font">
+                        共&nbsp;<span class="num" id="commentTotalNum"></span>&nbsp;条回复
+                    </div>
+                    <img src="./img/geng.png" class="xia-icon">
+                </div>
+            </div>
+        </div>
+
+    
+    </div>
+    <!--  -->
+    <div class="fixed-bottom">
+        <div class="box">
+            <input type="text" name="comment" class="comment-input" placeholder="说点什么吧" >
+            <div class="btm-c" onclick="collectFn()">
+                <div class="collect-icon icon" id="collectIcon"></div>
+                <span class="num" id="collectNum">0</span>
+            </div>
+            <div class="btm-c" onclick="linkFn()">
+                <div class="link-icon icon " id="linkIcon"></div>
+                <span class="num" id="linkNum">0</span>
+            </div>
+            <div class="btm-c" onclick="shareFn()">
+                <img src="./img/share.png" class="share-icon icon" id="shareIcon">
+                <span class="num" id="shareNum">0</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./jquery.min.js"></script>
+<script src="./main.js"></script>
+<script>
+    let goods_width = 0;
+    $(function() {
+        $("#goodsList").scroll(function(event){
+            var scroW = $(this).scrollLeft();
+            var contentW = goods_width-10;
+            var viewW = $("#goodsBox").width(); //可见宽度
+            var maxScoll = contentW - viewW;
+            // let left = (contentW+scroW)/(viewW+maxScoll);
+            let left = scroW-75;
+            // $("#goodsScroll").css('left', left + 'px');
+        })
+    });
+    $(function() {
+        getData(detailsId, true);
+        //
+        $("#moreDetailsBtn").click(function(){
+            if ($("#detailsConBox").hasClass('isHeight')) {
+                // 关闭状态
+                $(this).find('.more-icon').addClass('upDown');
+                $(".mengban").hide();
+                $("#detailsConBox").removeClass("isHeight");
+            } else {
+                // 打开状态
+                $(this).find('.more-icon').removeClass('upDown');
+                $(".mengban").show();
+                $("#detailsConBox").addClass("isHeight");
+            }
+
+        })
+    });
+    var httpUrl = base;
+    var user_id = getUrlParams('user_id'); // '12811';//
+    var token = getUrlParams('token'); // 'bd7d20b7f85eda68fce892a747aad5719b8a0ac9'; //
+    var detailsId = getUrlParams('id'); // getUrlParams('id'); // 4;
+    var detailsDatainfo = '';
+    // 获取数据
+    function getData (id, isRefresh) {
+        ajaxPost('/user_v6/dynamic/NewTrendDetail', {
+            user_id: user_id,
+            token: token,
+            id: id
+        }).then(res => {
+            if(res.status == 1) {
+                let dataInfo = res.data;
+                detailsDatainfo = res.data;
+
+                if (isRefresh) {
+                    $("#title").text(dataInfo.title);
+                    $("#hotNum").text(dataInfo.hot);
+                    // 富文本
+                    $("#detailsContent").html(dataInfo.content);
+                    //let obj = document.getElementById("detailsContent");
+                    // obj.innerHTML = obj.innerText ;// 这样重新设置html代码为解析后的格式
+                    setTimeout(function(){
+                        let detail_h = $("#detailsConBox").height();
+                        if (detail_h > 300) {
+                            $("#moreDetailsBtn").show();
+                            $("#detailsConBox").addClass("isHeight");
+                        } else {
+                            $("#moreDetailsBtn").hide();
+                            $("#detailsConBox").removeClass("isHeight");
+                        }
+                    },10);
+                    // 标签
+                    if (dataInfo.style.length > 0) {
+                        for(let i = 0 ; i < dataInfo.style.length ; i++) {
+                            let style_str = "";
+                            if (dataInfo.style[i].type == 1) {
+                                style_str = '<li>'+dataInfo.style[i].store_style+'</li>';
+                            } else {
+                                style_str = '<li>'+dataInfo.style[i].product_style+'</li>';
+                            }
+                            $("#topicLabel").append(style_str)
+                        }
+                    }
+                    // 话题
+                    if (dataInfo.topic_title) {
+                        $("#topicLabel").append('<li>#'+dataInfo.topic_title+'#</li>');
+                    }
+                    // 推荐店铺
+                    if (dataInfo.store.length > 0) {
+                        $("#storeBox").show();
+                        let store_str = "";
+                        for(let i = 0 ; i < dataInfo.store.length ; i++) {
+                            store_str += '<li onclick="linkStoreFn(this)" id="'+dataInfo.store[i].store_id+'">\n' +
+                                '            <img src="'+httpUrl+dataInfo.store[i].cover+'" class="store-logo">\n' +
+                                '            <span class="store-name textSplit2">'+dataInfo.store[i].store_name+'</span>\n' +
+                                '        </li>';
+                        }
+                        $("#storeList").html(store_str);
+                    } else {
+                        $("#storeBox").hide()
+                    }
+                    // 推荐商品
+                    if (dataInfo.product.length > 0) {
+                        $("#goodsBox").show();
+                        let goods_str = "";
+                        for(let i = 0 ; i < dataInfo.product.length ; i++) {
+                            goods_width += 118; // 118 li宽度
+                            goods_str += '<li onclick="linkProductFn(this)" id="'+dataInfo.product[i].product_id+'">\n' +
+                                '            <div class="goods-img-box">\n' +
+                                '                <img src="'+httpUrl+dataInfo.product[i].cover+'" class="goods-img">\n' +
+                                '            </div>\n' +
+                                '            <div class="goods-name textSplit1">'+dataInfo.product[i].product_name+'</div>\n' +
+                                '        </li>';
+                        }
+                        $("#goodsList").html(goods_str);
+                    } else {
+                        $("#goodsBox").hide()
+                    }
+                }
+                // 评论
+                let commentList = dataInfo.$comment;
+                let li_str = "";
+                if (commentList.length >0 ) {
+                    $("#commentTotalNumBox").show();
+                    $("#commentTotalNum").text(dataInfo.total_comment_number);
+                    for(let i = 0 ; i < commentList.length ; i++) {
+                        let creatTime = timeCalc(commentList[i].create_time);
+                        let avatar = (commentList[i].avatar).indexOf('http') >= 0 ? commentList[i].avatar : httpUrl+commentList[i].avatar;
+                        li_str += '<li class="item" onclick="moreCommentFn()">\n' +
+                            '          <div class="ava-box">\n' +
+                            '              <img src="'+avatar+'" class="ava-img">\n' +
+                            '          </div>\n' +
+                            '          <div class="right-box">\n' +
+                            '              <div class="user-info">\n' +
+                            '                  <div class="user-name">'+commentList[i].nickname+'</div>\n' +
+                            '                  <div class="user-time">'+creatTime+'</div>\n' +
+                            '              </div>\n' +
+                            '              <div class="comment-info">'+commentList[i].content+'</div>\n' +
+                            '              <div class="reply-box" id="replyBox'+i+'">\n' +
+                            '                  <ul class="reply-ul" id="replyUl'+i+'">\n' +
+
+                            '                  </ul>\n' +
+                            '                  <div class="more-reply" onclick="moreReplyFn(this)" id="'+commentList[i].id+'">更多回复<img src="./img/geng.png"/></div>\n' +
+                            '              </div>\n' +
+                            '          </div>\n' +
+                            '      </li>';
+                        setTimeout(function(){
+                            if (commentList[i].reply.length > 0) {
+                                $("#replyBox"+i).show();
+                                let reply_str = ' <li>\n' +
+                                    '               <span class="weight">'+commentList[i].reply[0].nickname+'&nbsp;</span>回复\n' +
+                                    '               <span class="weight">'+commentList[i].reply[0].b_user_nickname+'&nbsp;</span>'+commentList[i].reply[0].content+'\n' +
+                                    '           </li>';
+                                $("#replyUl"+i).html(reply_str);
+                            } else {
+                                $("#replyBox"+i).hide();
+                            }
+                        }, 10)
+                    }
+                } else {
+                    li_str = '<li class="no-comment">暂无评论，发布一下您的建议吧~~</li>';
+                    $("#commentTotalNumBox").hide();
+                }
+                $("#commentUl").html(li_str);
+                //
+                $("#collectNum").text(dataInfo.collect_number);
+                if (dataInfo.is_collect == 0) {
+                    $("#collectIcon").removeClass("active");
+                } else {
+                    $("#collectIcon").addClass("active")
+                }
+                $("#linkNum").text(dataInfo.like_number);
+                $("#shareNum").text(dataInfo.share_number);
+                if (dataInfo.is_dianzan == 0) {
+                    $("#linkIcon").removeClass("active");
+                } else {
+                    $("#linkIcon").addClass("active")
+                }
+            } else {
+                alert(res.msg)
+            }
+        }).catch(err => {
+            alert(err.responseJSON.msg)
+            console.log(err);
+        });
+    }
+    function add(m){return m<10?'0'+m:m }
+    function timeCalc(value){
+        var time = new Date(value*1000);
+        var year = time.getFullYear();
+        var month = time.getMonth()+1;
+        var date = time.getDate();
+        var hours = time.getHours();
+        var minutes = time.getMinutes();
+        var seconds = time.getSeconds();
+        // return year+'-'+add(month)+'-'+add(date)+' '+add(hours)+':'+add(minutes)+':'+add(seconds);
+        return year+'.'+add(month)+'.'+add(date)+' '+add(hours)+':'+add(minutes);
+    }  //2017-05-08 10:31:27
+</script>
+</html>

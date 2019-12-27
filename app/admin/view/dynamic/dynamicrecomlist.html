@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>APP今日推荐设置</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="today-table-header">
+        <form class="layui-form layui-inline">
+            <div class="layui-inline">
+                <label class="layui-form-label">动态ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="id" class="layui-input" placeholder="请输入动态id">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">操作人</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="handler" class="layui-input" placeholder="请输入操作人名字">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-inline">
+                    <select name="status">
+                        <option value="0">全部</option>
+                        <option value="1">生效中</option>
+                        <option value="2">已失效</option>
+                        <option value="3">开启</option>
+                        <option value="4">关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+        <!--<div class="layui-inline">
+            <button class="layui-btn" onclick="addDataLayer()">
+                <i class="layui-icon">&#xe654;</i>新增
+            </button>
+        </div>-->
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>动态ID</th>
+            <th>所属门店</th>
+            <th>所属品牌</th>
+            <th>排序值</th>
+            <th>生效时间</th>
+            <th>结束时间</th>
+            <th>指定位置</th>
+            <th>操作者</th>
+            <th>最近一次操作时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>84908034</td>
+            <td>环球中心channel店</td>
+            <td>channel</td>
+            <td>1</td>
+            <td>2019-10-11 00:00:00</td>
+            <td>2019-10-11 00:00:00</td>
+            <td>APP今日推荐位</td>
+            <td>sharle</td>
+            <td>2019-10-01 12:23:21</td>
+            <td>
+                <form class="layui-form" action="" lay-filter="checkboxForm">
+                    <div class="layui-input-block" style="margin-left: 0;">
+                        <input type="checkbox" name="switch" lay-filter="showHide" value="" lay-skin="switch" checked>
+                    </div>
+                </form>
+            </td>
+            <td style="width: 150px;">
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="edieDataLayer()">
+                    <i class="layui-icon">&#xe642;</i>编辑
+                </button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 编辑 -->
+<div class="layer-box-page" id="addEditDataLayer">
+    <form class="layui-form" lay-filter="formData">
+        <input type="hidden" name="dynamic_id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商家名称</label>
+            <div class="layui-input-block">
+                <div class="layui-form-mid layui-word-aux" id="storeName"></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属品牌</label>
+            <div class="layui-input-block">
+                <div class="layui-form-mid layui-word-aux" id="brandName"></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">生效时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="recom_start_time" lay-verify="datetime" placeholder="开始时间" autocomplete="off" id="starDate" class="layui-input">
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline">
+                <input type="text" name="recom_end_time" lay-verify="datetime" placeholder="结束时间" autocomplete="off" id="endDate" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序值</label>
+            <div class="layui-input-block">
+                <input type="text" name="recom_sort" class="layui-input" placeholder="请设置排序值">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开启</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_recommend" lay-skin="switch">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="recom_remark" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 40px;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formAddEditSubmit">确认</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script>
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let todaySet = {
+        getDatalist: function(page, dynamic_id, handler, status, isPage) {
+            ajaxPost('/admin/dynamic_api/recommendDynamicList', {
+                page: page,
+                dynamic_id: dynamic_id,
+                handler: handler,
+                status: status
+            }).then(res => {
+                // console.log(res);
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let isChecked = datalist[i].is_recommend==1?"checked":"";
+                        let brand_name = datalist[i].store_brand?datalist[i].store_brand.brand_name:"";
+                        tr += '<tr id="'+datalist[i].id+'" store-name="'+datalist[i].store_name+'" brand-name="'+datalist[i].store_name+'"  start-time="'+datalist[i].recom_start_time+'"  end-time="'+datalist[i].recom_end_time+'"  sort="'+datalist[i].recom_sort+'" is-recommend="'+datalist[i].is_recommend+'"  remark="'+datalist[i].recom_remark+'" >\n' +
+                            '     <td>'+datalist[i].id+'</td>\n' +
+                            '     <td>'+datalist[i].store_name+'</td>\n' +
+                            '     <td>'+brand_name+'</td>\n' +
+                            '     <td>'+datalist[i].recom_sort+'</td>\n' +
+                            '     <td>'+datalist[i].recom_start_time+'</td>\n' +
+                            '     <td>'+datalist[i].recom_end_time+'</td>\n' +
+                            '     <td>APP今日推荐位</td>\n' +
+                            '     <td>'+datalist[i].recom_handler+'</td>\n' +
+                            '     <td>'+datalist[i].recom_update_time+'</td>\n' +
+                            '     <td>\n' +
+                            '         <form class="layui-form" action="" lay-filter="checkboxForm">\n' +
+                            '             <div class="layui-input-block" style="margin-left: 0;">\n' +
+                            '                 <input type="checkbox" name="switch" lay-filter="showHide" value="'+datalist[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                            '             </div>\n' +
+                            '         </form>\n' +
+                            '     </td>\n' +
+                            '     <td style="width: 100px;">\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm magleft" onclick="edieDataLayer(this)">\n' +
+                            '             <i class="layui-icon">&#xe642;</i>编辑\n' +
+                            '         </button>\n' +
+                            '     </td>\n' +
+                            ' </tr>';
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/15));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 15
+                                ,theme: '#FF5722'
+                                ,jump: function(obj, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = obj.curr;
+                                        todaySet.getDatalist(obj.curr, dynamic_id, handler, status, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+                // checkbox
+                form.render('checkbox', 'checkboxForm');
+                form.on('switch(showHide)', function(data){
+                    // let load = layer.load()
+                    ajaxPost('/admin/dynamic_api/editRecommendDynamicStatus', {
+                        dynamic_id: data.value,
+                        is_recommend: data.elem.checked ? 1 : 0
+                    }).then((res) => {
+                        // layer.close(load);
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                });
+
+            }).catch(err => {});
+
+        }
+    };
+    // 编辑
+    var editOpenLayer = null;
+    function edieDataLayer(_this) {
+        let id = $(_this).parents("tr").attr("id");
+        let storeName = $(_this).parents("tr").attr("store-name");
+        let brandName = $(_this).parents("tr").attr("brand-name");
+        let startTime = $(_this).parents("tr").attr("start-time");
+        let endTime = $(_this).parents("tr").attr("end-time");
+        let sort = $(_this).parents("tr").attr("sort");
+        let isRecommend = $(_this).parents("tr").attr("is-recommend");
+        let remark = $(_this).parents("tr").attr("remark");
+        $("input[name=dynamic_id]").val(id);
+        $("#storeName").text(storeName);
+        $("#brandName").text(brandName);
+        $("input[name=recom_start_time]").val(startTime=="无"?"":startTime);
+        $("input[name=recom_end_time]").val(endTime=="无"?"":endTime);
+        $("input[name=recom_sort]").val(sort);
+        $("textarea[name=recom_remark]").val(remark);
+        if (isRecommend == 0) {
+            $("input[name=is_recommend]").prop("checked", false);
+        } else {
+            $("input[name=is_recommend]").prop("checked", true);
+        }
+        form.render(null, 'formData');
+        editOpenLayer = layer.open({
+            type: 1,
+            content: $('#addEditDataLayer'),
+            title: '编辑推荐设置',
+            area: ['800px', '700px'],
+            cancel: function () {
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        })
+    }
+    $(function() {
+        todaySet.getDatalist(1, '', '', '', true);
+        layui.use(["form", "upload", "laydate"], function(){
+            form = layui.form;
+            upload = layui.upload;
+            let laydate = layui.laydate;
+            laydate.render({
+                elem: '#starDate'
+                ,type: 'datetime'
+            });
+            laydate.render({
+                elem: '#endDate'
+                ,type: 'datetime'
+            });
+            // 列表搜索
+            form.on("submit(formSearchList)", function(data){
+                // console.log(data);
+                let field = data.field;
+                now_page = 1;
+                todaySet.getDatalist(1, field.id, field.handler, field.status, true);
+                return false
+            });
+            // 添加编辑
+            form.on("submit(formAddEditSubmit)", function(data){
+                // console.log(data.field);
+                ajaxPost('/admin/dynamic_api/editRecommendDynamic', {
+                    dynamic_id: data.field.dynamic_id,
+                    recom_start_time: data.field.recom_start_time,
+                    recom_end_time: data.field.recom_end_time,
+                    recom_sort: data.field.recom_sort,
+                    recom_remark: data.field.recom_remark,
+                    is_recommend: data.field.is_recommend ? 1 : 0
+                }).then(res => {
+                    layer.msg('编辑成功', {time: 1500}, function() {
+                        layer.close(editOpenLayer);
+                        let id = $("input[name=id]").val();
+                        let handler = $("input[name=handler]").val();
+                        let status = $("select[name=status]").val();
+                        todaySet.getDatalist(now_page, id, handler, status, false);
+                    })
+                }).catch(err => {});
+                return false
+            })
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>知名品牌</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__WZH__/js/brandApi_dynamic.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="top-btn-box">
+        <button class="layui-btn" onclick="addBrandLayer()">
+            <i class="layui-icon">&#xe654;</i>新增品牌
+        </button>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>品牌LOGO</th>
+            <th>品牌名称</th>
+            <th>分类</th>
+            <th>开放</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+            <!--<tr>
+                <td>1</td>
+                <td><img class="brand-logo" src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg"></td>
+                <td>A品牌</td>
+                <td>美妆</td>
+                <td>
+                    <form class="layui-form" action="" lay-filter="checkboxForm">
+                        <div class="layui-input-block" style="margin-left: 0;">
+                           <input type="checkbox" name="switch" lay-filter="showHide" value="" lay-skin="switch" checked>
+                        </div>
+                    </form>
+                </td>
+                <td style="width: 450px;">
+                    <button type="button" class="layui-btn layui-btn-sm magleft">
+                        <i class="layui-icon">&#xe642;</i>编辑品牌
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft" onclick="brandStoryLayer(2)">
+                        <i class="layui-icon">&#xe654;</i>新增品牌故事
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft" onclick="brandDynamicLayer()">
+                        <i class="layui-icon">&#xe654;</i>时尚动态
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft">
+                        <i class="layui-icon">&#xe640;</i>删除品牌
+                    </button>
+                </td>
+            </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+
+
+</div>
+<!-- 新增品牌layer -->
+<div class="layer-box-page" id="addBrandLayer">
+    <form class="layui-form" lay-filter="brandForm">
+        <div class="layui-form-item">
+            <input type="hidden" name="brand_id" value="">
+            <label for="" class="layui-form-label">品牌名称</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" name="brand_name" placeholder="1-10个字符" autocomplete="off" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌分类</label>
+            <div class="layui-input-block">
+                <select name="cate_id" lay-verify="required">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌LOGO</label>
+            <div class="layui-input-block">
+                <div class="add-logo-box">
+                    <input type="hidden" name="logo" value="">
+                    <img src="" id="brandLogoImg" class="add-brand-logoimg-btn display-none">
+                    <div class="layui-btn layui-btn-primary add-brand-logoimg-btn addBrandLogoBtn" id="addBBtn">
+                        <i class="layui-icon add-logon-i">&#xe608;</i>
+                    </div>
+                </div>
+                <div class="layui-btn layui-btn-xs replace-logo addBrandLogoBtn display-none" id="replaceLogoBtn">更换</div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">开放</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_open" lay-skin="switch">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="margin-top: 100px;">
+                <button class="layui-btn pull-right layui-btn-normal" lay-submit lay-filter="formAddBrand">确认</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 品牌故事 -->
+<div class="layer-box-page" id="brandStory">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">广告位</label>
+            <div class="layui-input-block">
+                <div class="tips" style="padding-top: 10px;">图片1M以内，视频50M以内，规格750*570px,总计数量4个以内</div>
+                <div class="flex-row">
+                    <ul class="advert-ul flex-row-wrap" id="advertUl">
+                        <!--<li class="video-img img">
+                            <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg">
+                            <div class="layui-btn close" onclick="removeImgVideo(this)"><i class="layui-icon">&#x1006;</i></div>
+                        </li>-->
+                        <!--<li class="video-img video">
+                            <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg">
+                            <i class="layui-icon video-icon">&#xe652;</i>
+                            <div class="layui-btn close" onclick="removeImgVideo(this)"><i class="layui-icon">&#x1006;</i></div>
+                        </li>-->
+                    </ul>
+                    <div class="add-btn add-advert-btn" id="addAdvertImg" style="margin-right: 10px;"><i class="layui-icon">&#xe608;</i>上传图片</div>
+                    <div class="add-btn add-advert-btn" id="addAdvertVideo"><i class="layui-icon">&#xe608;</i>上传视频</div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌历史</label>
+            <div class="layui-input-block">
+                <textarea name="history" class="layui-textarea" placeholder="0-500个字符"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌理念</label>
+            <div class="layui-input-block">
+                <textarea name="notion" class="layui-textarea" placeholder="0-500个字符"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">经典款</label>
+            <div class="layui-input-block">
+                <div class="tips" style="padding-top: 10px;">最多设置4个</div>
+                <div class="flex-row">
+                    <ul class="active-goods-ul flex-row-wrap" id="activeGoodsUl">
+                        <!--<li>
+                            <div class="close" onclick="removeActiveGoods(this)">
+                                <button type="button" class="layui-btn closebtn">
+                                    <i class="layui-icon">&#x1006;</i>
+                                </button>
+                            </div>
+                            <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" class="goods-cover">
+                            <div class="goods-desc">
+                                <div class="goods-name textSplit2">商品名称 XL商品名称</div>
+                                <div class="goods-price">价格：<span class="price">￥65.00</span></div>
+                            </div>
+                        </li>-->
+                        <div class="add-btn add-goods-btn" onclick="showGoodsListLayer()"><i class="layui-icon">&#xe608;</i></div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 选择商品列表 -->
+<div class="list-layer display-none" id="goodsListLayer">
+    <div class="layer-box">
+        <div class="layer-header-search">
+            <input type="text" name="keywords" class="layui-input ipt" placeholder="商品名称">
+            <button class="layui-btn" onclick="searchGoodslist()">搜索</button>
+        </div>
+        <ul class="goodslist-ul" id="goodslistUl">
+            <!--<li>
+                <div class="gl-goods-item">
+                    <i class="layui-icon radio-i active">&#xe643;</i>
+                    <div class="imgbox">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572523097341&di=501f0f828c82de2094720aa3093a3847&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F14%2F20171014201130_HTnmN.jpeg" alt="">
+                        <span class="phone">
+                            <i class="fa fa-phone fa-lg"></i>
+                            18200376228
+                        </span>
+                    </div>
+                    <div class="goodsinfo">
+                        <div class="goodsname textSplit2">品名称商品名称名称名称</div>
+                        <div class="goodsdesc textSplit2">
+                            描述描述描述描述描述描述描述描述描述描述描述
+                        </div>
+                        <div class="goodsaddr textSplit1">
+                            <i class="fa fa-map-marker fa-lg"></i>
+                            希顿国际广场123号
+                        </div>
+                    </div>
+                </div>
+            </li>-->
+        </ul>
+        <div id="goodsPage"></div>
+    </div>
+</div>
+<!-- 时尚动态 -->
+<div class="layer-box-page" id="brandDynamic">
+    <input type="hidden" name="brand_id">
+    <input type="hidden" name="brand_dynamic_id">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" onclick="showAddAdvertLayer()">添加广告</button>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">广告位</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>类型</th>
+                    <th>标题</th>
+                    <th>封面</th>
+                    <th>跳转类型</th>
+                    <th>跳转链接</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="advertisingTbody">
+                    <!--<tr>
+                        <td>F001</td>
+                        <td>Banner广告/视频广告</td>
+                        <td>香奈儿2109新品发布会</td>
+                        <td><img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" class="advert-cover"></td>
+                        <td>https://www.baidu.com</td>
+                        <td style="width: 200px;">
+                            <button type="button" class="layui-btn layui-btn-sm magleft">
+                                <i class="layui-icon">&#xe642;</i>编辑
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft">
+                                <i class="layui-icon">&#xe640;</i>删除
+                            </button>
+                        </td>
+                    </tr>-->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="layui-form-item" style="margin-top: 30px;">
+        <div class="layui-input-block">
+            <button class="layui-btn" onclick="showAddInformLayer()">添加资讯集</button>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">资讯集</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>主题</th>
+                    <th>类型</th>
+                    <th>浏览量</th>
+                    <th>显示</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="informationTbody">
+                <!--<tr>
+                    <td>1</td>
+                    <td>2019人气单品</td>
+                    <td>视频/影集</td>
+                    <td>4562</td>
+                    <td>
+                        <form class="layui-form" action="" lay-filter="infoCheckboxForm">
+                            <div class="layui-input-block" style="margin-left: 0;">
+                                <input type="checkbox" name="switch" lay-filter="infoShowHide" value="" lay-skin="switch" checked>
+                            </div>
+                        </form>
+                    </td>
+                    <td style="width: 200px;">
+                        <button type="button" class="layui-btn layui-btn-sm magleft">
+                            <i class="layui-icon">&#xe642;</i>编辑
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft">
+                            <i class="layui-icon">&#xe640;</i>删除
+                        </button>
+                    </td>
+                </tr>-->
+                </tbody>
+            </table>
+            <div id="informationPage"></div>
+        </div>
+    </div>
+</div>
+<!-- 时尚动态-添加编辑（广告位） -->
+<div class="layer-box-page" id="addEditAdvertisingLayer">
+    <div class="layui-tab layui-tab-brief" lay-filter="bannerVideoTab">
+        <ul class="layui-tab-title">
+            <li lay-id="banner" class="layui-this">banner图广告</li>
+            <li lay-id="video">视频广告</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;">
+            <div class="layui-tab-item layui-show" id="bannerTab">
+                <!-- banner图广告 -->
+                <form class="layui-form">
+                    <input type="hidden" name="editAdvertId">
+                    <input type="hidden" name="addAdvertType" value="1">
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">广告位序号</label>
+                        <div class="layui-input-block">
+                            <div class="xu-num xuNum"></div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">广告位标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" class="layui-input" placeholder="1-20个字符" required lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">广告banner图</label>
+                        <div class="layui-input-block">
+                            <input type="hidden" name="banner_cover" value="">
+                            <img src="" class="add-div add-div-img addAdvertBanner display-none" id="bannerCover">
+                            <div class="layui-btn layui-btn-primary add-div add-div-btn addAdvertBanner" id="addBannerBtn">
+                                <i class="layui-icon add-logon-i">&#xe608;</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">跳转地址</label>
+                        <div class="layui-input-block" style="padding-top: 9px;">
+                            <input type="hidden" name="link_type" value="0">
+                            <ul class="link-ul-tab flex-row" id="linkUlTab">
+                                <li class="active">不跳转</li>
+                                <li>添加APP内指定页面</li>
+                                <li>添加H5跳转链接</li>
+                            </ul>
+                            <div class="" id="linkInput">
+                                <input type="hidden" class="s-h">
+                                <input type="text" name="link_app" class="layui-input s-h display-none" placeholder="请填写APP指定页面ID">
+                                <input type="text" name="link_h5" class="layui-input s-h display-none" placeholder="请填写H5跳转链接URL">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="margin-top: 66px;">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formAdvertBanner">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="layui-tab-item" id="videoTab">
+                <!-- 视频广告 -->
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">广告位序号</label>
+                        <div class="layui-input-block">
+                            <div class="xu-num xuNum"></div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">广告位标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" class="layui-input" placeholder="1-20个字符" required lay-verify="required">
+                        </div>
+                    </div>
+                    <!--<div class="layui-form-item">
+                        <label for="" class="layui-form-label">视频缩略图</label>
+                        <div class="layui-input-block">
+                            <input type="hidden" name="video_cover" value="">
+                            <img src="" class="add-div add-div-img display-none addAdvertVideo" id="videoCover">
+                            <div class="layui-btn layui-btn-primary add-div add-div-btn addAdvertVideo" id="addVideoCoverBtn">
+                                <i class="layui-icon add-logon-i">&#xe608;</i>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="layui-form-item">
+                        <label for="" class="layui-form-label">视频内容</label>
+                        <div class="layui-input-block">
+                            <input type="hidden" name="video_url" value="">
+                            <input type="hidden" name="video_cover" value="">
+                            <img src="" class="add-div add-div-img display-none" id="advertVideoCover">
+                            <div class="layui-btn layui-btn-primary add-div add-div-btn addAdvertVideoBtn">
+                                <i class="layui-icon add-logon-i">&#xe608;</i>
+                            </div>
+                            <div class="" style="margin-top: 8px;width: 120px;">
+                                <div class="layui-btn layui-btn-xs display-none addAdvertVideoBtn" id="advertVideoEdit">更换视频</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="margin-top: 66px;">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formAdvertVideo">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 时尚动态-添加编辑（资讯集） -->
+<div class="layer-box-page" id="addEditInformLayer">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="informEditId" class="clearVal">
+                <input type="text" name="title" class="layui-input clearVal" lay-verify="required" placeholder="2-16个字符">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">封面</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="cover" value="" class="clearVal">
+                <img src="" class="add-div add-div-img display-none informCoverImg" id="">
+                <div class="layui-btn layui-btn-primary add-div add-div-btn informCoverB" id="">
+                    <i class="layui-icon add-logon-i">&#xe608;</i>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <div class="layui-tab layui-tab-brief" lay-filter="informTypeTab">
+                    <input type="hidden" name="addInformType" value="0">
+                    <ul class="layui-tab-title">
+                        <li lay-id="video" class="layui-this">视频</li>
+                        <li lay-id="images">影集</li>
+                        <li lay-id="news">news</li>
+                    </ul>
+                    <div class="layui-tab-content" style="padding: 10px 0;">
+                        <div class="layui-tab-item layui-show" id="type_video">
+                            <!-- 视频 -->
+                            <div class="sub-tips" style="margin-bottom: 10px;">视频大小不超过50MB</div>
+                            <input type="hidden" name="video_cover" class="clearVal">
+                            <input type="hidden" name="video_url" class="clearVal">
+                            <input type="hidden" name="media_id" class="clearVal">
+                            <div class="layui-btn layui-btn-primary add-div add-div-btn videoAddBtn" id="videoAddBtn_icon">
+                                <i class="layui-icon add-logon-i">&#xe608;</i>
+                            </div>
+                            <div class="display-none" id="videoShowBox">
+                                <video src="" id="videoShow" controls style="width: 200px;height: 200px;"></video>
+                                <div class="" style="margin-top: 8px;width: 200px;">
+                                    <div class="layui-btn layui-btn-xs display-none videoAddBtn">更换视频</div>
+                                </div>
+                                <textarea name="media_desc" class="layui-textarea" style="margin-top: 8px;" placeholder="视频描述"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item" id="type_imgs">
+                            <!-- 影集 -->
+                            <div class="sub-tips">最多上传9张图片，建议尺寸750*1334，长按拖动调整顺序</div>
+                            <ul class="sub-movie" id="subMovieUl">
+                                <!--<li class="active">
+                                    <div class="left-img">
+                                        <div class="imgcover">
+                                            <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" class="img">
+                                        </div>
+                                        <div class="cover-status">封面</div>
+                                        <div class="close-cover"><i class="layui-icon">&#x1006;</i></div>
+                                        <div class="layui-btn layui-btn-primary layui-btn-xs set-cover">设置封面</div>
+                                    </div>
+                                    <div class="right-desc">
+                                        <textarea name="desc" class="layui-textarea textarea-desc" placeholder="描述，2-200个字符"></textarea>
+                                    </div>
+                                </li>-->
+                            </ul>
+                            <div class="add-img-box" id="addImgBox">
+                                <div class="layui-btn layui-btn-primary add-div add-div-btn " id="addImgBoxBtn">
+                                    <i class="layui-icon add-logon-i">&#xe608;</i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item" style="margin-left: -110px;" id="type_news">
+                            <!-- news -->
+                            <!--<div class="layui-form-item">
+                                <label for="" class="layui-form-label">上传视频</label>
+                                <div class="layui-input-block">
+                                    <div class="sub-tips" style="margin-bottom: 10px;padding-top: 10px;">视频大小不超过50MB</div>
+                                    <input type="hidden" name="video_file">
+                                    <div class="layui-btn layui-btn-primary add-div add-div-btn addInformVideo" id="">
+                                        <i class="layui-icon add-logon-i">&#xe608;</i>
+                                    </div>
+                                    <video src="" class="display-none" id="newsVideoShow" style="width: 200px;height: 200px;"></video>
+                                    <div class="" style="margin-top: 8px;">
+                                        <div class="layui-btn layui-btn-xs display-none addInformVideo" id="newsEditVideo">更换视频</div>
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">上传图片</label>
+                                <div class="layui-input-block">
+                                    <div class="sub-tips" style="margin-bottom: 10px;padding-top: 10px;">最多上传6张图片,建议尺寸 750 * 570，长按拖动调整顺序</div>
+                                    <ul class="news-img-box" id="newsImgBoxUl">
+                                        <!--<li class="">
+                                            <div class="news-img">
+                                                <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" >
+                                            </div>
+                                            <div class="cover-status">封面</div>
+                                            <div class="close-cover"><i class="layui-icon">&#x1006;</i></div>
+                                            <div class="layui-btn layui-btn-primary layui-btn-xs set-cover">设置封面</div>
+                                        </li>-->
+                                        <div class="layui-btn layui-btn-primary add-div add-div-btn " id="addNewsImgBtn">
+                                            <i class="layui-icon add-logon-i">&#xe608;</i>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label for="" class="layui-form-label">内容</label>
+                                <div class="layui-input-block">
+                                    <textarea name="newsContent" class="layui-textarea" placeholder="2-100个字符"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 66px;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formInformSubmit">提交</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script src="__WZH__/js/Sortable.min.js"></script>
+<script src="__WZH__/js/brandApi_brandStory.js"></script>
+<script src="__WZH__/js/brandApi_dynamic.js"></script>
+<script>
+    var form = null;
+    var upload = null;
+    var elementTab = null;
+    var now_page = 1;
+    var brandList = {
+        // get 品牌列表
+        getDataList: function(page, isPage) {
+            // console.log('当前页数：', page);
+            ajaxPost('/admin/brand_api/brandList',{
+                page: page
+            }).then(res => {
+                let datalist = res.data;
+                let tr = '';
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let isChecked = datalist[i].is_open==1?"checked":"";
+                        tr += '<tr>\n' +
+                            '     <td>'+datalist[i].id+'</td>\n' +
+                            '     <td><img class="brand-logo" src="'+httpUrl+datalist[i].logo+'"></td>\n' +
+                            '     <td>'+datalist[i].brand_name+'</td>\n' +
+                            '     <td>'+datalist[i].cate_name+'</td>\n' +
+                            '     <td>\n' +
+                            '         <form class="layui-form" action="" lay-filter="checkboxForm">\n' +
+                            '             <div class="layui-input-block" style="margin-left: 0;">\n' +
+                            '                <input type="checkbox" name="switch" lay-filter="showHide" lay-skin="switch" value="'+datalist[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                            '             </div>\n' +
+                            '         </form>\n' +
+                            '     </td>\n' +
+                            '     <td style="width: 450px;">\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm magleft" onclick="brandList.editBrand('+datalist[i].id+')">\n' +
+                            '             <i class="layui-icon">&#xe642;</i>编辑品牌\n' +
+                            '         </button>\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft" onclick="brandStoryLayer('+datalist[i].id+', '+datalist[i].brand_story_id+')">\n' +
+                            '             <i class="layui-icon">&#xe654;</i>品牌故事\n' +
+                            '         </button>\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft" onclick="brandDynamicLayer('+datalist[i].id+', '+datalist[i].brand_dynamic_id+')">\n' +
+                            '             <i class="layui-icon">&#xe654;</i>时尚动态\n' +
+                            '         </button>\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft" onclick="brandList.removeBrand('+datalist[i].id+')">\n' +
+                            '             <i class="layui-icon">&#xe640;</i>删除品牌\n' +
+                            '         </button>\n' +
+                            '     </td>\n' +
+                            ' </tr>';
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/15));
+                    $(".totaldata").html(res.total);
+                    if(isPage){
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 15
+                                ,theme: '#FF5722'
+                                ,jump: function(obj, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = obj.curr;
+                                        brandList.getDataList(obj.curr, false)
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    $(".page-box").hide();
+                    tr = '<td colspan="6" class="no-data">暂无数据</td>'
+                }
+                $("#dataListTbody").html(tr);
+                // checkbox
+                form.render('checkbox', 'checkboxForm');
+                form.on('switch(showHide)', function(data){
+                    // let load = layer.load()
+                    ajaxPost('/admin/brand_api/editBrandIsOpen', {
+                        id: data.value,
+                        is_open: data.elem.checked ? 1 : 2
+                    }).then((res) => {
+                        // layer.close(load);
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                });
+            }).catch(err => {
+
+            })
+
+        },
+        // 品牌分类列表
+        getBrandClassify: function() {
+            ajaxPost('/admin/brand_api/brandCateList', {}).then(res => {
+                // console.log(res);
+                let option = '';
+                for(let i in res) {
+                    option += '<option value="'+res[i].id+'">'+res[i].title+'</option>'
+                }
+                $("select[name=cate_id]").append(option);
+                form.render('select');
+            }).catch(err => {
+            })
+        },
+        // 编辑品牌
+        editBrand(id) {
+            ajaxPost('/admin/brand_api/brandInfo',{
+                id: id
+            }).then(res => {
+                $("input[name=brand_id]").val(res.id);
+                $("input[name=brand_name]").val(res.brand_name);
+                $("select[name=cate_id]").val(res.cate_id);
+                // logo
+                $("#brandLogoImg").show();
+                $("#replaceLogoBtn").show();
+                $("#brandLogoImg").attr('src', httpUrl + res.logo);
+                $("#addBBtn").hide();
+                $("input[name=logo]").val(res.logo);
+                // is_open
+                let isOpen = res.is_open == 1 ? true : false;
+                $("input[name=is_open]").prop('checked', isOpen);
+                form.render(null, 'brandForm'); // 更新form
+                openAddBrand = layer.open({
+                    type: 1,
+                    content: $('#addBrandLayer'),
+                    title: '编辑品牌',
+                    area: ['550px', '580px'],
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                        brandList.clearBrandForm()
+                    }
+                })
+            }).catch(err => {
+
+            })
+        },
+        // 清空品牌form的数据
+        clearBrandForm() {
+            $("input[name=brand_id]").val("");
+            $("input[name=brand_name]").val("");
+            $("select[name=cate_id]").val("");
+            // logo
+            $("#brandLogoImg").hide();
+            $("#replaceLogoBtn").hide();
+            $("#brandLogoImg").attr('src', '');
+            $("#addBBtn").show();
+            $("input[name=logo]").val("");
+            //
+            $("input[name=is_open]").prop('checked', false);
+            form.render(null, 'brandForm');
+        },
+        // 删除品牌
+        removeBrand(id){
+            layer.confirm('该品牌被删除后，使用此分类的商户主营品牌中也将移除此数据', {title: '提示'}, function(){
+                // 确认
+                ajaxPost('/admin/brand_api/delBrand', {
+                    id: id
+                }).then((res) => {
+                    layer.msg('删除成功', {time: 1500}, function(){
+                        brandList.getDataList(now_page, false)
+                    })
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+            },function(){
+                // 取消
+            })
+        }
+    };
+    // 新增品牌layer
+    let openAddBrand = null;
+    function addBrandLayer() {
+         openAddBrand = layer.open({
+            type: 1,
+            content: $('#addBrandLayer'),
+            title: '新增品牌',
+            area: ['550px', '580px'],
+            cancel: function () {
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+                brandList.clearBrandForm()
+            }
+        })
+    }
+    $(function() {
+        brandList.getDataList(1, true);
+        brandList.getBrandClassify();
+        layui.use(["element", "form", "upload"], function(){
+            elementTab = layui.element;
+            form = layui.form;
+            // 确认 品牌
+            form.on("submit(formAddBrand)", function(data) {
+                let param = data.field;
+                if (param.brand_name.length > 10) {
+                    layer.msg('品牌名称不能超过10个字符');
+                    return false
+                }
+                if (param.logo == '') {
+                    layer.msg('请上传品牌LOGO');
+                    return false
+                }
+                let loading = layer.load();
+                let brand_id = $("input[name=brand_id]").val();
+                let subParam = {
+                    brand_name: param.brand_name,
+                    cate_id: param.cate_id,
+                    logo: param.logo,
+                    is_open: param.is_open?'1':'2'
+                };
+                let url = '/admin/brand_api/addBrand';
+                let msginfo = '添加成功';
+                if (brand_id !='') {
+                    console.log('hei');
+                    url = '/admin/brand_api/editBrand';
+                    subParam.id = brand_id;
+                    msginfo = '编辑成功';
+                }
+                ajaxPost(url, subParam).then(res => {
+                    layer.close(loading);
+                    layer.msg(msginfo, {time: 1500}, function(){
+                        layer.close(openAddBrand);
+                        brandList.clearBrandForm();
+                        if (brand_id || brand_id==0) {
+                            brandList.getDataList(now_page, false)
+                        } else {
+                            now_page = 1;
+                            brandList.getDataList(1, true);
+                        }
+                    });
+
+                }).catch(err => {});
+                return false
+            });
+            //
+            upload = layui.upload;
+            // 上传品牌logo (module 有误)
+            upload.render({
+                elem: '.addBrandLogoBtn' //绑定元素
+                ,url: httpUrl + '/admin/api_base/upload' //上传接口
+                ,data: {module:'pop_pro', use:'bg'}
+                ,accept: 'images'
+                ,done: function(res){
+                    if(res.status == 1){
+                        $("#brandLogoImg").show();
+                        $("#replaceLogoBtn").show();
+                        $("#brandLogoImg").attr('src', httpUrl + res.data.src);
+                        $("#addBBtn").hide();
+                        $("input[name=logo]").val(res.data.src);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
+
+
+        });
+
+    })
+</script>
+</html>

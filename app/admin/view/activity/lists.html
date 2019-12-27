@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+  <style type="text/css">
+
+/* tooltip */
+#tooltip{
+  position:absolute;
+  border:1px solid #ccc;
+  background:#333;
+  padding:2px;
+  display:none;
+  color:#fff;
+}
+    .per-data{
+      background: #FF5722;
+      margin-right:200px;
+      padding:20px 0;
+    }
+    .per-data:nth-last-of-type(1){
+      margin-right:0px;
+    }
+    .layui-col-space10{
+      padding:5px;
+      margin-bottom: 20px;
+    }
+    .per-data p{
+      text-align: center;
+    }
+    .per-data-title{
+      color:#fff;
+    }
+    .per-data-data{
+      font-size:20px;
+      color:#333;
+      line-height:30px;
+    }
+    .hide_ul{
+      width: 50px;
+      position: absolute;
+      top: -42px;
+      right: -65px;
+      text-align: right;
+      border: 1px solid #ddd;
+      padding: 6px;
+      display: none;
+      background: #fff;
+      z-index: 9999;
+    }
+    .hide_ul li{
+      line-height:30px;
+    }
+</style>
+</head>
+<body style="padding:10px;">
+  <div class="tplay-body-div">
+    <div class="layui-tab">
+      <ul class="layui-tab-title">
+<!--        <li class="layui-this">推广人列表</li>-->
+<!--        <li><a href="{:url('Extend/publish')}" class="a_menu">新增推广人</a></li>-->
+      </ul>
+    </div>
+    <div class="layui-row layui-col-space10">
+      <div class="layui-col-md3 per-data">
+        <p class="per-data-title">已上线活动</p>
+        <p class="per-data-data">{$num_1}个</p>
+      </div>
+      <div class="layui-col-md3 per-data">
+        <p class="per-data-title">待上线活动</p>
+        <p class="per-data-data">{$num_2}个</p>
+      </div>
+      <div class="layui-col-md3 per-data">
+        <p class="per-data-title">本月完成活动</p>
+        <p class="per-data-data">{$num_3}个</p>
+      </div>
+    </div>
+      <form class="layui-form serch" action="{:url('Activity/lists')}" method="post">
+        <div class="layui-form-item" style="float: left;">
+          <div class="layui-input-inline">
+            <input type="text" name="keywords" lay-verify="title" value="{$keywords}" autocomplete="off" placeholder="请输入关键词" class="layui-input layui-btn-sm">
+          </div>
+          <div class="layui-input-inline">
+            <div class="layui-inline">
+                <select name="type" id="type_select" lay-search="">
+                  <option value="0">全部</option>
+                  <option value="1" {if condition="$type eq 1"} selected{/if}>草稿</option>
+                  <option value="2" {if condition="$type eq 2"} selected{/if}>待上线</option>
+                  <option value="3" {if condition="$type eq 3"} selected{/if}>进行中</option>
+                  <option value="4" {if condition="$type eq 4"} selected{/if}>下线</option>
+                </select>
+            </div>
+          </div>
+          <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">立即提交</button>
+        </div>
+      </form>
+    <table class="layui-table" lay-size="sm">
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>活动封面</th>
+          <th>活动名称</th>
+          <th>上线时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr> 
+      </thead>
+      <tbody>
+        {volist name="data" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td><img style="width:100px;height:100px;" src="{$vo.cover}" /></td>
+          <td>{$vo.title}</td>
+          <td>{$vo.start_time}</td>
+          <td>{$vo.status_txt}</td>
+
+          <td class="operation-menu">
+            <div class="layui-btn-group">
+              <a href="{:url('Activity/detail',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 10px;font-size:12px;">查看</a>
+              {if condition="$vo.status_type eq 2"}
+              <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary more" id="{$vo.id}" style="margin-left: 10px;font-size:12px;position: relative;">
+                更多<i class="layui-icon">&#xe61a;</i>
+                <ul class="hide_ul">
+                  <li class="temp-not-line">暂不上线</li>
+                  <li class="right-line">立即上线</li>
+                  <li class="edit">编辑</li>
+                </ul>
+              </a>
+              {/if}
+              {if condition="$vo.status_type eq 1"}
+              <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary more" id="{$vo.id}" style="margin-left: 10px;font-size:12px;position: relative;">
+                更多<i class="layui-icon">&#xe61a;</i>
+                <ul class="hide_ul">
+                  <li class="time-line">定时上线</li>
+                  <li class="right-line">立即上线</li>
+                  <li class="edit">编辑</li>
+                </ul>
+              </a>
+              {/if}
+              {if condition="$vo.status_type eq 3"}
+              <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary off-line" id="{$vo.id}" style="margin-left: 10px;font-size:12px;">下线</a>
+              {/if}
+            </div>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <div style="padding:0 20px;">{$page}</div>
+    {include file="public/foot"}
+
+      <script type="text/javascript">
+          $(function(){
+
+            $('.more').hover(function(){
+              $(this).find('.hide_ul').show()
+            },function(){
+              $(this).find('.hide_ul').hide()
+            })
+
+            let [type] = ["{$type}"];
+            $('#type_select').val(type)
+            layui.use('form', function(){
+              let form = layui.form;
+              form.render();
+            })
+
+            $('.edit').on('click', function(){
+              let id = $(this).parents('.more').attr('id');
+              location.href = "{:url('Activity/index')}?id=" + id;
+            })
+
+          })
+
+          layui.use('layer', function(){
+              var layer = layui.layer;
+
+              $('.right-line').on('click', function(){
+
+                let id = $(this).parents('.more').attr('id');
+
+                var alyerIdx = layui.layer.open({
+                  title: "上线设置",
+                  type: 1,
+                  skin: 'layui-layer-demo', //样式类名
+                  closeBtn: 1, //不显示关闭按钮
+                  anim: 2,
+                  area: ['500px', '180px'],
+                  shadeClose: false, //开启遮罩关闭
+                  content: '<div style="margin-top:20px;">' +
+                          '<div class="layui-form-item">\n' +
+                          '    <label class="layui-form-label">持续时长</label>\n' +
+                          '    <div class="layui-input-inline">\n' +
+                          '      <input type="text" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input ipt-keep-time">\n' +
+                          '    </div>\n' +
+                          '  </div>' +
+                          '<div class="layui-form-item">\n' +
+                          '    <label class="layui-form-label"></label>\n' +
+                          '<button type="button" class="layui-btn layui-btn-normal btn-right-line">立即上线</button>' +
+                          '  </div>' +
+
+                          '</div>'
+                })
+
+                $('.btn-right-line').on('click', function(){
+                  let activity_long = parseInt($('.ipt-keep-time').val());
+                  $.post("{:url('Activity/editActivityStatus')}",{id,'type':1,activity_long}, function(res){
+                    layer.msg(res.msg);
+                    if(res.code == 1){
+                      layer.close(alyerIdx)
+                      location.reload();
+                    }
+                  },'json')
+                })
+
+              })
+
+              $('.time-line').on('click', function(){
+                let id = $(this).parents('.more').attr('id');
+
+                var alyerIdx = layui.layer.open({
+                  title: "上线设置",
+                  type: 1,
+                  skin: 'layui-layer-demo', //样式类名
+                  closeBtn: 1, //不显示关闭按钮
+                  anim: 2,
+                  area: ['500px', '300px'],
+                  shadeClose: false, //开启遮罩关闭
+                  content: '<div style="margin-top:20px;">' +
+
+                          '<div class="layui-form-item">\n' +
+                          '    <label class="layui-form-label">上线时间</label>\n' +
+                          '<input type="text" style="width:190px;" class="layui-input" id="line_time" placeholder="请选择">' +
+                          '  </div>' +
+
+                          '<div class="layui-form-item">\n' +
+                          '    <label class="layui-form-label">持续时长</label>\n' +
+                          '    <div class="layui-input-inline">\n' +
+                          '      <input type="text" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input ipt-keep-time">\n' +
+                          '    </div>\n' +
+                          '  </div>' +
+                          '<div class="layui-form-item">\n' +
+                          '    <label class="layui-form-label"></label>\n' +
+                          '<button type="button" class="layui-btn layui-btn-normal btn-time-line">定时上线</button>' +
+                          '  </div>' +
+
+                          '</div>'
+                })
+
+                layui.laydate.render({
+                  elem: '#line_time',
+                  type: 'datetime',
+                });
+
+                $('.btn-time-line').on('click', function(){
+                  let activity_long = parseInt($('.ipt-keep-time').val());
+                  let start_time = $('#line_time').val();
+                  $.post("{:url('Activity/editActivityStatus')}",{id,'type':2,activity_long,start_time}, function(res){
+                    layer.msg(res.msg);
+                    if(res.code == 1){
+                      layer.close(alyerIdx)
+                      location.reload();
+                    }
+                  },'json')
+                })
+              })
+
+              $('.off-line').on('click', function(){
+                let id = $(this).attr('id');
+                //询问框
+
+                var layidx = layer.confirm('确定立即下线该活动吗', {
+                  btn: ['取消','确定'] //按钮
+                }, function(){
+                  layer.closeAll();
+                }, function(){
+                  $.post("{:url('Activity/offLineActivity')}",{id},function(res){
+                    layer.msg(res.msg);
+                    if(res.code == 1){
+                      layer.close(layidx);
+                      location.reload();
+                    }
+                  },'json')
+                });
+              })
+
+              $('.temp-not-line').on('click', function(){
+                let id = $(this).parents('.more').attr('id');
+
+                $.post("{:url('Activity/tempNotLineActivity')}", {id}, function(res){
+                  layer.msg(res.msg);
+                  if(res.code == 1){
+                    location.reload();
+                  }
+                }, 'json')
+              })
+
+          });
+      </script>
+
+  </div>
+</body>
+</html>

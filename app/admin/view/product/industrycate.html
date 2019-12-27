@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行业经营分类</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/check.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="" style="padding: 15px;">
+    <div class="today-table-header w-row-sb">
+        <form class="layui-form layui-inline" lay-filter="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">分类名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="cate_name" class="layui-input" placeholder="请输入分类名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">经营分类</label>
+                <div class="layui-input-inline w-row">
+                    <select name="headLevel" lay-filter="selectHeadLevelFilter">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+        <button class="layui-btn" onclick="obj.addDataLayer()">
+            <i class="layui-icon">&#xe654;</i>新增分类
+        </button>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>行业经营分类ID</th>
+            <th>行业经营分类</th>
+            <th>分类级别</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>12</td>
+            <td>Nike中国商贸股份有限公司</td>
+            <td>品牌商</td>
+            <td style="width: 100px;">
+                &lt;!&ndash;<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>&ndash;&gt;
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.editDataLayer(this)">编辑</button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 添加 编辑 -->
+<div class="layer-box-page" id="addEditLayerPage">
+    <form class="layui-form" lay-filter="addEditForm">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">类目层级</label>
+            <div class="layui-input-block">
+                <select name="level" lay-filter="selectCateFilter">
+                    <option value="1">一级分类</option>
+                    <option value="2">二级分类</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item elementShowNone">
+            <label for="" class="layui-form-label">请选择上一级类目</label>
+            <div class="layui-input-block">
+                <select name="pid" lay-filter="" id="preCateList">
+
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">分类名称</label>
+            <div class="layui-input-block">
+                <div class="w-row">
+                    <input type="text" name="cateName" class="layui-input" placeholder="请输入分类名称" style="width: 70%;">
+                    <div class="layui-btn layui-btn-sm add-leimu" onclick="obj.addCateInput()">添加</div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <ul class="cate-ul" id="layerCateUl">
+                    <!--<li>
+                        <span class="name">户外运动</span>
+                        <div class="close" onclick="obj.removeThisCate(this)"><i class="layui-icon">&#x1007;</i></div>
+                    </li>-->
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 66px;">
+            <div class="layui-input-block">
+                <input type="hidden" name="id">
+                <button class="layui-btn" lay-submit lay-filter="formAddEditSubmit">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+<script src="__WZH__/js/http.js"></script>
+
+<script>
+    let layer = null;
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let openLayer = null;
+    let tableList = [];
+    let obj = {
+        getDatalist: function(page, cate_name, id, isPage) {
+            ajaxPost('/admin/Industry_cate/getIndustryCateList', {
+                page: page,
+                cate_name: cate_name,
+                id: id,
+                type: 1
+            }).then(res => {
+                let datalist = res.data;
+                tableList = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let le_text = '';
+                        switch (parseInt(datalist[i].level)) {
+                            case 1:
+                                le_text = '一级分类';
+                                break;
+                            case 2:
+                                le_text = '二级分类';
+                                break;
+                        }
+                        tr += `<tr>
+                            <td>`+datalist[i].id+`</td>
+                            <td>`+datalist[i].cate_name+`</td>
+                            <td>`+le_text+`</td>
+                            <td style="width: 100px;">
+                                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.editDataLayer(`+i+`)">编辑</button>
+                            </td>
+                        </tr>`
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/10));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 10
+                                ,theme: '#FF5722'
+                                ,jump: function(objs, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = objs.curr;
+                                        obj.getDatalist(objs.curr, cate_name, id, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+
+            }).catch(err => {});
+
+        },
+        addDataLayer() {
+            openLayer = layer.open({
+                type: 1,
+                content: $('#addEditLayerPage'),
+                title: '新增分类',
+                area: ['700px', '500px'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    obj.closeDetailsLayer()
+                }
+            })
+        },
+        // 编辑show layer
+        editDataLayer(index) {
+            let info = tableList[index];
+            $("input[name=id]").val(info.id);
+            $("select[name=level]").val(info.level);
+            if (info.level != 1) {
+                $(".elementShowNone").show();
+                obj.getCateList(info.level, info)
+            } else {
+                $(".elementShowNone").hide();
+                form.render('select', 'addEditForm');
+            }
+            let str = `<li>
+                            <span class="name">`+info.cate_name+`</span>
+                            <div class="close" onclick="obj.removeThisCate(this)"><i class="layui-icon">&#x1007;</i></div>
+                        </li>`;
+            $("#layerCateUl").append(str);
+
+            openLayer = layer.open({
+                type: 1,
+                content: $('#addEditLayerPage'),
+                title: '编辑分类',
+                area: ['700px', '500px'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    obj.closeDetailsLayer()
+                }
+            })
+        },
+        closeDetailsLayer() {
+            $("input[name=id]").val("");
+            $("select[name=level]").val(1);
+            $("select[name=pid]").val("");
+            $("select[name=pid]").html("");
+            $(".elementShowNone").hide();
+            $("input[name=cateName]").val("");
+            $("#layerCateUl").html("");
+            form.render('select', 'addEditForm');
+        },
+        // 添加属性
+        addCateInput() {
+            let name = $("input[name=cateName]").val();
+            if (!name) {
+                layer.msg('请输入分类名称');
+                return
+            }
+            let str = `<li>
+                        <span class="name">`+name+`</span>
+                        <div class="close" onclick="obj.removeThisCate(this)"><i class="layui-icon">&#x1007;</i></div>
+                    </li>`;
+            $("input[name=cateName]").val("");
+            $("#layerCateUl").append(str);
+        },
+        //
+        removeThisCate(_this) {
+            $(_this).parent('li').remove();
+        },
+        getCateList(level, status) {
+            ajaxPost('/admin/Industry_cate/getIndustryCateList', {
+                type: 2
+            }).then(res => {
+                let option = '';
+                let list = res;
+                if (list.length > 0){
+                    for(let i in list) {
+                        option += `<option value="`+list[i].id+`">`+list[i].cate_name+`</option>`
+                    }
+                }
+                $("#preCateList").html(option);
+                if (status) {
+                    $("select[name=pid]").val(status.pid);
+                }
+                form.render('select', 'addEditForm');
+                $(".elementShowNone").show();
+
+            })
+        },
+        getSearchCate(status) {
+            ajaxPost('/admin/Industry_cate/getIndustryCateList', {
+                type: 2
+            }).then(res => {
+                let option = '';
+                let list = res;
+                option += `<option value="">请选择</option>`;
+                if (list.length > 0){
+                    for(let i in list) {
+                        option += `<option value="`+list[i].id+`">`+list[i].cate_name+`</option>`
+                    }
+                }
+                if (status) {
+                    $("select[name=pid]").val(status.pid);
+                }
+                $("select[name=headLevel]").html(option);
+                form.render('select', 'searchForm');
+            })
+        },
+    };
+    $(function() {
+        obj.getDatalist(1, '', '', true);
+        obj.getSearchCate();
+        layui.use(["layer", "form", "upload", "laydate"], function() {
+            layer = layui.layer;
+            form = layui.form;
+            upload = layui.upload;
+            form.on('select(selectCateFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                if (data.value != 1) {
+                    obj.getCateList(data.value, '')
+                } else {
+                    $(".elementShowNone").hide()
+                }
+            });
+
+            // 搜索
+            form.on('submit(formSearchList)', function(data) {
+                // console.log(data.field);
+                let param = data.field;
+                now_page = 1;
+                obj.getDatalist(1, param.cate_name, param.headLevel, true);
+                return false;
+            });
+            // 添加编辑
+            form.on('submit(formAddEditSubmit)', function(data){
+                let param = data.field;
+                let pid = param.pid;
+                if (param.level==1) {
+                    // 一级分类
+                    pid = 0;
+                }
+                let title = [];
+                let titleList = $("#layerCateUl>li");
+                if (titleList.length <= 0) {
+                    layer.msg('请添加分类名称');
+                    return false;
+                } else {
+                    titleList.each(function(){
+                        title.push($(this).find('.name').text())
+                    })
+                }
+                let id = $("input[name=id]").val();
+                let subParam = {
+                    level: param.level,
+                    pid: pid,
+                    cate_name: title
+                };
+                if (!id) {
+                    ajaxPost('/admin/Industry_cate/addIndustryCate', subParam).then(res => {
+                        layer.close(openLayer);
+                        layer.msg('添加成功', {time: 1500}, function(){
+                            now_page = 1;
+                            obj.getDatalist(1, '', '', true);
+                        })
+
+                    });
+                } else {
+                    subParam.id = id;
+                    ajaxPost('/admin/Industry_cate/editIndustryCate', subParam).then(res => {
+                        layer.close(openLayer);
+                        layer.msg('编辑成功', {time: 1500}, function(){
+                            let cate_name = $("input[name=cate_name]").val();
+                            let headLevel = $("select[name=headLevel]").val();
+                            obj.getDatalist(now_page, cate_name, headLevel, false);
+                        })
+
+                    });
+                }
+
+                //
+                return false;
+            })
+
+        })
+
+
+
+    });
+</script>
+</html>

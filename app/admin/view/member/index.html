@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">会员卡列表</li>
+            <li><a href="{:url('admin/member/publish')}" class="a_menu">新增会员卡</a></li>
+        </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>会员卡名称</th>
+            <th>价格</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="data" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.card_name}</td>
+                <td>{$vo.price}</td>
+                <td>{if condition="$vo.status eq 1 "} 启用中
+                        {elseif condition="$vo.status eq -1"/}已禁用
+                        {else /} 未知
+                        {/if}</td>
+                        <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                        
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/member/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+                        
+                        <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>删除</a>
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </form>
+        </tbody>
+    </table>
+    <div style="padding:0 20px;">{$data->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+
+        $('.delete').click(function(){
+            var id = $(this).attr('id');
+            layer.confirm('确定要删除?', function(index) {
+                $.ajax({
+                    url:"{:url('admin/member/delete')}",
+                    data:{id:id},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+</div>
+</body>
+</html>

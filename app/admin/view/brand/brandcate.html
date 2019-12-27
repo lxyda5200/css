@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>品牌分类管理</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/check.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="today-table-header w-row-sb">
+        <form class="layui-form layui-inline" lay-filter="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">品牌名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="brand_name" class="layui-input" placeholder="请输入类目名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">所属类目</label>
+                <div class="layui-input-inline w-row">
+                    <select name="headLevel" lay-filter="selectHeadLevelFilter">
+
+                    </select>
+                    <div class="w-mr10"></div>
+                    <select name="headLeve2" lay-filter="">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+        <button class="layui-btn" onclick="obj.addDataLayer()">
+            <i class="layui-icon">&#xe654;</i>新增品牌分类
+        </button>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>品牌编码</th>
+            <th>品牌名称</th>
+            <th>品牌logo</th>
+            <th>所属类目</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>12</td>
+            <td>Nike中国商贸股份有限公司</td>
+            <td>
+                <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" class="w-img120">
+            </td>
+            <td>服装鞋包_服饰配件/皮带/帽子/围巾</td>
+            <td style="width: 150px;">
+                &lt;!&ndash;<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>&ndash;&gt;
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.editDataLayer(this)">编辑</button>
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.editDataLayer(this)">查看</button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 添加 编辑 -->
+<div class="layer-box-page" id="addEditLayerPage">
+    <form class="layui-form" lay-filter="addEditForm">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">所属类目</label>
+            <div class="layui-input-block w-row">
+                <select name="level" lay-filter="selectCateFilter">
+
+                </select>
+                <div class="w-mr10"></div>
+                <select name="leve2" lay-filter="">
+
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌名</label>
+            <div class="layui-input-block">
+                <div class="w-row">
+                    <input type="text" name="brandName" class="layui-input" placeholder="请输入品牌名称" style="width: 77.5%;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌LOGO</label>
+            <div class="layui-input-block">
+                <div class="add-logo-box">
+                    <input type="hidden" name="logo" value="">
+                    <img src="" id="brandLogoImg" class="add-brand-logoimg-btn display-none">
+                    <div class="layui-btn layui-btn-primary add-brand-logoimg-btn addBrandLogoBtn" id="addBBtn">
+                        <i class="layui-icon add-logon-i">&#xe608;</i>
+                    </div>
+                </div>
+                <div class="layui-btn layui-btn-xs replace-logo addBrandLogoBtn display-none" id="replaceLogoBtn">更换</div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <ul class="cate-ul" id="layerCateUl">
+                    <!--<li>
+                        <span class="name">户外运动</span>
+                        <div class="close" onclick="obj.removeThisCate(this)"><i class="layui-icon">&#x1007;</i></div>
+                    </li>-->
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 66px;">
+            <div class="layui-input-block">
+                <input type="hidden" name="id">
+                <button class="layui-btn" lay-submit lay-filter="formAddEditSubmit">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 查看 -->
+<div class="layer-box-page" id="seeDetailsLayer">
+    <form action="" class="layui-form">
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">所属类目</label>
+            <div class="layui-input-block w-flex-center">
+                <span class="" id="seeCate"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌名</label>
+            <div class="layui-input-block w-flex-center">
+                <span class="w-font-bold" id="seeBrandName"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="" class="layui-form-label">品牌名</label>
+            <div class="layui-input-block">
+                <img src="" class="w-img120" id="seeBrandLogo">
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+
+<script>
+    let layer = null;
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let openLayer = null;
+    let obj = {
+        getDatalist: function(page, brand_name, cate_pid, cate_id, isPage) {
+            ajaxPost('/admin/brand_api/brandCate', {
+                page: page,
+                brand_name: brand_name,
+                cate_pid: cate_pid,
+                cate_id: cate_id,
+            }).then(res => {
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        tr += `<tr>
+                                <td>`+datalist[i].id+`</td>
+                                <td>`+datalist[i].brand_name+`</td>
+                                <td>
+                                    <img src="`+httpUrl+datalist[i].logo+`" class="w-img120">
+                                </td>
+                                <td>`+datalist[i].cate_pname+` / `+datalist[i].cate_name+`</td>
+                                <td style="width: 150px;">
+                                    <!--<button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">审核</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">复审</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal magleft">封店</button>-->
+                                    <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.editDataLayer(`+datalist[i].id+`)">编辑</button>
+                                    <button type="button" class="layui-btn layui-btn-sm magleft" onclick="obj.seeDataLayer(`+datalist[i].id+`)">查看</button>
+                                </td>
+                            </tr>`
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/10));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 10
+                                ,theme: '#FF5722'
+                                ,jump: function(objs, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = objs.curr;
+                                        obj.getDatalist(objs.curr, brand_name, cate_pid, cate_id, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+
+            }).catch(err => {});
+
+        },
+        // 获取商品分类
+        getGoodsCateList(types, status, pid, details) {
+            ajaxPost('/admin/brand_cate/cateList', {
+                type: 2,
+                level: status=='one' ? 1 : '',
+                pid: pid
+            }).then(res => {
+                let option = '<option value="">全部类目</option>';
+                let list = res;
+                if (list.length > 0){
+                    for(let i in list) {
+                        option += `<option value="`+list[i].id+`">`+list[i].cate_name+`</option>`
+                    }
+                }
+                if (types == 'search'&&status == 'one') {
+                    $("select[name=headLevel]").html(option);
+                    form.render('select', 'searchForm');
+                } else if (types == 'search'&&status == 'two') {
+                    $("select[name=headLeve2]").html(option);
+                    form.render('select', 'searchForm');
+                } else if (types == 'addEdit'&&status == 'one') {
+                    $("select[name=level]").html(option);
+                    if (details) {
+                        obj.getGoodsCateList('addEdit', 'two', details.cate_pid, details);
+                        $("select[name=level]").val(details.cate_pid)
+                    }
+                    form.render('select', 'addEditForm');
+                } else if (types == 'addEdit'&&status == 'two') {
+                    $("select[name=leve2]").html(option);
+                    if (details) {
+                        $("select[name=leve2]").val(details.cate_id)
+                    }
+                    form.render('select', 'addEditForm');
+                }
+            })
+        },
+        addDataLayer() {
+            obj.getGoodsCateList('addEdit', 'one', '');
+            openLayer = layer.open({
+                type: 1,
+                content: $('#addEditLayerPage'),
+                title: '新增品牌',
+                area: ['700px', '550px'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    obj.closeDetailsLayer()
+                }
+            })
+        },
+        // 编辑show layer
+        editDataLayer(id) {
+            ajaxPost('/admin/brand_api/brandCateDetail', {
+                id: id
+            }).then(res => {
+                obj.getGoodsCateList('addEdit', 'one', '', res);
+                $("input[name=id]").val(res.id);
+                $("input[name=brandName]").val(res.brand_name);
+                $("#brandLogoImg").show();
+                $("#replaceLogoBtn").show();
+                $("#brandLogoImg").attr('src', httpUrl + res.logo);
+                $("#addBBtn").hide();
+                $("input[name=logo]").val(res.logo);
+                openLayer = layer.open({
+                    type: 1,
+                    content: $('#addEditLayerPage'),
+                    title: '编辑品牌',
+                    area: ['700px', '550px'],
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                        obj.closeDetailsLayer()
+                    }
+                })
+            })
+        },
+        closeDetailsLayer() {
+            $("input[name=id]").val("");
+            $("select[name=leve1]").val('');
+            $("select[name=leve1]").html('');
+            $("select[name=leve2]").val('');
+            $("select[name=leve2]").html('');
+            $("input[name=brandName]").val("");
+            // logo
+            $("#brandLogoImg").hide();
+            $("#replaceLogoBtn").hide();
+            $("#brandLogoImg").attr('src', '');
+            $("#addBBtn").show();
+            $("input[name=logo]").val('');
+        },
+        // 详情
+        seeDataLayer(id) {
+            ajaxPost('/admin/brand_api/brandCateDetail', {
+                id: id
+            }).then(res => {
+                $("#seeCate").text(res.cate_pname+' / '+ res.cate_name);
+                $("#seeBrandName").text(res.brand_name);
+                $("#seeBrandLogo").attr('src', httpUrl + res.logo);
+                let open = layer.open({
+                    type: 1,
+                    content: $('#seeDetailsLayer'),
+                    title: '详情',
+                    area: ['700px', '500px'],
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    }
+                })
+            })
+
+        },
+
+    };
+    $(function() {
+        obj.getDatalist(1, '', '', '', true);
+        obj.getGoodsCateList('search', 'one', '');
+        layui.use(["layer", "form", "upload", "laydate"], function() {
+            layer = layui.layer;
+            form = layui.form;
+            upload = layui.upload;
+            form.on('select(selectHeadLevelFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                obj.getGoodsCateList('search', 'two', data.value)
+            });
+            form.on('select(selectCateFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                obj.getGoodsCateList('addEdit', 'two', data.value)
+            });
+            // 搜索
+            form.on('submit(formSearchList)', function(data) {
+                // console.log(data.field);
+                let param = data.field;
+                let cate_pid = param.headLevel;
+                let cate_id = param.headLeve2;
+                now_page = 1;
+                obj.getDatalist(1, param.brand_name, cate_pid, cate_id, true);
+                return false;
+            });
+            // 上传品牌logo
+            upload.render({
+                elem: '.addBrandLogoBtn' //绑定元素
+                ,url: httpUrl + '/admin/api_base/upload' //上传接口
+                ,data: {module:'pop_pro', use:'bg'}
+                ,accept: 'images'
+                ,done: function(res){
+                    if(res.status == 1){
+                        $("#brandLogoImg").show();
+                        $("#replaceLogoBtn").show();
+                        $("#brandLogoImg").attr('src', httpUrl + res.data.src);
+                        $("#addBBtn").hide();
+                        $("input[name=logo]").val(res.data.src);
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
+
+            // 添加编辑
+            form.on('submit(formAddEditSubmit)', function(data){
+                let param = data.field;
+
+                let id = $("input[name=id]").val();
+                if (!param.level||!param.leve2) {
+                    layer.msg('请选择所属类目')
+                    return false
+                }
+                if (!param.brandName) {
+                    layer.msg('请输入品牌名称')
+                    return false
+                }
+                if (!param.logo) {
+                    layer.msg('请上传品牌LOGO')
+                    return false
+                }
+                let subParam = {
+                    cate_pid: param.level,
+                    cate_id:  param.leve2,
+                    brand_name: param.brandName,
+                    logo: param.logo
+                };
+                if (!id) {
+                    ajaxPost('/admin/brand_api/addBrandCate', subParam).then(res => {
+                        layer.close(openLayer);
+                        layer.msg('添加成功', {time: 1500}, function(){
+                            now_page = 1;
+                            obj.getDatalist(1, '', '', '', true);
+                        })
+
+                    });
+                } else {
+                    subParam.id = id;
+                    ajaxPost('/admin/brand_api/updateBrandCate', subParam).then(res => {
+                        layer.close(openLayer);
+                        layer.msg('编辑成功', {time: 1500}, function(){
+                            let brand_name = $("input[name=brand_name]").val();
+                            let headLevel = $("select[name=headLevel]").val();
+                            let headLeve2 = $("select[name=headLeve2]").val();
+                            obj.getDatalist(now_page, brand_name, headLevel, headLeve2, false);
+                        })
+
+                    });
+                }
+
+                return false;
+            })
+
+        })
+
+
+
+    });
+</script>
+</html>

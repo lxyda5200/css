@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>NEWS</title>
+  <link href="https://cdn.bootcss.com/Swiper/4.5.0/css/swiper.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./fashionDetail.css">
+  <script src="../config/config.js"></script>
+</head>
+
+<body>
+  <div class="swiper-container">
+    <div class="swiper-wrapper"></div>
+    <p>
+      <span id="currentPage">1</span>/<span id="totalPage"></span>
+    </p>
+  </div>
+  <div class="content-box">
+    <h3 class="w-title w-publicOne"></h3>
+    <p class="w-create-time w-publicOne"></p>
+    <div class="w-rich-content"></div>
+  </div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.10.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/Swiper/4.5.0/js/swiper.min.js"></script>
+<script src="./moment.js"></script>
+<script>
+  //域名
+  // const base = 'http://wx.supersg.cn'
+  //设置自适应 b
+  resize()
+  window.onresize = function () {
+    resize()
+  }
+
+  function resize() {
+    var docEl = document.documentElement
+    var clientWidth = window.innerWidth
+    if (clientWidth >= 750) {
+      docEl.style.fontSize = '100px'
+    } else {
+      docEl.style.fontSize = 100 * (clientWidth / 750) + 'px'
+    }
+  }
+  //设置自适应 e
+  //设置swiper b
+  const mySwiper = new Swiper('.swiper-container', {
+    loop: false,
+    on: {
+      slideChangeTransitionEnd: function () {
+        $('#currentPage').html(this.activeIndex + 1)
+      }
+    }
+  })
+  //设置swiper e
+
+  let bannerHtml = ''
+  //获取参数
+  function getQueryString(name) {
+    let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    let r = decodeURI(window.location.search).substr(1).match(reg);
+    if (r != null)
+      return unescape(r[2]);
+    return null;
+  }
+  let _id = getQueryString("id")
+  $.post(base + "/user_v6/dynamic/FashionTrendsNewsDetail", {
+    id: _id
+  }, function (resp) {
+    if (resp.status == 1) {
+      let res = resp.data
+      let banners = res.img
+      let totalPage = banners.length
+      for (let i = 0, j = banners.length; i < j; i++) {
+        if (banners[i].type == 1) {
+          bannerHtml += `<div class="swiper-slide">
+                                <img src="${base}/${banners[i].url}">
+                            </div>`
+        } else {
+          bannerHtml += `<div class="swiper-slide">
+                        <div class="swiper-slideVideo">
+								<video src="${banners[i].url}" id="slideVideo" webkit-playsinline="true" playsinline="true" width="100%" height="100%" type="video/mp4" preload="" x-webkit-airplay="true" x5-playsinline="true" poster="img/t4.jpg" x-webkit-airplay="true">
+									<source type="video/mp4" src="${banners[i].url}">
+								</video>
+								<div class="video_btn">
+									<img src="playerBtn.png" />
+								</div>
+							</div>
+                            </div>`
+        }
+      }
+      $('.swiper-wrapper').html(bannerHtml)
+      mySwiper.update();
+      $('#totalPage').text(totalPage)
+      $('.w-title').text(res.title)
+      let time = formatTime(res.create_time)
+      $('.w-create-time').text(time)
+      $('.w-rich-content').html(res.content)
+    }
+  })
+</script>
+<script type="text/javascript">
+  function load() {
+    $(".video_btn").hide();
+    $("#slideVideo").trigger('play');
+
+  }
+
+  $(".video_btn").on("click", function () {
+    $("#slideVideo").trigger('play');
+    $(".video_btn").hide();
+    return false;
+  })
+  $(".swiper-slideVideo").on("click", function () {
+    $("#slideVideo").trigger('pause');
+    $(".video_btn").show();
+  })
+  $("#slideVideo").on("ended", function () {
+    $(".video_btn").show();
+  })
+  $(".vAndi").show();
+  // var swiper1 = new Swiper('.case', {
+  //   pagination: '.swiper-pagination',
+  //   paginationType: 'custom',
+  //   //修改显示数量的下标
+  //   paginationCustomRender: function(swiper, current, total) {
+  //     var current1 = current - 1;
+  //     var total1 = total - 1;
+  //     console.log('执行')
+  //     console.log(current1 + ' / ' + total1)
+  //     return current1 + ' / ' + total1;
+  //   },
+  //   paginationClickable: true,
+  //   //							loop: true,
+
+  //   updateOnImagesReady: true,
+  //   lazyLoading: true,
+  //   lazyLoadingInPrevNext: true,
+  //   lazyLoadingInPrevNextAmount: 2,
+  //   onSlideChangeStart: function(swiper) {
+  //     var sliderIndex = swiper.activeIndex;
+  //     $("#slideVideo").trigger('pause');
+  //     $(".video_btn").show();
+  //   }
+  // });
+</script>
+
+
+
+</html>

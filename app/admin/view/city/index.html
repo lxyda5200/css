@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+  <style type="text/css">
+
+/* tooltip */
+#tooltip{
+  position:absolute;
+  border:1px solid #ccc;
+  background:#333;
+  padding:2px;
+  display:none;
+  color:#fff;
+}
+</style>
+</head>
+<body style="padding:10px;">
+  <div class="tplay-body-div">
+    <div class="layui-tab">
+      <ul class="layui-tab-title">
+        <li class="layui-this">城市</li>
+        <li><a href="{:url('admin/city/publish')}" class="a_menu">新增城市</a></li>
+      </ul>
+    </div>
+    <table class="layui-table" lay-size="sm">
+      <colgroup>
+        <col width="50">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>排序</th>
+         <!-- <th>编号</th>-->
+          <th>城市名称</th>
+          <th>所属省份</th>
+          <th>热门城市</th>
+          <th>是否显示</th>
+          <th>操作</th>
+        </tr> 
+      </thead>
+      <tbody>
+      <form class="layui-form" id="admin">
+        {volist name="citys" id="vo"}
+        <tr>
+          <td><input type="text" name="paixu[]" value="{$vo.paixu}" style="width: 20px;" class="paixu"><input type="hidden" name="id[]" value="{$vo.id}"></td>
+          <td>{$vo.city_name}</td>
+          <td>{$vo.province_name}</td>
+          <td><a href="javascript:;" style="font-size:18px;" class="is_hot" data-id="{$vo.id}" data-val="{$vo.is_hot}">{eq name="vo.is_hot" value="1"}<i class="fa fa-toggle-on"></i>{else /}<i class="fa fa-toggle-off"></i>{/eq}</a></td>
+          <td><a href="javascript:;" style="font-size:18px;" class="is_show" data-id="{$vo.id}" data-val="{$vo.is_show}">{eq name="vo.is_show" value="1"}<i class="fa fa-toggle-on"></i>{else /}<i class="fa fa-toggle-off"></i>{/eq}</a></td>
+          <td class="operation-menu">
+            <div class="layui-btn-group">
+              <a href="{:url('admin/city/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+              <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <button class="layui-btn layui-btn-sm" lay-submit lay-filter="admin">更新排序</button>
+    </form>
+    <div style="padding:0 20px;">{$citys->render()}</div>
+    {include file="public/foot"}
+    <script>
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form;
+            $(window).on('load', function() {
+                form.on('submit(admin)', function(data) {
+                    $.ajax({
+                        url:"{:url('admin/city/paixu')}",
+                        data:$('#admin').serialize(),
+                        type:'post',
+                        async: false,
+                        success:function(res) {
+                            if(res.code == 1) {
+                                layer.alert(res.msg, function(index){
+                                    location.href = res.url;
+                                })
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    })
+                    return false;
+                });
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $('.is_hot').click(function(){
+            var val = $(this).attr('data-val');
+            var id = $(this).attr('data-id');
+            var i = $(this).find('i');
+            var the = $(this);
+            if(val == 1){
+                var is_hot = 0;
+            } else {
+                var is_hot = 1;
+            }
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/city/is_hot')}",
+                data:{is_hot:is_hot,id:id},
+                success:function(res){
+
+                    if(res.code == 1) {
+                        top();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+
+            function top(){
+                if(val == 1){
+                    i.attr("class","fa fa-toggle-off");
+                    the.attr('data-val',0);
+                } else {
+                    i.attr("class","fa fa-toggle-on");
+                    the.attr('data-val',1);
+                }
+            }
+        })
+
+
+        $('.is_show').click(function(){
+            var val = $(this).attr('data-val');
+            var id = $(this).attr('data-id');
+            var i = $(this).find('i');
+            var the = $(this);
+            if(val == 1){
+                var is_show = 0;
+            } else {
+                var is_show = 1;
+            }
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/city/is_show')}",
+                data:{is_show:is_show,id:id},
+                success:function(res){
+
+                    if(res.code == 1) {
+                        tostatus();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+
+            function tostatus(){
+                if(val == 1){
+                    i.attr("class","fa fa-toggle-off");
+                    the.attr('data-val',0);
+                } else {
+                    i.attr("class","fa fa-toggle-on");
+                    the.attr('data-val',1);
+                }
+            }
+        })
+    </script>
+    <script type="text/javascript">
+
+        $('.delete').click(function(){
+            var id = $(this).attr('id');
+            layer.confirm('确定要删除?', function(index) {
+                $.ajax({
+                    url:"{:url('admin/city/delete')}",
+                    data:{id:id},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+  </div>
+</body>
+</html>

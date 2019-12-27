@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+  <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+  <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+  <style type="text/css">
+
+/* tooltip */
+#tooltip{
+  position:absolute;
+  border:1px solid #ccc;
+  background:#333;
+  padding:2px;
+  display:none;
+  color:#fff;
+}
+</style>
+</head>
+<body style="padding:10px;">
+  <div class="tplay-body-div">
+    <div class="layui-tab">
+      <ul class="layui-tab-title">
+        <li class="layui-this">商品</li>
+        <li><a href="{:url('admin/goods/publish')}" class="a_menu">新增商品</a></li>
+      </ul>
+    </div>
+    <form class="layui-form serch" action="{:url('admin/goods/index')}" method="post" id="myform">
+      <div class="layui-form-item" style="float: left;">
+        <!--<div class="layui-input-inline">
+          <input type="text" name="keywords" lay-verify="title" value="{$param.keywords}" autocomplete="off" placeholder="请输入关键词" class="layui-input layui-btn-sm">
+        </div>-->
+        <div class="layui-input-inline">
+          <div class="layui-inline">
+            <select name="class_id" onchange="submitForm()" lay-search="">
+              <option value="">商品分类</option>
+              {volist name="$goods_class" id="vo"}
+              <option value="{$vo.id}" {if condition="$param.class_id eq $vo.id"} selected{/if} >{$vo.class_name}</option>
+              {/volist}
+
+            </select>
+          </div>
+        </div>
+        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">立即提交</button>
+      </div>
+    </form>
+    <table class="layui-table" lay-size="sm">
+      <colgroup>
+        <col width="50">
+        <col width="150">
+        <col width="150">
+        <col width="300">
+        <col width="150">
+        <col width="100">
+        <col width="100">
+          <col width="100">
+          <col width="150">
+          <col width="200">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>所属分类</th>
+          <th>商品图</th>
+          <th>商品名称</th>
+          <th>规格</th>
+          <th>价格</th>
+          <th>销量</th>
+          <th>状态</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr> 
+      </thead>
+      <tbody>
+      <form class="layui-form" id="admin">
+        {volist name="lists" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{$vo.class_name}</td>
+          <td><a href="{$vo.goods_img.img_url}" class="tooltip"><img src="{$vo.goods_img.img_url}" width="20" height="20"></a></td>
+          <td>{$vo.goods_name}</td>
+          <td>{$vo.spec}</td>
+          <td>{$vo.price}元</td>
+          <td>{$vo.sales}</td>
+            <td>{if condition="$vo.status eq 1"}<span class="layui-badge">上架</span>{else /}<span class="layui-badge layui-bg-gray">下架</span>{/if}</td>
+          <td>{$vo.create_time}</td>
+          <td class="operation-menu">
+            <div class="layui-btn-group">
+              <a href="{:url('admin/goods/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>编辑</a>
+                <a class="layui-btn layui-btn-xs layui-btn-primary status" {if condition="$vo.status eq 1"}data-id="0"{else /}data-id="1"{/if} id="{$vo.id}" style="margin-right: 0;font-size:12px;" ><i class="fa {if condition="$vo.status eq 1"}fa-toggle-on{else /}fa-toggle-off{/if}"></i>上架/下架</a>
+                <a href="javascript:;" class="layui-btn layui-btn-xs layui-btn-primary delete" id="{$vo.id}" style="margin-right: 0;font-size:12px;"><i class="layui-icon"></i>删除</a>
+            </div>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    </form>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    {include file="public/foot"}
+      <script type="text/javascript">
+          layui.use('layer', function(){
+              var layer = layui.layer;
+
+
+              $('.status').click(function(){
+                  var id = $(this).attr('id');
+                  var status = $(this).attr('data-id');
+                  layer.confirm('确定要设置?', function(index) {
+                      $.ajax({
+                          url:"{:url('admin/goods/status')}",
+                          type:'post',
+                          data:{id:id,status:status},
+                          success:function(res) {
+                              layer.msg(res.msg);
+                              if(res.code == 1) {
+                                  setTimeout(function(){
+                                      location.href = res.url;
+                                  },1500)
+                              }
+                          }
+                      })
+                  })
+              })
+
+          });
+      </script>
+    <script type="text/javascript">
+
+        $('.delete').click(function(){
+            var id = $(this).attr('id');
+            layer.confirm('确定要删除?', function(index) {
+                $.ajax({
+                    url:"{:url('admin/goods/delete')}",
+                    data:{id:id},
+                    success:function(res) {
+                        layer.msg(res.msg);
+                        if(res.code == 1) {
+                            setTimeout(function(){
+                                location.href = res.url;
+                            },1500)
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+.no-data{
+    text-align: center;
+}
+.page-box{
+    width: 100%;
+    display: flex;
+}
+.page-box .page-info{
+    margin-left: 20px;
+    padding-top: 15px;
+}
+.page-box .totalpage,
+.page-box .totaldata
+{
+    color: red;
+}
+.dragMove{
+    position: absolute;
+    z-index: 100;
+    background: #f2f2f2;
+    cursor: grab;
+}
+.addbg{
+    width: 250px;
+    height: 250px;
+    background: #e7e7e7;
+}
+.showimg-box{
+    display: inline-block;
+    width: 250px;
+    height: 250px;
+    position: relative;
+ }
+.showimg-box .showbgimg{
+    width: 250px;
+    height: 250px;
+}
+.showimg-box .closebtn{
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    z-index: 2;
+    padding: 0;
+    line-height: 0;
+    border-radius: 50%;
+    background: red;
+}
+.showimg-box .closebtn i{
+    font-size: 12px;
+    margin: 0;
+}

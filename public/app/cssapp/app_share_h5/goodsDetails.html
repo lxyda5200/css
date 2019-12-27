@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>探店-商品详情</title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1， user-scalable=no,minimal-ui" servergenerated="true">
+    <link rel="stylesheet" href="./js/swiper-4.5.1/css/swiper.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="../config/config.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/swiper-4.5.1/js/swiper.min.js"></script>
+    <script src="./js/rem.js"></script>
+    <script src="./js/com.js"></script>
+</head>
+<body id="goodsDetails">
+<div class="swiper-container" id="swiper10">
+    <div class="swiper-wrapper" id="banner">
+       <!-- <div class="swiper-slide">
+            <img class="banner-img" src="./img/banner.png" alt="">
+        </div>-->
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
+<div class="page-box">
+    <div class="flex-sb">
+        <span class="goods-price" id="goodsPrice"></span>
+    </div>
+    <div class="goods-name" id="goodsName"></div>
+    <div class="flex-row" style="margin-top: .2rem;">
+<!--        <div class="kd-collect kd">快递：0.00</div>-->
+        <div class="kd-collect collect-num" id="productCollectionNumber"></div>
+    </div>
+</div>
+<div class="graybg"></div>
+<div class="page-box flex-sb flex-ai-center guige" onclick="showLogin('goodsDetail?id')">
+    <div class="left flex-row flex-ai-center">
+        <span class="yixuan">规格</span>
+        <div class="guige-info textSplit1" id="productSpecs"></div>
+    </div>
+    <img src="./img/right.png" class="right-icon">
+</div>
+<div class="graybg"></div>
+<div class="page-box">
+    <div class="flex-sb flex-ai-center comment-title" onclick="showLogin('goodsDetail?id')">
+        <span class="con-tit">用户评价(<span id="commentTotal"></span>)</span>
+        <div class="flex-row flex-ai-center">
+            <span class="font26 gray">全部评价</span>
+            <img src="./img/right.png" class="right-icon">
+        </div>
+    </div>
+    <ul class="comment-box-ul" id="commentBoxUl">
+        <!--<li class="flex-row">
+            <img src="./img/baby.jpg" class="user-ava">
+            <div class="comment-right">
+                <div class="user-name-time flex-ai-center flex-sb">
+                    <span class="font26 gray">某某某</span>
+                    <span class="font22 gray">26小时</span>
+                </div>
+                <div class="comment-content">法拉盛京东方了，阿卡丽时代峰峻刻录机阿斯蒂芬，安防监控了sad发</div>
+                <div class="comment-img-box flex-wrap">
+                    <div class="comment-img-item"><img src="./img/baby.jpg" ></div>
+                    <div class="comment-img-item"><img src="./img/baby.jpg" ></div>
+                    <div class="comment-img-item"><img src="./img/baby.jpg" ></div>
+                </div>
+            </div>
+        </li>-->
+    </ul>
+</div>
+<div class="graybg"></div>
+<div class="page-box flex-sb flex-ai-center store-info" onclick="showLogin('goodsDetail?id')">
+    <div class="left flex-row flex-ai-center">
+        <img src="" class="store-logo" id="storeLogo">
+        <div class="flex-col">
+            <span class="store-name textSplit1" id="storeName"></span>
+            <span class="store-collect" id="storeCollectNum"></span>
+        </div>
+    </div>
+    <div class="jindian-btn">进店看看</div>
+</div>
+<div class="graybg"></div>
+<div class="page-box font30">商品详情</div>
+<div class="goods-content-desc" id="goodsContentDesc"></div>
+<!--  -->
+<div class="fixed-bottom-box flex-row" onclick="showLogin('goodsDetail?id')">
+    <div class="sc-kf flex-jc-center">
+        <div class="items flex-col">
+            <img src="./img/collect.png" class="sc-icon">
+            <span class="n">收藏</span>
+        </div>
+        <div class="items flex-col">
+            <img src="./img/lianxikefu_icon.png" class="kf-icon">
+            <span class="n">联系客服</span>
+        </div>
+    </div>
+    <div class="btn cart-btn">加入购物车</div>
+    <div class="btn pay-btn">直接购买</div>
+</div>
+<!-- logo reg -->
+<div class="w-model">
+    <div class="w-model-box">
+        <img src="./img/delOne.png" id="hiddenModel">
+        <div class="w-model-title">欢迎来到超神宿</div>
+        <div class="w-inp-box">
+            <div class="w-public-inp w-inpOne">
+                <input type="text" placeholder="请输入手机号" id="w-phone">
+            </div>
+            <div class="w-public-inp w-inpTwo">
+                <input type="text" placeholder="短信验证码" id="wCode">
+                <div class="w-code">获取验证码</div>
+            </div>
+        </div>
+        <div class="w-hint"></div>
+        <div class="w-logoIn-btn" id="loginBtn">登录</div>
+    </div>
+</div>
+</body>
+<script>
+    var id = getUrlParams('id');
+    function getData() {
+        ajaxPost('/user_v6/product/productDetail', {
+            product_id: id
+        }).then(res => {
+            if (res.status == 1) {
+                let info = res.data;
+                if(info.product_img.length > 0) {
+                    let str = '';
+                    for(let i in info.product_img) {
+                        str += ` <div class="swiper-slide">
+                                    <img class="banner-img" src="`+httpUrl+info.product_img[i]+`" style="width: 100%">
+                                </div>`;
+                    }
+                    $("#banner").html(str);
+                    bannerSwiper();
+                }
+                $("#goodsPrice").text('￥'+info.price);
+                $("#goodsName").text('￥'+info.product_name);
+                $("#productCollectionNumber").text('收藏量：'+info.product_collection_number);
+                $("#productSpecs").text(info.product_specs);
+
+                $("#goodsContentDesc").html(info.content);
+                $("#commentTotal").text(info.comment_total);
+                $("#storeName").text(info.store_name);
+                $("#storeLogo").attr('src', httpUrl+info.store_logo);
+                $("#storeCollectNum").text(info.store_collection+'人收藏');
+                //
+                if (info.comment_total>0) {
+                    $("#commentBoxUl").show();
+                    let imgs = '';
+                    if (info.comment_detail.comment_img.length> 0) {
+                        for(let i in info.comment_detail.comment_img) {
+                            imgs += `div class="comment-img-item"><img src="`+httpUrl+info.comment_detail.comment_img[i]+`" ></div>`
+                        }
+                    }
+                    let ava = (info.comment_detail.avatar).indexOf('http')>=0?info.comment_detail.avatar:httpUrl+info.comment_detail.avatar;
+                    let li_str = `<li class="flex-row">
+                                    <img src="`+ava+`" class="user-ava">
+                                    <div class="comment-right">
+                                        <div class="user-name-time flex-ai-center flex-sb">
+                                            <span class="font26 gray">`+info.comment_detail.nickname+`</span>
+                                            <span class="font22 gray">`+time(``+info.comment_detail.create_time+``)+`</span>
+                                        </div>
+                                        <div class="comment-content">`+info.comment_detail.content+`</div>
+                                        <div class="comment-img-box flex-wrap">
+                                            `+imgs+`
+                                        </div>
+                                    </div>
+                                </li>`;
+                    $("#commentBoxUl").html(li_str)
+                } else {
+                    $("#commentBoxUl").hide()
+                }
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    $(function(){
+        getData()
+    })
+</script>
+</html>

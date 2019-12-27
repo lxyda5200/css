@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="keywords" content="服饰,美妆,引流,电商,流量,购物,潮流,资讯"><meta name="viewport" content="user-scalable=yes"><title>注册</title><link rel="stylesheet" href="./css/regster.css"><meta name="description" content="四川神龟科技有限公司成立于2017年05月，旗下平台“超神宿APP”，着力于服饰与美妆领域，通过互联网连接实体门店与消费者，为品牌和用户提供优质服务。超神宿对用户进行精准分析，通过线上商品的展示和销售，有效地为实体商家实现线上至线下引流，以及品牌线上新品发布、活动促销和推广宣传等。旗下项目“流量小店”，有效整合各经销商、生产商的资源，以便利店的形式在全国范围内开设直营与加盟店。依托线上平台的庞大流量，将线上平台与线下门店相互结合，为用户提供更加便捷的购物体验。"><!--    <script src="./libs/jquery-1.7.2.min.js"></script>--><!--[if lte IE 9]>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js'></script>
+    <![endif]--></head><body><div class="page-box"><img src="./images/bj_denglu.png" class="page-bg"> <img src="./images/ic_chaoshensu.png" class="logo"><div class="content-box"><div class="title">商家账号注册</div><div class="el-steps-box"><div class="el-steps-item fl active" id="steps1"><div class="el-step-head"><!-- ✔ --><div class="el-step__icon" id="stepsText1">1</div><div class="el-step__line"></div></div><div class="el-step__main"><div class="el-step__title">手机号注册</div></div></div><div class="el-steps-item fl" id="steps2"><div class="el-step-head"><div class="el-step__icon" id="stepsText2">2</div><div class="el-step__line el-step_line_center"></div></div><div class="el-step__main"><div class="el-step__title">验证身份</div></div></div><div class="el-steps-item fl" id="steps3"><div class="el-step-head"><div class="el-step__icon" id="stepsText3">3</div><div class="el-step__line el-step_line_center"></div></div><div class="el-step__main"><div class="el-step__title">设置备用邮箱</div></div></div><div class="el-steps-item fl" id="steps4"><div class="el-step-head"><div class="el-step__icon" id="stepsText4">4</div><div class="el-step__line el-step_line_left"></div></div><div class="el-step__main"><div class="el-step__title">注册成功</div></div></div></div><!--  第一步 --><div class="step-2 none" id="step-1"><div class="info-box"><form><div class="form-item-block"><img src="./images/ic_shoujihao.png" class="phone-icon fl"> <input type="text" name="mobile" placeholder="请输入注册手机号" class="ipt fl" autocomplete="off"></div><div class="form-item-block"><img src="./images/ic_shezhi.png" class="phone-icon fl"> <input type="password" name="password" placeholder="请设置账号登录密码" value="" class="ipt psd-ipt fl" id="paw" autocomplete="off"> <img src="./images/show_password.png" class="see-icon hover bi-icon" id="biPsd"> <img src="./images/ic_zhengyan.png" class="see-icon hover" id="showPsd" style="display: none;"></div><div class="xieyi-box" id="xieYiBox"><img src="./images/ic_gouxuan.png" class="gou-icon" onclick="xyClick(this)"><div class="xieyi-text" onclick="xyClick(this)">点击注册按钮即表示您同意</div><a href="./signIn_agreement.html" class="a-link">《超神宿商家注册协议》</a></div><div class="btn-box"><div class="btn reg-btn hover" onclick="steps1Btn()">注册</div><div class="go-logo-reg" style="width: 360px;"><div class="fr"><span class="gray-color">已有账号</span> <span class="go-login-btn hover"><a href="./enterExplain.html" style="color: #333;">立即登录</a></span></div></div></div></form></div></div><!--  第二步 --><div class="step-2 none" id="step-2"><form><div class="send-code-tips"><img src="./images/ic_tixing.png" class="tixing-icon fl"><div class="code-tips-text fl">已经向您的手机号<span id="telphone"></span>发送了短信验证码，请在60秒之内完成验证。</div></div><div class="info-box"><div class="form-item-block"><img src="./images/ic_shezhi.png" class="phone-icon fl"> <input type="text" name="mobilecode" placeholder="请输入验证码" class="ipt code-ipt fl" autocomplete="off"><div class="time-end" id="djsBox"><span id="timeS">59</span>秒后重新发</div><div class="time-end hover none" id="resetSendBtn">重新发送</div></div><div class="code-tips">*短信验证码为4位纯数字</div><div class="btn-box"><div class="btn reg-btn hover" onclick="steps2Btn()">下一步</div><div class="gotoback" onclick="steps(1)">返回上页</div></div></div></form></div><!--  第三步 --><div class="step-3 none" id="step-3"><form><div class="send-code-tips" style="width: 400px"><img src="./images/ic_tixing.png" class="tixing-icon fl"><div class="code-tips-text fl">为了方便您管理商家账号，请设置备用邮箱。</div></div><div class="info-box"><div class="form-item-block"><img src="./images/ic_youxiang.png" class="phone-icon fl"> <input type="text" name="email" placeholder="请输入备用邮箱" class="ipt fl" autocomplete="off"></div><div class="form-item-block"><img src="./images/ic_shezhi.png" class="phone-icon fl"> <input type="text" name="emailcode" placeholder="请输入邮箱验证码" class="ipt code-ipt fl" autocomplete="off"><div class="time-end time-end2 none" id="djsEmail"><span class="s" id="emailS">59</span>秒后重新发</div><div class="time-end time-end2 hover" id="resetEmailBtn" onclick="sendEmailCode()">发送</div></div><div class="code-tips">*邮箱验证码为6位数字</div><div class="btn-box"><div class="btn reg-btn hover" onclick="steps3Btn()">完成</div></div></div></form></div><!----><!--  第四步 --><div class="step-4 none" id="step-4"><div class="info-box"><div class="success-icon-box"><img src="./images/ic_wancheng.png" class="success-icon"></div><p class="success-tips">恭喜，您已完成商家账号注册</p><div class="btn-box center-btn-box"><a class="btn reg-btn hover" href="./enterExplain.html">立即登录</a></div></div></div><!----></div><div class="reg-footer">© Copyright©2017-2019 超神宿有限公司版权所有</div></div></body><script src="./libs/jquery.min.js"></script><script src="./libsTwo/layer/layer.js"></script><script src="./libs/jquery.placeholder.min.js"></script><script src="./js/http.js"></script><script>// 协议选择
+    function xyClick(_this) {
+        if($(_this).parents('.xieyi-box').hasClass('active')){
+            $(_this).parents('.xieyi-box').find(".gou-icon").attr('src', './images/ic_gouxuan.png');
+            $(_this).parents('.xieyi-box').removeClass('active');
+        } else {
+            $(_this).parents('.xieyi-box').find(".gou-icon").attr('src', './images/ic-gou.png');
+            $(_this).parents('.xieyi-box').addClass('active');
+        }
+    }
+    //显示密码
+    $('#biPsd').mousedown(function(){
+        $('#paw')[0].type = 'text';
+        $(this).hide();
+        $("#showPsd").show();
+    })
+    //隐藏密码
+    $("#showPsd").mouseup(function(){
+        $('#paw')[0].type = 'password';
+        $(this).hide();
+        $("#biPsd").show();
+    })
+    // 当前步骤
+    function steps(now_step) {
+        for(var i = 1 ; i <= 4 ; i++) {
+            if (i < now_step) {
+                $("#steps"+i).addClass('active');
+                $("#stepsText"+i).text('✔');
+            } else if (i == now_step) {
+                $("#steps"+i).addClass('active');
+                $("#stepsText"+i).text(i);
+            } else {
+                $("#steps"+i).removeClass('active');
+                $("#stepsText"+i).text(i);
+            }
+            if (now_step==4) {
+                $("#stepsText4").text('✔');
+            }
+            //
+            if (i==now_step) {
+                $("#step-"+i).show()
+            } else {
+                $("#step-"+i).hide()
+            }
+        }
+    }
+    // 获取手机验证码
+    function getMobilCode(mobile){
+        var loadIndex = layer.load();
+        ajaxPost('/store_v1/index/getVerifyCode',{
+            mobile: mobile,
+            mobile_type: '2', // 是否已注册 1是 2否
+        },function(res){
+            layer.close(loadIndex);
+            if (res.status == 1) {
+                $("#telphone").html(mobile.slice(0,3) + '****' + mobile.slice(7));
+                $("#djsBox").show();
+                $("#resetSendBtn").hide();
+                steps(2);
+                var time_s = 59;
+                var timer = null;
+                timer = setInterval(function(){
+                    time_s--;
+                    if(time_s<0){
+                        clearInterval(timer);
+                        $("#timeS").text(59);
+                        $("#djsBox").hide();
+                        $("#resetSendBtn").show();
+                    }else{
+                        $("#timeS").text(time_s);
+                    }
+                }, 1000)
+            } else {
+                layer.msg(res.msg)
+            }
+        },function(err){
+            layer.close(loadIndex);
+            layer.msg('获取手机验证码接口报错');
+        });
+    }
+    // 1 注册
+    function steps1Btn() {
+        var mobile = $("input[name=mobile]").val();
+        var psd = $("input[name=password]").val();
+        if (!checkType(mobile, 'phone')) {
+            layer.msg('请输入正确的手机号');
+            return false;
+        }
+        if (!checkType(psd, 'psd')) {
+            layer.msg('密码由字母或数字组成的8-16字符');
+            return false;
+        }
+        if (!$("#xieYiBox").hasClass('active')) {
+            layer.msg('请勾选商家帐号注册协议');
+            return false;
+        }
+        getMobilCode(mobile)
+    }
+    // 2 下一步
+    function steps2Btn() {
+        var mobilePhone = $("input[name=mobile]").val();
+        var mobileCode = $("input[name=mobilecode]").val();
+        if (!mobileCode || mobileCode.length !=4) {
+            layer.msg('请输入正确的验证码');
+            return false
+        }
+        ajaxPost('/store_v1/shop/chen_code', {
+            mobile: mobilePhone,
+            code: mobileCode,
+            type: 1 // 1短信 2邮箱
+        }, function(res) {
+            if(res.status == 1) {
+                steps(3);
+            } else {
+                layer.msg(res.msg)
+            }
+        }, function(){
+            alert('接口有误')
+        });
+        // steps(3);
+    }
+    // 获取邮箱code
+    function sendEmailCode() {
+        var email = $("input[name=email]").val();
+        if(!checkType(email, 'email')) {
+            layer.msg('请输入正确的邮箱地址');
+            return false;
+        }
+        var loadIndex = layer.load();
+        ajaxPost('/store_v1/index/getVerifyemail',{
+            email: email
+        },function(res){
+            layer.close(loadIndex);
+            if (res.status == 1) {
+                $("#djsEmail").show();
+                $("#resetEmailBtn").hide();
+                var email_s = 59;
+                var email_timer = null;
+                email_timer = setInterval(function(){
+                    email_s--;
+                    if(email_s<0){
+                        clearInterval(email_timer);
+                        $("#emailS").text(59);
+                        $("#djsEmail").hide();
+                        $("#resetEmailBtn").show();
+                    }
+                    $("#emailS").text(email_s);
+                }, 1000)
+            } else {
+                layer.msg(res.msg)
+            }
+        },function(err){
+            layer.close(loadIndex);
+            alert('获取邮箱验证码接口报错');
+        })
+    }
+    // 4 完成
+    function steps3Btn() {
+        var emails = $("input[name=email]").val();
+        var emailcode = $("input[name=emailcode]").val();
+        var phone = $("input[name=mobile]").val();
+        var pasd = $("input[name=password]").val();
+        var phonecode = $("input[name=mobilecode]").val();
+        if(!checkType(emails, 'email')) {
+            layer.msg('请输入正确的邮箱地址');
+            return false;
+        }
+        if(!emailcode) {
+            layer.msg('请输入邮箱验证码');
+            return false;
+        }
+        var loadIndex = layer.load();
+        ajaxPost('/store_v1/Shop/register',{
+            email: emails,
+            emailcode: emailcode,
+            mobile: phone,
+            password: pasd,
+            code: phonecode,
+        },function(res){
+            layer.close(loadIndex);
+            if (res.status == 1) {
+                steps(4);
+            } else {
+                layer.msg(res.msg)
+            }
+        },function(err){
+            layer.close(loadIndex);
+            alert('注册接口报错')
+        })
+    }
+    $(function(){
+        steps(1);
+        // 兼容ie placeholder
+        $('input,textarea').placeholder();
+        // 重新获取手机验证码
+        $("#resetSendBtn").click(function(){
+            var mobiles = $("input[name=mobile]").val();
+            getMobilCode(mobiles)
+        })
+    })</script></html>

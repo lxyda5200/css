@@ -1,0 +1,16 @@
+stages:
+- deploy
+deploy:
+  stage: deploy
+  script:
+  - mkdir gitpush
+  - git clone http://192.168.124.226/oneming/SgCaoSenWeb.git gitpush
+  - cd gitpush
+  - git remote rm origin
+  - git remote add origin root@121.196.214.146:/usr/share/nginx/html/gitcsswx/css
+  - git push  origin master -f
+  only:
+  - master
+  tags:
+  - SgCaoSenWeb
+  

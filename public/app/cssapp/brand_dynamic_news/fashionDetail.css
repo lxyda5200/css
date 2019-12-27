@@ -1,0 +1,74 @@
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form,img, div,input,a{ 
+	margin:0; padding:0; 
+}
+ul,ol{
+	list-style: none;
+}
+a{
+	text-decoration: none;
+}
+a,a:hover,a:active,a:visited,a:link,a:focus{
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+    outline:none;
+    background: none;
+    text-decoration: none;
+}
+img{
+	border: 0;
+	vertical-align: middle;
+}
+input{
+	border: 0;
+	outline-style: none;
+}
+button{
+	outline-style: none;
+	border: 0;
+}
+.swiper-container{
+	position: relative;
+	height: 5.68rem;
+}
+.swiper-container a img{
+	display: block;
+	width: 100%
+}
+.swiper-container a video{
+	width:100%;
+	height:100%;
+	object-fit: fill
+}
+.swiper-container p{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 0.1rem 0.08rem 0.07rem 0.15rem;
+	background-color: #EC6664;
+	border-top-left-radius: 0.04rem;
+	opacity: 0.7;
+	color: #fff;
+	font-size: 0.26rem;
+	line-height: 0.18rem;
+	z-index: 999
+}
+.content-box{
+	padding: 0.44rem 0.27rem 0
+}
+.w-publicOne{
+	text-align: center;
+	line-height: 0.48rem;
+}
+.w-title{
+	font-size: 0.36rem;
+}
+.w-create-time{
+	padding: 0.18rem 0 0.4rem;
+	font-size: 0.24rem;
+	color: #999;
+}
+.w-rich-content{
+	font-size: .3rem;
+	text-align: justify;
+	text-align-last: left;
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+        .serch:after{
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">买单列表</li>
+            <!-- <li><a href="{:url('admin/goods/publish')}" class="a_menu">新增商品</a></li>-->
+        </ul>
+    </div>
+    <form class="layui-form serch" action="{:url('MaiDan/lists')}" method="post" id="myform">
+        <div class="layui-form-item" style="float: left;">
+            <div class="layui-input-inline">
+                <input type="text" name="store_name" lay-verify="title" value="{$param.store_name}" autocomplete="off" placeholder="请输入商家名称" class="layui-input layui-btn-sm">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="order_sn" lay-verify="title" value="{$param.order_sn}" autocomplete="off" placeholder="请输入买单流水号" class="layui-input layui-btn-sm">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" name="user_mobile" lay-verify="title" value="{$param.user_mobile}" autocomplete="off" placeholder="请输入用户手机号" class="layui-input layui-btn-sm">
+            </div>
+
+            <div class="layui-input-inline">
+                <input type="text" value="{$param.start_time}" name="start_time" placeholder="开始时间" class="layui-input" id="start_time">
+            </div>
+            <div class="layui-input-inline">
+                <input type="text" value="{$param.end_time}" name="end_time" placeholder="结束时间" class="layui-input" id="end_time">
+            </div>
+
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">立即提交</button>
+        </div>
+    </form>
+
+    <div class="wrap-count">
+    <span style="line-height: 30px;"> 买单总金额：<span style="color: red">{$total_maidan_yj}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 买单总支付金额：<span style="color: red">{$total_maidan_pay}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 商家收入总金额：<span style="color: red">{$total_store_price}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 平台总提成金额：<span style="color: red">{$total_platform_profit}</span>元</span>
+    </div>
+
+    <div class="wrap-count">
+    <span style="line-height: 30px;"> 买单金额：<span style="color: red">{$maidan_yj}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 买单支付金额：<span style="color: red">{$maidan_pay}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 商家收入金额：<span style="color: red">{$store_price}</span>元</span>
+    <span style="line-height: 30px;margin-left: 50px"> 平台提成金额：<span style="color: red">{$platform_profit}</span>元</span>
+    </div>
+
+    <table class="layui-table" lay-size="sm">
+        <colgroup>
+            <col width="60">
+            <col width="250">
+            <col width="150">
+            <col width="180">
+            <col width="100">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="100">
+            <col width="100">
+            <col width="100">
+<!--            <col width="150">-->
+        </colgroup>
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>商家名称</th>
+            <th>买单流水号</th>
+            <th>买单时间</th>
+            <th>用户电话</th>
+            <th>商品金额</th>
+<!--            <th>商家优惠</th>-->
+<!--            <th>平台优惠</th>-->
+            <th>优惠券金额</th>
+            <th>商家折扣</th>
+            <th>平台会员折扣</th>
+            <th>平台扣点</th>
+            <th>平台提成</th>
+            <th>实收金额</th>
+            <th>商家收益</th>
+            <th>平台补贴</th>
+            <th>平台收益</th>
+            <th>结转状态</th>
+<!--            <th>操作</th>-->
+        </tr>
+        </thead>
+        <tbody>
+            {volist name="lists" id="vo"}
+            <tr>
+                <td>{$i}</td>
+                <td>{$vo.store_name}</td>
+                <td>{$vo.order_sn}</td>
+                <td>{$vo.pay_time|date='Y-m-d H:i',###}</td>
+                <td>{$vo.user_mobile}</td>
+                <td>{$vo.price_yj}</td>
+<!--                <td>{$vo.store_policy}元</td>-->
+<!--                <td>{$vo.platform_policy}元</td>-->
+                <td>{$vo.coupon_money}</td>
+                <td>{$vo.discount}折</td>
+                <td>{$vo.discount_platform}折</td>
+                <td>{$vo.maidan_deduct}%</td>
+                <td>{$vo.platform_profit}</td>
+                <td>{$vo.price_maidan}</td>
+                <td>{$vo.price_store}</td>
+                <td>{$vo.platform_policy}</td>
+                <td>{$vo.platform_profit - $vo.platform_policy}</td>
+                <td>{if condition="$vo['is_finish'] eq 1"}已结转{else}未结转{/if}</td>
+<!--                <td class="operation-menu">-->
+<!--                    <div class="layui-btn-group">-->
+<!--                        <a href="{:url('admin/product_order/publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-eye" aria-hidden="true"></i>查看详情</a>-->
+<!--                    </div>-->
+<!--                </td>-->
+            </tr>
+            {/volist}
+        </tbody>
+    </table>
+    </form>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    {include file="public/foot"}
+</div>
+</body>
+</html>
+<script>
+
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end_time' //指定元素
+        });
+
+        laydate.render({
+            elem: '#start_time' //指定元素
+        });
+    });
+
+</script>

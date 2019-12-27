@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>店铺主页</title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1， user-scalable=no,minimal-ui" servergenerated="true">
+    <link rel="stylesheet" href="./js/swiper-4.5.1/css/swiper.min.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="../config/config.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/swiper-4.5.1/js/swiper.min.js"></script>
+    <script src="./js/rem.js"></script>
+    <script src="./js/com.js"></script>
+</head>
+<body id="storeIndex">
+<div class="page-box">
+    <div class="header flex-row">
+        <div class="left">
+            <img src="" class="store-logo" id="storeLogo" onclick="showLogin('store?store_id')">
+            <!--<img src="./img/lianximaijia_icon.png" class="lxmj-icon">-->
+        </div>
+        <div class="right flex-col">
+            <div class="store-name textSplit1" id="storeName"></div>
+            <div class="flex-sb">
+                <div class="flex-col" style="max-width: 70%">
+                    <div class="fs">粉丝 <span class="fs-num" id="fansNum"></span></div>
+                    <div class="address textSplit1" id="storeAddress"></div>
+                </div>
+                <div class="guanzhu-btn" onclick="showLogin('store?store_id')">+ 关注</div>
+            </div>
+        </div>
+    </div>
+    <div class="two-btn-box flex-sb" id="brandHtml">
+       <!-- <div class="btn">品牌故事</div>
+        <div class="btn">时尚动态</div>-->
+    </div>
+    <div class="swiper-container radius4" id="swiper10" style="margin-bottom: .3rem;" onclick="showLogin('store?store_id')">
+        <div class="swiper-wrapper" id="storeBanner">
+            <!--<div class="swiper-slide">
+                <img class="banner-img" src="./img/banner.png" >
+            </div>-->
+        </div>
+        <div class="swiper-pagination" style="bottom: 2px;"></div>
+    </div>
+    <!--<div class="box-title">买单</div>
+    <div class="maidan-box flex-sb radius4">
+       &lt;!&ndash; <div class="left flex-ai-center">
+            <img src="./img/maidan.png" class="md-icon">
+            <span class="font28">店铺活动中~</span>
+        </div>&ndash;&gt;
+        <div class="left flex-ai-center">
+            <span class="z-num">9</span>
+            <span class="z-text">折</span>
+            <div class="vip-z radius4">会员折上8折</div>
+        </div>
+        <div class="right flex-ai-center">
+            <span class="gomd-font">去买单</span>
+            <img src="./img/go_icon.png" class="red-right-icon">
+        </div>
+    </div>-->
+</div>
+<div class="yhj-box" id="yhjBox">
+    <div class="box-title" style="padding-left: .3rem;">优惠券</div>
+    <div class="yju-ul-box">
+        <ul class="yhj-ul scroll-x" id="yhjUl">
+            <!--<li>
+                <div class="box flex-ai-center">
+                    <div class="left flex-row">
+                        <span class="price">100</span>
+                        <span class="dw">￥</span>
+                    </div>
+                    <div class="right flex-col">
+                        <span class="xxj">店铺线下优惠券</span>
+                        <span class="gray ms">满50元可用</span>
+                    </div>
+                </div>
+                <div class="btn">点<br>击<br>领<br>取</div>
+            </li>-->
+        </ul>
+    </div>
+</div>
+<div class="page-box">
+    <div class="list-tab" onclick="showLogin('store?store_id')">
+        <span class="text active">商品</span>
+        <span class="text">动态</span>
+        <span class="text">搭配</span>
+    </div>
+    <ul class="list-ul flex-sb flex-wrap" id="goodsUl">
+        <!--<li class="list-items flex-col">
+            <div class="bq">满<br>减</div>
+            <div class="img-box">
+                <img src="./img/baby.jpg" class="img">
+            </div>
+            <div class="desc-box">
+                <div class="name textSplit2">秋季新款女士羊毛大衣 潮流保暖外套… 拷贝</div>
+                <div class="price-box flex-sb">
+                    <div class="p-left flex-ai-center">
+                        <span class="price">￥221</span>
+                        <del class="yuan-price">￥621</del>
+                    </div>
+                    <img src="./img/gouwu.png" class="cart-icon">
+                </div>
+            </div>
+        </li>-->
+    </ul>
+</div>
+<!-- logo reg -->
+<div class="w-model">
+    <div class="w-model-box">
+        <img src="./img/delOne.png" id="hiddenModel">
+        <div class="w-model-title">欢迎来到超神宿</div>
+        <div class="w-inp-box">
+            <div class="w-public-inp w-inpOne">
+                <input type="text" placeholder="请输入手机号" id="w-phone">
+            </div>
+            <div class="w-public-inp w-inpTwo">
+                <input type="text" placeholder="短信验证码" id="wCode">
+                <div class="w-code">获取验证码</div>
+            </div>
+        </div>
+        <div class="w-hint"></div>
+        <div class="w-logoIn-btn" id="loginBtn">登录</div>
+    </div>
+</div>
+</body>
+<script>
+    var id = getUrlParams('store_id'); // 76 //
+    function getStoreDetails() {
+        ajaxPost('/user_v6/product/storeDetail', {
+            store_id: id
+        }).then(res => {
+            if (res.status == 1) {
+                let info = res.data;
+                $("#storeLogo").attr('src', httpUrl+info.cover);
+                $("#storeName").text(info.store_name);
+                $("#fansNum").text(info.fans_number);
+                $("#storeAddress").text(info.province+info.city+info.area+info.address);
+                if(info.store_banner.length > 0){
+                    let str = '';
+                    for(let i in info.store_banner){
+                        str += `<div class="swiper-slide" style="width: 100%;height: 2rem;">
+                                    <img class="banner-img" src="`+httpUrl+info.store_banner[i].cover+`" style="width: 100%;">
+                                </div>`
+                    }
+                    $("#storeBanner").html(str);
+                    bannerSwiper();
+                } else {
+                    $("#swiper10").hide()
+                }
+                if (info.brand_story.length > 0) {
+                    let str = '';
+                    for(let i in info.brand_story) {
+                        if (info.brand_story[i].is_show == 1) {
+                            str += '<div class="btn" onclick="showLogin(\'store?store_id\')">'+info.brand_story[i].title+'</div>'
+                        }
+                    }
+                    $("#brandHtml").html(str)
+                }
+                if (info.coupons.length > 0) {
+                    let str = '';
+                    for(let i in info.coupons) {
+                        let active = info.coupons[i].is_get_coupon!=0?'active':'';
+                        let text = info.coupons[i].is_get_coupon!=0?"点<br>击<br>领<br>取":"已<br>领<br>取";
+                        str += `<li class="`+active+`" onclick="showLogin('store?store_id')">
+                                    <div class="box flex-ai-center">
+                                        <div class="left flex-row">
+                                            <span class="price">`+info.coupons[i].coupon_money+`</span>
+                                            <span class="dw">￥</span>
+                                        </div>
+                                        <div class="right flex-col">
+                                            <span class="xxj">`+info.coupons[i].coupon_name+`</span>
+                                            <span class="gray ms">满`+info.coupons[i].satisfy_money+`元可用</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn">`+text+`</div>
+                                </li>`
+                    }
+                    $("#yhjUl").html(str)
+                } else {
+                    $("#yhjBox").hide()
+                }
+
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    function getStoreGoods() {
+        ajaxPost('/user_v6/product/productList', {
+            store_id: id,
+            size: 20
+        }).then(res => {
+            if (res.status == 1) {
+                let list = res.data.list;
+                let str = '';
+                if (list.length > 0) {
+                    for(let i in list) {
+                        str += `<li class="list-items flex-col" onclick="showLogin('store?store_id')">
+                                    <!--<div class="bq">满<br>减</div>-->
+                                    <div class="img-box">
+                                        <img src="`+httpUrl+list[i].product_img+`" class="img">
+                                    </div>
+                                    <div class="desc-box">
+                                        <div class="name textSplit2">`+list[i].product_name+`</div>
+                                        <div class="price-box flex-sb">
+                                            <div class="p-left flex-ai-center">
+                                                <span class="price">￥`+list[i].price+`</span>
+                                                <!--<del class="yuan-price">￥621</del>-->
+                                            </div>
+                                            <img src="./img/gouwu.png" class="cart-icon">
+                                        </div>
+                                    </div>
+                                </li>`;
+                    }
+                } else {
+                    str = '<li class="no-data">暂无数据</li>'
+                }
+                $("#goodsUl").html(str)
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    $(function(){
+        getStoreDetails();
+        getStoreGoods();
+    })
+</script>
+</html>

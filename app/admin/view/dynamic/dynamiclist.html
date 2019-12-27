@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>门店动态列表</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="today-table-header">
+        <form class="layui-form layui-inline">
+            <div class="layui-inline">
+                <label class="layui-form-label">动态ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="dynamic_id" class="layui-input" placeholder="请输入动态ID">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商家名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" class="layui-input" placeholder="请输入商家名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">发布时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="start_time" lay-verify="datetime" placeholder="开始时间" autocomplete="off" id="starDate" class="layui-input">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="end_time" lay-verify="datetime" placeholder="结束时间" autocomplete="off" id="endDate" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>动态ID</th>
+            <th>商家名称</th>
+            <th>经营品牌</th>
+            <th>动态封面</th>
+            <th>动态标题</th>
+            <th>内容描述</th>
+            <th>门店地址</th>
+            <th>话题类型</th>
+            <th>发布时间</th>
+            <th>状态(上架/下架)</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 查看详情 -->
+<div class="layer-box-page" id="detailsLayer">
+    <input type="hidden" name="dynamicId">
+    <div class="details-title">动态详情</div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>动态标题</th>
+            <th>动态ID</th>
+            <th>发布商家</th>
+            <th>所属品牌</th>
+            <th>话题标签</th>
+            <th>发布时间</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr id="detailsTr1"></tr>
+            <tr>
+                <td class="fontbold" colspan="3">内容</td>
+                <td class="fontbold" colspan="2">动态图片</td>
+                <td class="fontbold" colspan="1">动态视频</td>
+            </tr>
+            <tr>
+                <td colspan="3" id="description"></td>
+                <td colspan="2">
+                    <div id="dynamicImgs"></div>
+                </td>
+                <td colspan="1">
+                    <div id="dynamicVideos"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="details-title">动态数据统计</div>
+    <table class="layui-table">
+        <tr class="fontbold">
+            <td>今日曝光量</td>
+            <td>今日浏览量</td>
+            <td>今日转发量</td>
+            <td>今日点赞数</td>
+            <td>今日评论数</td>
+            <td>今日导航探店数</td>
+        </tr>
+        <tr id="todayData">
+        </tr>
+        <tr class="fontbold">
+            <td>总曝光量</td>
+            <td>总浏览量</td>
+            <td>总转发量</td>
+            <td>总点赞数</td>
+            <td>总评论数</td>
+            <td>总导航探店数</td>
+        </tr>
+        <tr id="totalData">
+        </tr>
+    </table>
+    <div class="details-title">数据统计视图</div>
+    <div class="echart-box">
+        <div class="echart-head">
+            <div class="day-box" id="selectDay">
+                <div class="day active">最近三天</div>
+                <div class="day">最近一周</div>
+            </div>
+            <form class="layui-form">
+                <div class="layui-inline">
+                    <label class="layui-form-label">时间筛选</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="start_time" lay-verify="date" placeholder="开始时间" autocomplete="off" id="echartStarDate" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="end_time" lay-verify="date" placeholder="结束时间" autocomplete="off" id="echartEndDate" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <button class="layui-btn" lay-submit lay-filter="formEchartSubmit">查询</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- 统计图 折线图 -->
+        <div id="echartMain" style="width: 1100px;height: 450px;margin: 15px auto 0;"></div>
+    </div>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script src="__WZH__/js/echarts.min.js"></script>
+<script>
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let obj = {
+        getDatalist: function(page, dynamic_id, keywords, start_time, end_time, isPage) {
+            ajaxPost('/admin/dynamic_api/dynamicList', {
+                page: page,
+                dynamic_id: dynamic_id,
+                keywords: keywords,
+                start_time: start_time,
+                end_time: end_time
+            }).then(res => {
+                // console.log(res);
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let isChecked = datalist[i].status==1?"checked":"";
+                        tr += '<tr>\n' +
+                            '     <td>'+datalist[i].id+'</td>\n' +
+                            '     <td>'+datalist[i].store_name+'</td>\n' +
+                            '     <td>'+datalist[i].brand_name+'</td>\n' +
+                            '     <td><img src="'+httpUrl+datalist[i].cover+'" style="width: 100px;"></td>\n' +
+                            '     <td>'+datalist[i].title+'</td>\n' +
+                            '     <td style="max-width: 300px;">'+datalist[i].description+'</td>\n' +
+                            '     <td>'+datalist[i].address+'</td>\n' +
+                            '     <td>'+datalist[i].topic+'</td>\n' +
+                            '     <td>'+datalist[i].create_time+'</td>\n' +
+                            '     <td>\n' +
+                            '         <form class="layui-form" action="" lay-filter="checkboxForm">\n' +
+                            '             <div class="layui-input-block" style="margin-left: 0;">\n' +
+                            '                 <input type="checkbox" name="switch" lay-filter="showHide" value="'+datalist[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                            '             </div>\n' +
+                            '         </form>\n' +
+                            '     </td>\n' +
+                            '     <td style="width: 200px;">\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm" id="'+datalist[i].id+'" onclick="detailsFn(this)">\n' +
+                            '             <i class="layui-icon">&#xe642;</i>查看详情\n' +
+                            '         </button>\n' +
+                            '         <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft" id="'+datalist[i].id+'" onclick="removeDataFn(this)">\n' +
+                            '             <i class="layui-icon">&#xe640;</i>删除\n' +
+                            '         </button>\n' +
+                            '     </td>\n' +
+                            ' </tr>';
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/15));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 15
+                                ,theme: '#FF5722'
+                                ,jump: function(objs, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = objs.curr;
+                                        obj.getDatalist(objs.curr, dynamic_id, keywords, start_time, end_time, false);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+                // checkbox
+                form.render('checkbox', 'checkboxForm');
+                form.on('switch(showHide)', function(data){
+                    // let load = layer.load()
+                    ajaxPost('/admin/dynamic_api/editDynamicStatus', {
+                        dynamic_id: data.value,
+                        status: data.elem.checked ? 1 : -1
+                    }).then((res) => {
+                        // layer.close(load);
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                });
+
+            }).catch(err => {});
+
+        }
+    };
+    // 删除
+    function removeDataFn(_this) {
+        let id = $(_this).attr("id");
+        layer.confirm('确定要删除该动态数据吗？', {title: '提示'}, function(){
+            // 确认
+            ajaxPost('/admin/dynamic_api/delDynamic', {
+                dynamic_id: id
+            }).then((res) => {
+                layer.msg('删除成功', {time: 1500}, function(){
+                    let dynamic_id = $("input[name=dynamic_id]").val();
+                    let keywords = $("input[name=keywords]").val();
+                    let start_time = $("input[name=start_time]").val();
+                    let end_time = $("input[name=end_time]").val();
+                    obj.getDatalist(now_page, dynamic_id, keywords, start_time, end_time, false);
+                })
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        },function(){
+            // 取消
+        })
+    }
+    // 动态详情
+    function detailsFn(_this) {
+        let id = $(_this).attr("id");
+        ajaxPost('/admin/dynamic_api/dynamicDetail',{
+            dynamic_id: id
+        }).then(res => {
+            $("input[name=dynamicId]").val(id);
+            let dynamic_info = res.dynamic_info;
+            let tr1 = '<td>'+dynamic_info.title+'</td>' +
+                      '<td>'+dynamic_info.id+'</td>' +
+                      '<td>'+dynamic_info.store_name+'</td>' +
+                      '<td>'+dynamic_info.brand_name+'</td>'+
+                      '<td>'+dynamic_info.topic_title+'</td>'+
+                      '<td>'+dynamic_info.create_time+'</td>';
+            $("#detailsTr1").html(tr1);
+            $("#description").html(dynamic_info.description);
+            // 图片
+            if (dynamic_info.dynamic_imgs.length > 0) {
+                $("#dynamicImgs").show();
+                let imgs = '';
+                for(let i in dynamic_info.dynamic_imgs) {
+                    imgs += '<img src="'+httpUrl+dynamic_info.dynamic_imgs[i].img_url+'" />'
+                }
+                $("#dynamicImgs").html(imgs);
+            } else {
+                $("#dynamicImgs").hide()
+            }
+            // 视频
+            if (dynamic_info.dynamic_videos.length > 0) {
+                $("#dynamicVideos").show();
+                let videos = '';
+                for(let i in dynamic_info.dynamic_videos) {
+                    videos += '<video class="videos" src="'+dynamic_info.dynamic_videos[i].img_url+'" poster="'+dynamic_info.dynamic_videos[i].cover+'" controls></video>'
+                }
+                $("#dynamicVideos").html(videos);
+            } else {
+                $("#dynamicVideos").hide()
+            }
+            // 数据统计
+            let today_data = res.today_data;
+            let today_str = '<td>'+today_data.today_look+'</td>' +
+                            '<td>'+today_data.today_visit+'</td>'+
+                            '<td>'+today_data.today_share+'</td>'+
+                            '<td>'+today_data.today_praise+'</td>'+
+                            '<td>'+today_data.today_comment+'</td>'+
+                            '<td>'+today_data.today_navigation+'</td>';
+            $("#todayData").html(today_str);
+            let total_data = res.total_data;
+            let total_str = '<td>'+total_data.total_look+'</td>' +
+                '<td>'+total_data.total_visit+'</td>'+
+                '<td>'+total_data.total_share+'</td>'+
+                '<td>'+total_data.total_praise+'</td>'+
+                '<td>'+total_data.total_comment+'</td>'+
+                '<td>'+total_data.total_navigation+'</td>';
+            $("#totalData").html(total_str);
+            //
+            echartData(id, 1, 3, '', '');
+            let open = layer.open({
+                type: 1,
+                content: $('#detailsLayer'),
+                title: '动态详情',
+                area: ['95%', '90%'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    $("input[name=dynamicId]").val("");
+                    $("#selectDay>div.day").eq(0).addClass('active').siblings().removeClass('active');
+                    $("#echartStarDate").val("");
+                    $("#echartEndDate").val("");
+                }
+            })
+        }).catch(err => {});
+
+    }
+    // 获取统计图数据
+    function echartData(dynamic_id, type, days, start_time, end_time) {
+        ajaxPost('/admin/dynamic_api/dynamicData', {
+            dynamic_id: dynamic_id,
+            type: type, // 搜索类型:1.按最近天数；2.按时间区间
+            days: days, // 最近天数
+            start_time: start_time,
+            end_time: end_time
+        }).then(res => {
+            // console.log(res);
+            let list = res.data_list;
+            let xData = [];
+            let visitNum = []; // 浏览
+            let shareNum = []; // 转发
+            let navigationNum = []; // 导航探店
+            $.each(list, function(key, value){
+                xData.push(key);
+                visitNum.push(value.visit_num);
+                shareNum.push(value.share_num);
+                navigationNum.push(value.navigation_num);
+            });
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('echartMain'));
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '数据统计视图'
+                },
+                tooltip : {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data:['浏览量','转发量','导航探店数']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : xData
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value'
+                    }
+                ],
+                series : [
+                    {
+                        name:'浏览量',
+                        type:'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: visitNum
+                    },
+                    {
+                        name:'转发量',
+                        type:'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: shareNum
+                    },
+                    {
+                        name:'导航探店数',
+                        type:'line',
+                        stack: '总量',
+                        areaStyle: {},
+                        data: navigationNum
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+        }).catch(err => {})
+    }
+    $(function() {
+        obj.getDatalist(1, '', '', '', '', true);
+        layui.use(["form", "upload", "laydate"], function(){
+            form = layui.form;
+            upload = layui.upload;
+            let laydate = layui.laydate;
+            laydate.render({
+                elem: '#starDate'
+                ,type: 'datetime'
+            });
+            laydate.render({
+                elem: '#endDate'
+                ,type: 'datetime'
+            });
+            laydate.render({
+                elem: '#echartStarDate'
+            });
+            laydate.render({
+                elem: '#echartEndDate'
+            });
+            // 列表搜索
+            form.on("submit(formSearchList)", function(data){
+                // console.log(data);
+                let field = data.field;
+                now_page = 1;
+                obj.getDatalist(1, field.dynamic_id, field.keywords, field.start_time, field.end_time, true);
+                return false
+            });
+            // 统计图按时间查询
+            form.on("submit(formEchartSubmit)", function(data) {
+                // console.log(data);
+                let id = $("input[name=dynamicId]").val();
+                echartData(id, 2, '', data.field.start_time, data.field.end_time);
+                return false;
+            })
+        });
+        // 选择天数 筛选统计图数据
+        $("#selectDay>div.day").click(function() {
+            let index = $("#selectDay>div.day").index(this);
+            $(this).addClass('active').siblings().removeClass('active');
+            let day = index == 0 ? 3 : 7;
+            let id = $("input[name=dynamicId]").val();
+            echartData(id, 1, day, '', '');
+        })
+
+    })
+</script>
+</html>

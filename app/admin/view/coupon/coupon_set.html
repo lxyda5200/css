@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style>
+        #satisfy_money_span{
+            display: inline-block;
+            position: relative;
+            top:5px;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('admin/coupon/coupon_set')}" class="a_menu">优惠券赠送规则</a></li>
+        </ul>
+    </div>
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin">
+        <div class="layui-form-item">
+            <label class="layui-form-label">操作</label>
+            <div class="layui-input-block">
+                <select name="" lay-search="" lay-filter="aihao" disabled>
+                    <option value="">注册赠送优惠券</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开启</label>
+            <div class="layui-input-block">
+                <input type="radio" name="is_open" value="1" title="开启" {if condition="$data.is_open eq 1"}checked="checked"{/if}>
+                    <input type="radio" name="is_open" value="0"  title="关闭" {if condition="$data.is_open eq 0"}checked="checked"{/if}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券类型</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input type="radio" name="a" value="1" title="限制购物金额（有门槛）" {if condition="$data.satisfy_money neq 0"}checked="checked"{/if}>
+                <span id="satisfy_money_span">全场满<input type="text" name="satisfy_money" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" value="{$data.satisfy_money}" style="width:68px;text-align: center"> 元可使用</span>
+                <input type="radio" name="a" value="0" title="不限购物金额（无门槛）" {if condition="$data.satisfy_money eq 0"}checked="checked"{/if}>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券名称</label>
+            <div class="layui-input-inline">
+                <input name="coupon_name" style="width: 400px;" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" type="text" value="{$data.coupon_name}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">优惠券金额</label>
+            <div class="layui-input-inline">
+                <!--<input name="coupon_money" style="width: 150px;text-align: center" lay-verify="required|number" autocomplete="off" class="layui-input" type="text" value="{$data.coupon_money}"> 元-->
+                <input name="coupon_money" style="width: 150px;text-align: center" lay-verify="required|number" autocomplete="off" class="layui-input" type="text" value="{$data.coupon_money}" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"> 元
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">有效天数</label>
+            <div class="layui-input-inline">
+                <input name="days" style="width: 150px;text-align: center" lay-verify="required|number"  autocomplete="off" class="layui-input" type="text" value="{$data.days}" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"> 天
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">赠送数量</label>
+            <div class="layui-input-inline">
+                <input name="zengsong_number" style="width: 150px;text-align: center" lay-verify="required|number"  autocomplete="off" class="layui-input" type="text" value="{$data.zengsong_number}" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"> 张
+            </div>
+        </div>
+
+
+
+
+        {notempty name="$data"}
+        <input type="hidden" name="id" value="{$data.id}">
+        {/notempty}
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="admin">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script>
+        var message;
+        layui.config({
+            base: '__JS__/',
+            version: '1.0.1'
+        }).use(['app', 'message'], function() {
+            var app = layui.app,
+                $ = layui.jquery,
+                layer = layui.layer;
+            //将message设置为全局以便子页面调用
+            message = layui.message;
+            //主入口
+            app.set({
+                type: 'iframe'
+            }).init();
+        });
+    </script>
+    <script>
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form;
+            $(window).on('load', function() {
+                form.on('submit(admin)', function(data) {
+                    $.ajax({
+                        url:"{:url('admin/coupon/coupon_set')}",
+                        data:$('#admin').serialize(),
+                        type:'post',
+                        async: false,
+                        success:function(res) {
+                            if(res.code == 1) {
+                                layer.alert(res.msg, function(index){
+                                    location.href = res.url;
+                                })
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    })
+                    return false;
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

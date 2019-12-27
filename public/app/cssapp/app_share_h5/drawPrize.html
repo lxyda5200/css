@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>抽奖</title>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1， user-scalable=no,minimal-ui" servergenerated="true">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="../config/config.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/rem.js"></script>
+    <script src="./js/com.js"></script>
+</head>
+<body>
+<img src="./img/cj_bj.png" style="width: 100%;">
+<div class="draw-container">
+    <div class="title-img-box">
+        <!--<div class="prize-num">奖品数量 100个</div>-->
+        <div class="guize-btn" onclick="showLogin('luckDraw')">活动规则</div>
+    </div>
+    <div class="draw-status">
+        <div class="status" id="status1">距活动开始 00:00:00</div>
+        <div class="status" id="status2">
+            还有
+            <span class="draw-num">3</span>
+            次抽奖机会
+        </div>
+        <div class="status" id="status3">奖品已抽完</div>
+    </div>
+    <!-- 大转盘box -->
+    <div class="dzp-box">
+        <img src="./img/ic_jh.png" class="jh-icon">
+        <img src="./img/ic_cj.png" class="cj-btn" onclick="showLogin('luckDraw')">
+        <div class="items-box">
+            <div class="items flex-col item1">
+                <div class="name">谢谢参与</div>
+                <img src="./img/ic_hs.png" class="hs-icon">
+            </div>
+            <div class="items flex-col item2">
+                <div class="name">平台券</div>
+                <div class="pt-icon">￥30</div>
+            </div>
+            <div class="items flex-col item3">
+                <div class="name">谢谢参与</div>
+                <img src="./img/ic_hs.png" class="hs-icon">
+            </div>
+            <div class="items flex-col item4">
+                <div class="name">商品券</div>
+                <div class="pt-icon">￥30</div>
+            </div>
+            <div class="items flex-col item5">
+                <div class="name">谢谢参与</div>
+                <img src="./img/ic_hs.png" class="hs-icon">
+            </div>
+            <div class="items flex-col item6">
+                <div class="name">店铺券</div>
+                <div class="pt-icon">￥30</div>
+            </div>
+            <div class="items flex-col item7">
+                <div class="name">谢谢参与</div>
+                <img src="./img/ic_hs.png" class="hs-icon">
+            </div>
+            <div class="items flex-col item8">
+                <div class="name">优惠券</div>
+                <div class="pt-icon icon2">￥100</div>
+            </div>
+        </div>
+    </div>
+    <div class="my-prize-btn" onclick="showLogin('luckDraw')">查看我的奖品</div>
+    <!-- 中奖名单 -->
+    <div class="user-prize-box active" id="userPrizeBox" onclick="showLogin('luckDraw')">
+        <diov class="record" id="recordBox">
+            <div class="user-prize-title flex-ai-center flex-sb">
+                <span class="l">中奖名单</span>
+                <span class="r">共102个宿友中奖</span>
+            </div>
+            <ul class="userprize-ul" id="userprizeUl">
+                <!--<li class="flex-sb">
+                    <div class="left flex-ai-center">
+                        <img src="./img/baby.jpg" class="user-ava">
+                        <div class="flex-col">
+                            <span class="white font22">159****1542</span>
+                            <span class="white time">5分钟前抽到</span>
+                        </div>
+                    </div>
+                    <div class="right white">满300减30商品券</div>
+                </li>-->
+            </ul>
+        </diov>
+    </div>
+    <div class="footer">本活动的最终解释权归超神宿所有，和苹果公司无关</div>
+</div>
+<!-- logo reg -->
+<div class="w-model">
+    <div class="w-model-box">
+        <img src="./img/delOne.png" id="hiddenModel">
+        <div class="w-model-title">欢迎来到超神宿</div>
+        <div class="w-inp-box">
+            <div class="w-public-inp w-inpOne">
+                <input type="text" placeholder="请输入手机号" id="w-phone">
+            </div>
+            <div class="w-public-inp w-inpTwo">
+                <input type="text" placeholder="短信验证码" id="wCode">
+                <div class="w-code">获取验证码</div>
+            </div>
+        </div>
+        <div class="w-hint"></div>
+        <div class="w-logoIn-btn" id="loginBtn">登录</div>
+    </div>
+</div>
+</body>
+<script>
+    var id = getUrlParams('draw_id'); // 1
+    function getOtherInfo() {
+        ajaxPost('/user_v6/interact/getOtherInfo', {
+            draw_id: id
+        }).then(res => {
+            if (res.status == 1) {
+                let info = res.data;
+                drawTime(info)
+                //
+                if(info.reward_record.length > 0) {
+                    let list = info.reward_record;
+                    let str = '';
+                    for(let i in list) {
+                        let avatar = (list[i].avatar).indexOf('http')>=0?list[i].avatar:httpUrl+list[i].avatar;
+                        let satisfy = list[i].satisfy_money>0?'满'+list[i].satisfy_money+'减'+list[i].coupon_money+'商品券':''
+                        str += `<li class="flex-sb">
+                                    <div class="left flex-ai-center">
+                                        <img src="`+avatar+`" class="user-ava">
+                                        <div class="flex-col">
+                                            <span class="white font22">`+list[i].user_name+`</span>
+                                            <span class="white time">`+time(``+list[i].draw_time+``)+`</span>
+                                        </div>
+                                    </div>
+                                    <div class="right white">`+satisfy+`</div>
+                                </li>`;
+                    }
+                    $("#userprizeUl").html(str);
+                } else {
+                    $("#recordBox").hide();
+                    $("#userPrizeBox").removeClass('active')
+                }
+            } else {
+                alert(res.msg)
+            }
+        })
+    }
+    let timer = null;
+    function drawTime(info) {
+        // 活动状态：1.待开始，2.进行中，3.已抽完
+        switch (parseInt(info.status)) {
+            case 1:
+                let me =  parseInt(info.start_time) * 1000;
+                timer = setInterval(function(){
+                    let nowTime = new Date().getTime();
+                    let t = (me - nowTime)/ 1000;
+                    if (me-nowTime <= 0) {
+                        getOtherInfo(id);
+                        clearInterval(timer);
+                    }else {
+                        $("#status1").text('距活动开始 '+ endTime(t))
+                    }
+                }, 1000);
+                $("#status1").show();
+                break;
+            case 2:
+                $("#status2").show();
+                $("#status2").text('进行中');
+                break;
+            case 3:
+                $("#status3").show();
+                $("#status3").text('奖品已抽完');
+                break;
+        }
+    }
+    function endTime(value){
+        let time = new Date(value*1000);
+        let year = time.getFullYear();
+        let month = time.getMonth()+1;
+        let date = time.getDate();
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+        let seconds = time.getSeconds();
+        return add(hours)+':'+add(minutes)+':'+add(seconds);
+        // return year+'-'+add(month)+'-'+add(date)+' '+add(hours)+':'+add(minutes)+':'+add(seconds);
+    }  //2017-05-08 10:31:27
+    $(function () {
+        getOtherInfo()
+
+    })
+</script>
+</html>

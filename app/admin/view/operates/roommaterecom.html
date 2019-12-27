@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>宿友推荐TOP榜</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" style="padding: 15px;">
+    <div class="layui-tab" lay-filter="classifyTabList">
+        <ul class="layui-tab-title" id="tabTitle">
+            <li lay-id="111" class="layui-this">宿友推荐TOP榜</li>
+            <li lay-id="222">新增</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>主题</th>
+                        <th>浏览量</th>
+                        <th>显示</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="classifyTbody">
+
+                    </tbody>
+                </table>
+                <div class="page-box">
+                    <div id="page"></div>
+                    <div class="page-info">
+                        共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+                        <span class="totaldata"></span>&nbsp;条数据
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item">
+                <form class="layui-form" action="" style="margin-top: 15px;">
+                    <div class="layui-form-item">
+                        <input type="hidden" name="id">
+                        <label class="layui-form-label">主题</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" required  lay-verify="required" placeholder="2-16个字符" autocomplete="off" class="layui-input" style="max-width: 500px;">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">简介</label>
+                        <div class="layui-input-block">
+                            <textarea name="description" placeholder="2-120个字符" required lay-verify="required" class="layui-textarea" style="max-width: 500px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">背景</label>
+                        <div class="layui-input-block">
+                            <button type="button" class="layui-btn addbg" id="backgroundImg">
+                                <i class="layui-icon" style="font-size: 45px;">&#xe654;</i>
+                            </button>
+                            <input type="hidden" name="bg_img" value="">
+                            <div class="showimg-box" style="display: none;">
+                                <img src="" alt="" class="showbgimg" id="bgImg">
+                                <button type="button" class="layui-btn closebtn">
+                                    <i class="layui-icon">&#x1006;</i>
+                                </button>
+                            </div>
+                            <span style="vertical-align: bottom;color: #333;margin-left: 15px;">规格：750x1334</span>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">推荐列表</label>
+                        <div class="layui-input-block-danping">
+                            <div class="layui-input-block-right">
+                                <div class="top-btn-box" style="width: 576px;">
+                                    <button type="button" class="layui-btn layui-btn-sm" onclick="showGoodsListFn(this, '1')">添加门店</button>
+                                </div>
+                                <ul class="danping-list" id="danpingMove">
+                                    <li class="danping-li">
+                                        <div class="close" onclick="removeDanPingFn(this)">
+                                            <button type="button" class="layui-btn closebtn">
+                                                <i class="layui-icon">&#x1006;</i>
+                                            </button>
+                                        </div>
+                                        <div class="moveBox">
+                                            <i class="fa fa-arrows-v fa-lg"></i>
+                                            <span>拖拽排序</span>
+                                        </div>
+                                        <div class="danping-content">
+                                            <div class="left">
+                                                <img class="cover" src="" alt="">
+                                                <input type="file" name="filecover" style="display: none;">
+                                                <input type="hidden" name="cover" value="">
+                                                <button type="button" class="layui-btn layui-btn-xs set-cover-btn" onclick="setCoverFn(this)">设置封面</button>
+                                                <span class="liulannum">浏览量：<span>0</span></span>
+                                            </div>
+                                            <div class="right">
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">推荐指数</label>
+                                                    <input type="hidden" name="star" value="3">
+                                                    <div class="layui-input-block">
+                                                        <div class="starBox">
+                                                            <!--fa-star-half-full-->
+                                                            <i class="star fa fa-star" onclick="starFn(this, 0)"></i>
+                                                            <i class="star fa fa-star" onclick="starFn(this, 1)"></i>
+                                                            <i class="star fa fa-star" onclick="starFn(this, 2)"></i>
+                                                            <i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>
+                                                            <i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">标题</label>
+                                                    <div class="layui-input-block">
+                                                        <input type="text" name="goodsTitle" value="" required  lay-verify="required" placeholder="2-30个字符" autocomplete="off" class="layui-input">
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">推荐理由</label>
+                                                    <div class="layui-input-block">
+                                                        <textarea name="recommended_reason" placeholder="请输入内容,100字以内" required lay-verify="required" class="layui-textarea"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">关联门店</label>
+                                                    <input type="hidden" name="store_id" value="">
+                                                    <div class="layui-input-block">
+                                                        <div class="top-btn-box" style="padding-top: 8px;">
+                                                            <button type="button" class="layui-btn layui-btn-xs" style="line-height: 25px;" onclick="showGoodsListFn(this, '2')">
+                                                                更换门店<i class="layui-icon">&#xe602</i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="guanGoods0">
+                                                            <!--<div class="gl-goods-item">
+                                                                <div class="imgbox">
+                                                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572523097341&di=501f0f828c82de2094720aa3093a3847&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F14%2F20171014201130_HTnmN.jpeg" alt="">
+                                                                    <span class="phone">
+                                                                    <i class="fa fa-phone fa-lg"></i>
+                                                                    18200376228
+                                                                </span>
+                                                                </div>
+                                                                <div class="goodsinfo">
+                                                                    <div class="goodsname textSplit2">品名称商品名称名称名称</div>
+                                                                    <div class="goodsdesc textSplit2">
+                                                                        描述描述描述描述描述描述描述描述描述描述描述
+                                                                    </div>
+                                                                    <div class="goodsaddr textSplit1">
+                                                                        <i class="fa fa-map-marker fa-lg"></i>
+                                                                        希顿国际广场123号
+                                                                    </div>
+                                                                </div>
+                                                            </div>-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 门店列表layer -->
+<div class="list-layer" id="goodsListLayer" style="display: none;">
+    <div class="layer-box">
+        <div class="layer-header-search">
+            <form class="layui-form" lay-filter="shopSearchForm">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">主营分类</label>
+                        <div class="layui-input-block">
+                            <select name="cate_id" lay-filter="cate_id">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">主营风格</label>
+                        <div class="layui-input-block">
+                            <select name="style_id" lay-filter="style_id">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-block" style="margin-left: 0;">
+                            <input type="text" name="keywords" class="layui-input ipt" placeholder="门店名称/门店帐号">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-block" style="margin-left: 0;">
+                            <button type="button" class="layui-btn" onclick="searchGoodslist()">搜索</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <ul class="goodslist-ul" id="goodslistUl">
+            <!--<li>
+                <div class="gl-goods-item">
+                    <i class="layui-icon radio-i active">&#xe643;</i>
+                    <div class="imgbox">
+                        <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572523097341&di=501f0f828c82de2094720aa3093a3847&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F14%2F20171014201130_HTnmN.jpeg" alt="">
+                        <span class="phone">
+                            <i class="fa fa-phone fa-lg"></i>
+                            18200376228
+                        </span>
+                    </div>
+                    <div class="goodsinfo">
+                        <div class="goodsname textSplit2">品名称商品名称名称名称</div>
+                        <div class="goodsaddr textSplit1">
+                            <i class="fa fa-map-marker fa-lg"></i>
+                            希顿国际广场123号
+                        </div>
+                    </div>
+                </div>
+            </li>-->
+
+        </ul>
+        <div id="goodsPage"></div>
+    </div>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<script src="__WZH__/js/Sortable.min.js"></script>
+<script>
+    var elementTab;
+    var form;
+    var upload;
+    var now_page = 1;
+    var goods_page = 1
+    function getDataList(now_page, isPage) {
+        ajaxPost('/admin/operate/roommateRecomList',{
+            page: now_page
+        }).then(function(data){
+            // console.log(data)
+            let dataList = data.data
+            let html = ''
+            if (dataList.length>0) {
+                for(let i = 0 ; i < dataList.length ; i++){
+                    let isChecked = dataList[i].status==1?"checked":""
+                    html += '<tr class="product" data-index="'+i+'" data-id="'+dataList[i].id+'" data-sort="'+dataList[i].sort+'">\n' +
+                        '                        <td>'+dataList[i].id+'</td>\n' +
+                        '                        <td>'+dataList[i].title+'</td>\n' +
+                        '                        <td>'+dataList[i].visit_number+'</td>\n' +
+                        '                        <td><form class="layui-form" action="" lay-filter="checkboxForm">\n' +
+                        '                                       <div class="layui-input-block" style="margin-left: 0;">\n' +
+                        '                                       <input type="checkbox" name="switch" lay-filter="showHide" value="'+dataList[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                        '                                   </div>\n' +
+                        '                            </form>' +
+                        '                        </td>\n' +
+                        '                        <td width="220px">\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft editBtn" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'"  onclick="editClassify(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe642;</i> 编辑\n' +
+                        '                                </button>\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'" onclick="delClassify(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe640;</i> 删除\n' +
+                        '                                </button>\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-primary layui-btn-xs magleft" data-id="'+dataList[i].id+'" data-title="'+dataList[i].title+'" onclick="dataTop(this)" >\n' +
+                        '                                    <i class="layui-icon">&#xe604;</i> 置顶\n' +
+                        '                                </button>\n' +
+                        '                        </td>\n' +
+                        '                    </tr>';
+                }
+                $(".totalpage").html(Math.ceil((data.total)/15));
+                $(".totaldata").html(data.total);
+                $(".page-box").show();
+                // 点击分页时，不在实例化分页page
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: data.total //数据总数，从服务端得到
+                            ,groups: 8
+                            ,limit: 15
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    now_page = obj.curr
+                                    getDataList(obj.curr, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                html = '<td colspan="5" class="no-data">暂无数据</td>'
+                $(".page-box").hide()
+            }
+            $("#classifyTbody").html(html)
+            // 拖拽排序
+            var list = document.getElementById("classifyTbody");
+            Sortable.create(list, {
+                onUpdate: function(evt){
+                    // console.log(evt.item)
+                    let index = $(evt.item).attr('data-index');
+                    let id = $(evt.item).attr('data-id');
+                    let sort = $(evt.item).attr('data-sort');
+                    let jIndex = 0;
+                    for(let j = 0 ; j < $("#classifyTbody>.product").length ; j++) {
+                        if ($("#classifyTbody>.product").eq(j).attr('data-index') == index) {
+                            // console.log(j); // 当前元素已拖拽到了 这个下标位置
+                            jIndex = j;
+                            break
+                        }
+                    }
+                    // console.log('拖拽前位置：', sort);
+                    // console.log('拖拽后位置：', dataList[jIndex].sort)
+                    ajaxPost('/admin/operate/sortRoommateRecom', {
+                        id: id ,
+                        sort: dataList[jIndex].sort
+                    }).then((res) => {
+                        getDataList(now_page, false)
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                }
+            }); // That's all.
+            // checkbox
+            form.render('checkbox', 'checkboxForm');
+            form.on('switch(showHide)', function(data){
+                // let load = layer.load()
+                ajaxPost('/admin/operate/editRoommateRecomStatus', {
+                    id: data.value,
+                    status: !data.elem.checked ? 1 : -1
+                }).then((res) => {
+                    // layer.close(load);
+                }).catch((err) => {
+                    console.log(err);
+                })
+            });
+        }).catch(function(err){
+            console.log(err)
+        })
+    }
+    function returnStar(num) {
+        let str = '';
+        num = parseFloat(num)
+        switch (num) {
+            case 0.5:
+                str = '<i class="star fa fa-star-half-full" onclick="starFn(this, 0)"></i>\n' +
+                      '<i class="star fa fa-star-o" onclick="starFn(this, 1)"></i>\n' +
+                      '<i class="star fa fa-star-o" onclick="starFn(this, 2)"></i>\n' +
+                      '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                      '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 1:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 1.5:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star-half-full" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 2:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 2.5:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star-half-full" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 3:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 3.5:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star-half-full" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 4:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>';
+                break;
+            case 4.5:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star-half-full" onclick="starFn(this, 4)"></i>';
+                break;
+            case 5:
+                str = '<i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 3)"></i>\n' +
+                    '<i class="star fa fa-star" onclick="starFn(this, 4)"></i>';
+                break;
+        }
+        return str
+    }
+    function editClassify(_this) {
+        let id = $(_this).attr('data-id');
+
+        ajaxPost('/admin/operate/roommateRecomInfo', {
+            id: id
+        }).then(res => {
+            elementTab.tabChange('classifyTabList', '222');
+            $("#tabTitle>li:nth-child(2)").text("编辑");
+            $("input[name=id]").val(res.id);
+            $("input[name=title]").val(res.title);
+            $("textarea[name=description]").val(res.description);
+            // 背景
+            $(".showimg-box").show();
+            $("#bgImg").attr('src', httpUrl + res.bg_cover);
+            $("#backgroundImg").hide();
+            $("input[name=bg_img]").val(res.bg_cover)
+            // 推荐列表
+            if(res.details.length > 0 ){
+                let datalist = res.details
+                let str = ''
+                for(let i = 0 ; i < datalist.length ; i++) {
+                    str += '<li class="danping-li">\n' +
+                        '                        <div class="close" onclick="removeDanPingFn(this)">\n' +
+                        '                            <button type="button" class="layui-btn closebtn">\n' +
+                        '                                <i class="layui-icon">&#x1006;</i>\n' +
+                        '                            </button>\n' +
+                        '                        </div>\n' +
+                        '                        <div class="moveBox">\n' +
+                        '                            <i class="fa fa-arrows-v fa-lg"></i>\n' +
+                        '                            <span>拖拽排序</span>\n' +
+                        '                        </div>\n' +
+                        '                        <div class="danping-content">\n' +
+                        '                            <div class="left">\n' +
+                        '                                <img class="cover" src="'+httpUrl+datalist[i].cover+'" alt="">\n' +
+                        '                                <input type="file" name="filecover" style="display: none;">\n' +
+                        '                                <input type="hidden" name="cover" value="'+datalist[i].cover+'">\n' +
+                        '                                <button type="button" class="layui-btn layui-btn-xs set-cover-btn" onclick="setCoverFn(this)">设置封面</button>\n' +
+                        '                                <span class="liulannum">浏览量：<span>'+datalist[i].read_number+'</span></span>\n' +
+                        '                            </div>\n' +
+                        '                            <div class="right">\n' +
+                        '                              <div class="layui-form-item">\n' +
+                        '                                    <label class="layui-form-label">推荐指数</label>\n' +
+                        '                                    <input type="hidden" name="star" value="'+parseFloat(datalist[i].star)+'">\n' +
+                        '                                    <div class="layui-input-block">\n' +
+                        '                                        <div class="starBox">\n' +
+                        '                                            <!--fa-star-half-full-->\n' +
+                        '                                               '+returnStar(datalist[i].star)+'\n'+
+                        '                                        </div>\n' +
+                        '                                    </div>\n' +
+                        '                                </div>\n' +
+                        '                                <div class="layui-form-item">\n' +
+                        '                                    <label class="layui-form-label">标题</label>\n' +
+                        '                                    <div class="layui-input-block">\n' +
+                        '                                        <input type="text" name="goodsTitle" value="'+datalist[i].title+'" required  lay-verify="required" placeholder="2-30个字符" autocomplete="off" class="layui-input">\n' +
+                        '                                    </div>\n' +
+                        '                                </div>\n' +
+                        '                                <div class="layui-form-item">\n' +
+                        '                                    <label class="layui-form-label">简述</label>\n' +
+                        '                                    <div class="layui-input-block">\n' +
+                        '                                        <textarea name="recommended_reason" placeholder="请输入内容,100字以内" required lay-verify="required" class="layui-textarea">'+datalist[i].recommended_reason+'</textarea>\n' +
+                        '                                    </div>\n' +
+                        '                                </div>\n' +
+                        '                                <div class="layui-form-item">\n' +
+                        '                                    <label class="layui-form-label">关联门店</label>\n' +
+                        '                                    <input type="hidden" name="store_id" value="'+datalist[i].store_id+'">\n' +
+                        '                                    <div class="layui-input-block">\n' +
+                        '                                        <div class="top-btn-box" style="padding-top: 8px;">\n' +
+                        '                                            <button type="button" class="layui-btn layui-btn-xs" style="line-height: 25px;" onclick="showGoodsListFn(this, \'2\')">\n' +
+                        '                                                更换门店<i class="layui-icon">&#xe602</i>\n' +
+                        '                                            </button>\n' +
+                        '                                        </div>\n' +
+                        '                                        <div class="guanGoods0">\n' +
+                        '                                            <div class="gl-goods-item">\n' +
+                        '                                                  <div class="imgbox">\n' +
+                        '                                                      <img src="'+httpUrl+datalist[i].store_img+'" alt="">\n' +
+                        '                                                      <span class="phone">\n' +
+                        '                                                      <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                                                      '+datalist[i].mobile+'\n' +
+                        '                                                  </span>\n' +
+                        '                                                  </div>\n' +
+                        '                                                  <div class="goodsinfo">\n' +
+                        '                                                      <div class="goodsname textSplit2">'+datalist[i].store_name+'</div>\n' +
+                        '                                                      <div class="goodsaddr textSplit1">\n' +
+                        '                                                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                                                          '+datalist[i].address+'\n' +
+                        '                                                      </div>\n' +
+                        '                                               </div>\n' +
+                        '                                            </div>\n' +
+                        '                                        </div>\n' +
+                        '                                    </div>\n' +
+                        '                                </div>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </li>';
+                }
+                $("#danpingMove").html(str);
+            }
+
+        }).catch(err => {})
+    }
+    function delClassify(_this) {
+        let id = $(_this).attr('data-id')
+        let title = $(_this).attr('data-title')
+        layer.confirm('确定要删除 “'+title+'” 吗？', {title: '提示'}, function(){
+            // 确认
+            ajaxPost('/admin/operate/delRoommateRecom', {
+                id: id
+            }).then((res) => {
+                layer.msg('删除成功', {time: 1500}, function(){
+                    getDataList(now_page, false)
+                })
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        },function(){
+            // 取消
+        })
+    }
+    // 排序置顶
+    function dataTop(_this) {
+        let id = $(_this).attr('data-id');
+        ajaxPost('/admin/operate/topRoommateRecom', {
+            id: id
+        }).then((res) => {
+            layer.msg('置顶成功', {time: 1500}, function(){
+                getDataList(now_page, false)
+            })
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    //=============================================================新增 编辑操作页
+    // 设置封面
+    function setCoverFn(_this) {
+        $(_this).parent().find('input[name=filecover]').click()
+        $(_this).parent().find('input[name=filecover]').change(function(e){
+            var fileObj = $(this)[0].files[0]; // js 获取文件对象
+            var fileData = new FormData(); // FormData 对象
+            fileData.append("module", 'mate_recom');
+            fileData.append("use", 'cover');
+            fileData.append("file", fileObj); // 文件对象
+            $.ajax({
+                url: httpUrl + '/admin/api_base/upload', /*接口域名地址*/
+                type:'post',
+                data: fileData,
+                contentType: false,
+                processData: false,
+                success:function(res){
+                    if(res.status == 1){
+                        $(_this).parent().find('img').attr('src', httpUrl + res.data.src)
+                        $(_this).parent().find('input[name=cover]').val(res.data.src)
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+            })
+        })
+
+    }
+    var style_id = '';
+    var cate_id = '';
+    var store_ids = [];
+    var keywords = '';
+    // 获取门店风格、分类
+    function getStyleCate() {
+        ajaxPost('/admin/operate/cateStoreAndStyleStore', '').then((res) => {
+            // console.log(res);
+            let styleList = res.style_list;
+            let cateList = res.cate_list;
+            let styleStr = '';
+            let cateStr = '';
+            for(let i in styleList){
+                styleStr += '<option value="'+styleList[i].id+'">'+styleList[i].title+'</option>'
+            }
+            for(let i in cateList){
+                cateStr += '<option value="'+cateList[i].id+'">'+cateList[i].title+'</option>'
+            }
+            $("select[name=style_id]").append(styleStr)
+            $("select[name=cate_id]").append(cateStr)
+            form.render(null, 'shopSearchForm')
+            //
+            form.on('select(style_id)', function(data){
+                style_id = data.value
+            });
+            form.on('select(cate_id)', function(data){
+                cate_id = data.value
+            });
+        }).catch((err) => {
+
+        })
+    }
+    // get 店铺列表
+    function getGuanList(page, store_ids, style_id, cate_id, keywords, isPage) {
+        ajaxPost('/admin/operate/storeList', {
+            page: page,
+            store_ids: store_ids.join(','), // 需要排除的店铺id，多个用,连接
+            style_id: style_id,
+            cate_id: cate_id,
+            keywords: keywords
+        }).then((res) => {
+            let dataList = res.data
+            let liStr = ''
+            if (dataList.length > 0) {
+                for(let i = 0 ; i < dataList.length ; i++){
+                    liStr += '<li class="goodslistLi" cover="'+dataList[i].cover+'" mobile="'+dataList[i].mobile+'" store_name="'+dataList[i].store_name+'" address="'+dataList[i].address+'" read_number="'+dataList[i].read_number+'" onclick="selectedGoodsFn(this, '+dataList[i].id+')">\n' +
+                        '                <div class="gl-goods-item">\n' +
+                        '                    <i class="layui-icon radio-i">&#xe63f;</i>\n' +
+                        '                    <div class="imgbox">\n' +
+                        '                        <img src="'+httpUrl+dataList[i].cover+'" alt="">\n' +
+                        '                        <span class="phone">\n' +
+                        '                            <i class="fa fa-phone fa-lg"></i>\n' +
+                        '                            '+dataList[i].mobile+'\n' +
+                        '                        </span>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="goodsinfo">\n' +
+                        '                        <div class="goodsname textSplit2">'+dataList[i].store_name+'</div>\n' +
+                        '                        <div class="goodsaddr textSplit1">\n' +
+                        '                            <i class="fa fa-map-marker fa-lg"></i>\n' +
+                        '                            '+dataList[i].address+'\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '            </li>'
+                }
+                $("#goodsPage").show()
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'goodsPage' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: res.total //数据总数，从服务端得到
+                            ,limit: 12
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    goods_page = obj.curr
+                                    getGuanList(obj.curr, store_ids, style_id, cate_id, keywords, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                liStr = '<li class="no-data" style="width: 100%">暂无数据</li>'
+                $("#goodsPage").hide()
+            }
+            $("#goodslistUl").html(liStr)
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+    // 搜索门店
+    function searchGoodslist(){
+        keywords = $("input[name=keywords]").val();
+        goods_page = 1;
+        activeGoods = null;
+        getGuanList(1, store_ids, style_id, cate_id, keywords, true)
+    }
+    // 选择门店
+    var activeGoods = null // 选中的门店
+    function selectedGoodsFn(_this, id) {
+        $(_this).find('.radio-i').addClass('active').parents('li').siblings().find('.radio-i').removeClass('active')
+        $(_this).find('.radio-i').html('&#xe643;').parents('li').siblings().find('.radio-i').html('&#xe63f;')
+        activeGoods = {
+            id: id,
+            cover: $(_this).attr("cover"),
+            mobile: $(_this).attr("mobile"),
+            store_name: $(_this).attr("store_name"),
+            address: $(_this).attr("address"),
+            read_number: $(_this).attr("read_number"),
+        }
+    }
+    // （show 门店列表）
+    function showGoodsListFn(obj, type) {
+        store_ids = [];
+        goods_page = 1;
+        for(let i = 0 ; i < $(".danping-li").length ; i++) {
+            let storeId = $(".danping-li").eq(i).find('input[name=store_id]').val();
+            if(storeId) {
+                store_ids.push(storeId)
+            }
+        }
+        getGuanList(1, store_ids, style_id, cate_id, keywords, true);
+        let _this = $(obj);
+        let open = layer.open({
+            type: 1,
+            content: $('#goodsListLayer'),
+            title: '搜索门店',
+            btn: ['确认', '取消'],
+            area: ['90%', '75%'],
+            yes: function() {
+                // 确认
+                if(activeGoods){
+                    // console.log(activeGoods)
+                    if(parseInt(type) === 2){
+                        // 更换门店
+                        // danpingList[index].productInfo = activeGoods
+                        _this.parents('.danping-li').find(".liulannum>span").text(activeGoods.read_number)
+                        _this.parents('.danping-li').find('input[name=store_id]').val(activeGoods.id)
+                        let guanGoods = '<div class="gl-goods-item">\n' +
+                            '               <div class="imgbox">\n' +
+                            '                   <img src="'+httpUrl+activeGoods.cover+'" alt="">\n' +
+                            '                   <span class="phone">\n' +
+                            '                   <i class="fa fa-phone fa-lg"></i>\n' +
+                            '                   '+activeGoods.mobile+'\n' +
+                            '               </span>\n' +
+                            '               </div>\n' +
+                            '               <div class="goodsinfo">\n' +
+                            '                   <div class="goodsname textSplit2">'+activeGoods.store_name+'</div>\n' +
+                            '                   <div class="goodsaddr textSplit1">\n' +
+                            '                       <i class="fa fa-map-marker fa-lg"></i>\n' +
+                            '                       '+activeGoods.address+'\n' +
+                            '                   </div>\n' +
+                            '               </div>\n' +
+                            '           </div>'
+                        _this.parents('.danping-li').find('.guanGoods0').html(guanGoods)
+                    } else if(parseInt(type) === 1) {
+                        // 添加新的列表（搜索门店）
+                        let liStr = '<li class="danping-li">\n' +
+                            '                                        <div class="close" onclick="removeDanPingFn(this)">\n' +
+                            '                                            <button type="button" class="layui-btn closebtn">\n' +
+                            '                                                <i class="layui-icon">&#x1006;</i>\n' +
+                            '                                            </button>\n' +
+                            '                                        </div>\n' +
+                            '                                        <div class="moveBox">\n' +
+                            '                                            <i class="fa fa-arrows-v fa-lg"></i>\n' +
+                            '                                            <span>拖拽排序</span>\n' +
+                            '                                        </div>\n' +
+                            '                                        <div class="danping-content">\n' +
+                            '                                            <div class="left">\n' +
+                            '                                                <img class="cover" src="" alt="">\n' +
+                            '                                                <input type="file" name="filecover" style="display: none;">\n' +
+                            '                                                <input type="hidden" name="cover" value="">\n' +
+                            '                                                <button type="button" class="layui-btn layui-btn-xs set-cover-btn" onclick="setCoverFn(this)">设置封面</button>\n' +
+                            '                                                <span class="liulannum">浏览量：<span>'+activeGoods.read_number+'</span></span>\n' +
+                            '                                            </div>\n' +
+                            '                                            <div class="right">\n' +
+                            '                                              <div class="layui-form-item">\n' +
+                            '                                                    <label class="layui-form-label">推荐指数</label>\n' +
+                            '                                                    <input type="hidden" name="star" value="3">\n' +
+                            '                                                    <div class="layui-input-block">\n' +
+                            '                                                        <div class="starBox">\n' +
+                            '                                                            <!--fa-star-half-full-->\n' +
+                            '                                                            <i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                            '                                                            <i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                            '                                                            <i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                            '                                                            <i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                            '                                                            <i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>\n' +
+                            '                                                        </div>\n' +
+                            '                                                    </div>\n' +
+                            '                                                </div>\n' +
+                            '                                                <div class="layui-form-item">\n' +
+                            '                                                    <label class="layui-form-label">标题</label>\n' +
+                            '                                                    <div class="layui-input-block">\n' +
+                            '                                                        <input type="text" name="goodsTitle" value="" required  lay-verify="required" placeholder="2-30个字符" autocomplete="off" class="layui-input">\n' +
+                            '                                                    </div>\n' +
+                            '                                                </div>\n' +
+                            '                                                <div class="layui-form-item">\n' +
+                            '                                                    <label class="layui-form-label">简述</label>\n' +
+                            '                                                    <div class="layui-input-block">\n' +
+                            '                                                        <textarea name="recommended_reason" placeholder="请输入内容,100字以内" required lay-verify="required" class="layui-textarea"></textarea>\n' +
+                            '                                                    </div>\n' +
+                            '                                                </div>\n' +
+                            '                                                <div class="layui-form-item">\n' +
+                            '                                                    <label class="layui-form-label">关联门店</label>\n' +
+                            '                                                    <input type="hidden" name="store_id" value="'+activeGoods.id+'">\n' +
+                            '                                                    <div class="layui-input-block">\n' +
+                            '                                                        <div class="top-btn-box" style="padding-top: 8px;">\n' +
+                            '                                                            <button type="button" class="layui-btn layui-btn-xs" style="line-height: 25px;" onclick="showGoodsListFn(this, \'2\')">\n' +
+                            '                                                                更换门店<i class="layui-icon">&#xe602</i>\n' +
+                            '                                                            </button>\n' +
+                            '                                                        </div>\n' +
+                            '                                                        <div class="guanGoods0">\n' +
+                            '                                                            <div class="gl-goods-item">\n' +
+                            '                                                                  <div class="imgbox">\n' +
+                            '                                                                      <img src="'+httpUrl+activeGoods.cover+'" alt="">\n' +
+                            '                                                                      <span class="phone">\n' +
+                            '                                                                      <i class="fa fa-phone fa-lg"></i>\n' +
+                            '                                                                      '+activeGoods.mobile+'\n' +
+                            '                                                                  </span>\n' +
+                            '                                                                  </div>\n' +
+                            '                                                                  <div class="goodsinfo">\n' +
+                            '                                                                      <div class="goodsname textSplit2">'+activeGoods.store_name+'</div>\n' +
+                            '                                                                      <div class="goodsaddr textSplit1">\n' +
+                            '                                                                          <i class="fa fa-map-marker fa-lg"></i>\n' +
+                            '                                                                          '+activeGoods.address+'\n' +
+                            '                                                                      </div>\n' +
+                            '                                                               </div>\n' +
+                            '                                                            </div>\n' +
+                            '                                                        </div>\n' +
+                            '                                                    </div>\n' +
+                            '                                                </div>\n' +
+                            '                                            </div>\n' +
+                            '                                        </div>\n' +
+                            '                                    </li>';
+                        $("#danpingMove").append(liStr)
+                    }
+                    layer.close(open)
+                } else {
+                    layer.msg('请选择关联门店')
+                }
+            },
+            btn2: function() {
+                // // 取消
+                // activeGoods = null
+                // let len = $(".goodslistLi").length
+                // for(let i = 0 ; i < len ; i++){
+                //     $(".goodslistLi").eq(i).find('.radio-i').removeClass('active')
+                //     $(".goodslistLi").eq(i).find('.radio-i').html('&#xe63f;')
+                // }
+            },
+            cancel: function(){
+                // activeGoods = null
+                // let len = $(".goodslistLi").length
+                // for(let i = 0 ; i < len ; i++){
+                //     $(".goodslistLi").eq(i).find('.radio-i').removeClass('active')
+                //     $(".goodslistLi").eq(i).find('.radio-i').html('&#xe63f;')
+                // }
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        });
+    }
+    // 删除 推荐列表list item
+    function removeDanPingFn(_this){
+        $(_this).parents('.danping-li').remove()
+    }
+    // 评分 星星
+    function starFn(_this, index) {
+        let star = $(_this).parent('.starBox').find('.fa')
+        // console.log(index)
+        let starVal = parseInt(index) + 1;
+        for(let i = 0 ; i < star.length ; i++) {
+            if(i <= index) { // 当前star 及之前的 star ； 反之 就是之后的
+                if (i == index) { // 点击当前的star
+                    if(star.eq(index).hasClass('fa-star-half-full')) { // 如果当前是 半星，就显示全星；反之就是半星
+                        star.eq(index).addClass('fa-star').removeClass('fa-star-o').removeClass('fa-star-half-full')
+                    } else {
+                        starVal = starVal - 0.5
+                        star.eq(index).addClass('fa-star-half-full').removeClass('fa-star-o').removeClass('fa-star')
+                    }
+                } else {
+                    star.eq(i).addClass('fa-star').removeClass('fa-star-o').removeClass('fa-star-half-full')
+                }
+            } else {
+                star.eq(i).addClass('fa-star-o').removeClass('fa-star').removeClass('fa-star-half-full')
+            }
+        }
+        $(_this).parents('li.danping-li').find('input[name=star]').val(starVal)
+    }
+    $(function(){
+        getDataList(1, true);
+        // getGuanList(1, [], '', '', '',  true);
+        getStyleCate();
+        // 新增编辑 (推荐列表) 拖拽
+        var container = document.getElementById("danpingMove");
+        Sortable.create(container, {
+            handle: '.moveBox',
+            animation: 150
+        });
+
+        layui.use(['element', 'upload'], function() {
+            //
+            elementTab = layui.element;
+            //监听Tab切换
+            elementTab.on('tab(classifyTabList)', function(data){
+                // console.log(data.index)
+                // console.log(this.getAttribute('lay-id'));
+                // 初始化 新增的页面
+                $("input[name=id]").val('');
+                $("input[name=title]").val('');
+                $("textarea[name=description]").val('');
+                $(".closebtn").click() // 背景图
+                let str = '<li class="danping-li">\n' +
+                    '               <div class="close" onclick="removeDanPingFn(this)">\n' +
+                    '                   <button type="button" class="layui-btn closebtn">\n' +
+                    '                       <i class="layui-icon">&#x1006;</i>\n' +
+                    '                   </button>\n' +
+                    '               </div>\n' +
+                    '               <div class="moveBox">\n' +
+                    '                   <i class="fa fa-arrows-v fa-lg"></i>\n' +
+                    '                   <span>拖拽排序</span>\n' +
+                    '               </div>\n' +
+                    '               <div class="danping-content">\n' +
+                    '                   <div class="left">\n' +
+                    '                       <img class="cover" src="" alt="">\n' +
+                    '                       <input type="file" name="filecover" style="display: none;">\n' +
+                    '                       <input type="hidden" name="cover" value="">\n' +
+                    '                       <button type="button" class="layui-btn layui-btn-xs set-cover-btn" onclick="setCoverFn(this)">设置封面</button>\n' +
+                    '                       <span class="liulannum">浏览量：<span>0</span></span>\n' +
+                    '                   </div>\n' +
+                    '                   <div class="right">\n' +
+                    '                     <div class="layui-form-item">\n' +
+                    '                           <label class="layui-form-label">推荐指数</label>\n' +
+                    '                           <input type="hidden" name="star" value="3">\n' +
+                    '                           <div class="layui-input-block">\n' +
+                    '                               <div class="starBox">\n' +
+                    '                                   <!--fa-star-half-full-->\n' +
+                    '                                   <i class="star fa fa-star" onclick="starFn(this, 0)"></i>\n' +
+                    '                                   <i class="star fa fa-star" onclick="starFn(this, 1)"></i>\n' +
+                    '                                   <i class="star fa fa-star" onclick="starFn(this, 2)"></i>\n' +
+                    '                                   <i class="star fa fa-star-o" onclick="starFn(this, 3)"></i>\n' +
+                    '                                   <i class="star fa fa-star-o" onclick="starFn(this, 4)"></i>\n' +
+                    '                               </div>\n' +
+                    '                           </div>\n' +
+                    '                       </div>\n' +
+                    '                       <div class="layui-form-item">\n' +
+                    '                           <label class="layui-form-label">标题</label>\n' +
+                    '                           <div class="layui-input-block">\n' +
+                    '                               <input type="text" name="goodsTitle" value="" required  lay-verify="required" placeholder="2-30个字符" autocomplete="off" class="layui-input">\n' +
+                    '                           </div>\n' +
+                    '                       </div>\n' +
+                    '                       <div class="layui-form-item">\n' +
+                    '                           <label class="layui-form-label">简述</label>\n' +
+                    '                           <div class="layui-input-block">\n' +
+                    '                               <textarea name="recommended_reason" placeholder="请输入内容,100字以内" required lay-verify="required" class="layui-textarea"></textarea>\n' +
+                    '                           </div>\n' +
+                    '                       </div>\n' +
+                    '                       <div class="layui-form-item">\n' +
+                    '                           <label class="layui-form-label">关联门店</label>\n' +
+                    '                           <input type="hidden" name="store_id" value="">\n' +
+                    '                           <div class="layui-input-block">\n' +
+                    '                               <div class="top-btn-box" style="padding-top: 8px;">\n' +
+                    '                                   <button type="button" class="layui-btn layui-btn-xs" style="line-height: 25px;" onclick="showGoodsListFn(this, \'2\')">\n' +
+                    '                                       更换门店<i class="layui-icon">&#xe602</i>\n' +
+                    '                                   </button>\n' +
+                    '                               </div>\n' +
+                    '                               <div class="guanGoods0">\n' +
+
+                    '                               </div>\n' +
+                    '                           </div>\n' +
+                    '                       </div>\n' +
+                    '                   </div>\n' +
+                    '               </div>\n' +
+                    '        </li>';
+                $("#danpingMove").html(str)
+                if(data.index == 0) {
+                    $("#tabTitle>li:nth-child(2)").text("新增")
+                }
+            });
+            //
+            upload = layui.upload;
+            //背景图片 执行实例
+            upload.render({
+                elem: '#backgroundImg' //绑定元素
+                ,url: httpUrl + '/admin/api_base/upload' //上传接口
+                ,data: {module:'mate_recom', use:'bg'}
+                ,done: function(res){
+                    if(res.status == 1){
+                        $(".showimg-box").show()
+                        $("#bgImg").attr('src', httpUrl + res.data.src)
+                        $("#backgroundImg").hide()
+                        $("input[name=bg_img]").val(res.data.src)
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
+
+        });
+        layui.use(['form'], function() {
+            //
+            form = layui.form;
+            //监听提交
+            form.on('submit(formSubmit)', function(data){
+                let danList = $(".danping-li")
+                let param = {
+                    title: data.field.title,
+                    description: data.field.description,
+                    bg_cover: data.field.bg_img,
+                    store_list: []
+                }
+                if (param.bg_img == '') {
+                    layer.msg('请上传背景图')
+                    return false
+                }
+                for(let i = 0 ; i < danList.length ; i++){
+                    let cover = danList.eq(i).find('input[name=cover]').val();
+                    let goodsTitle = danList.eq(i).find('input[name=goodsTitle]').val();
+                    let recommended_reason = danList.eq(i).find('textarea[name=recommended_reason]').val();
+                    let store_id = danList.eq(i).find('input[name=store_id]').val();
+                    let star = danList.eq(i).find('input[name=star]').val();
+                    if(!goodsTitle || !cover || !recommended_reason || !store_id){
+                        layer.msg('请完善信息');
+                        break
+                        return false
+                    }
+                    param.store_list[i] = {
+                        "star": star,
+                        "title": goodsTitle,  //标题
+                        "cover": cover,  //封面
+                        "recommended_reason": recommended_reason,  //推荐理由
+                        "store_id": store_id,  // 店铺id
+                        "sort": i+1  //排序
+                    }
+                }
+                let isAdd = $("input[name=id]").val();
+                if(!isAdd) {
+                    // 添加
+                    ajaxPost('/admin/operate/addRoommateRecom', JSON.stringify(param)).then((res) => {
+                        layer.msg('添加成功', {time: 1500}, function(){
+                            elementTab.tabChange('classifyTabList', '111');
+                            getDataList(1, true)
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                } else {
+                    // 编辑
+                    param.id = isAdd;
+                    ajaxPost('/admin/operate/editRoommateRecom', JSON.stringify(param)).then((res) => {
+                        layer.msg('修改成功', {time: 1500}, function(){
+                            elementTab.tabChange('classifyTabList', '111');
+                            getDataList(now_page, false)
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                }
+                return false;
+            });
+        });
+        // 删除背景图
+        $(".closebtn").click(function(){
+            $(".showimg-box").hide();
+            $("#backgroundImg").show();
+            $("#bgImg").attr('src', '');
+            $("input[name=bg_img]").val('')
+        })
+    })
+</script>
+</html>

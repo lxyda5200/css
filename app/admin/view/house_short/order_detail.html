@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<style>
+    .layui-upload-img { width: 150px; height: 150px; margin: 0; }
+    .pic-more { width:100%; left; margin: 10px 0px 0px 0px;}
+    .pic-more li { width:150px; float: left; margin-right: 5px;}
+    .pic-more li .layui-input { display: initial; }
+    .pic-more li a { position: absolute; top: 0; display: block; }
+    .pic-more li a i { font-size: 24px; background-color: #008800; }
+    #slide-pc-priview .item_img img{ width: 150px; height: 150px;}
+    #slide-pc-priview li{position: relative;}
+    #slide-pc-priview li .operate{ color: #000; display: none;}
+    #slide-pc-priview li .toleft{ position: absolute;top: 70px; left: 1px; cursor:pointer;}
+    #slide-pc-priview li .toright{ position: absolute;top: 70px; right: 1px;cursor:pointer;}
+    #slide-pc-priview li .close{position: absolute;top: 5px; right: 5px;cursor:pointer;}
+    #slide-pc-priview li:hover .operate{ display: block;}
+</style>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('admin/house_short/order_list')}" class="a_menu">短租订单</a></li>
+            <li class="layui-this">{$title}</li>
+        </ul>
+    </div>
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin">
+
+        <div class="layui-form-item" style="border-bottom: 1px solid black;">
+            <label class="layui-form-label"><font style="font-weight: bold">订单信息</font></label>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单号</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" value="{$data.order_no}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">预定时间</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.start_time"} value="{$data.start_time} 一 {$data.end_time}"{/notempty}>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">下单用户</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" value="{$data.nickname}">
+            </div>
+        </div>
+
+        {if condition="$data.order_status neq 1"}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单金额</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.pay_money"} value="{$data.pay_money}元"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付方式</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.pay_type"} value="{$data.pay_type}"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付时间</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.pay_time"} value="{$data.pay_time|date='Y-m-d H:i:s',###}"{/notempty}>
+            </div>
+        </div>
+        {/if}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单状态</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px;color:red" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.status"} value="{if condition="$data.status eq 1"}待支付
+                {elseif condition="$data.status eq 2"/}已支付
+                {elseif condition="$data.status eq 3"/}出租中
+                {elseif condition="$data.status eq 4"/}待评价
+                {elseif condition="$data.status eq 5"/}已完成
+                {else/}已取消
+                {/if}"{/notempty}>
+            </div>
+        </div>
+
+        {if condition="$data.status eq -2"}
+        <div class="layui-form-item">
+            <label class="layui-form-label">取消时间</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.cancel_time"} value="{$data.cancel_time|date='Y-m-d H:i:s',###}"{/notempty}>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否已退款</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" value="{if condition="$data.is_refund eq 1"}已退款{else/}未退款{/if}"}>
+            </div>
+        </div>
+        {/if}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属门店</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.shop_name"} value="{$data.shop_name}"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="border-bottom: 1px solid black;">
+            <label class="layui-form-label"><font style="font-weight: bold">房源信息</font></label>
+        </div>
+
+        <div class="layui-form-item" id="pics">
+            <div class="layui-form-label">房源图片</div>
+            <div class="layui-input-block" style="width: 70%;">
+                <div class="layui-upload">
+                    <!--<button type="button" class="layui-btn" id="slide-pc">选择多图</button>-->
+                    <div class="pic-more">
+                        <ul class="pic-more-upload-list" id="slide-pc-priview">
+                            {notempty name="$house_img"}
+                            {volist name="$house_img" id="vo"}
+                            <li class="item_img"><div class="operate"></div><img src="{$vo.img_url}" class="img" ><input type="hidden" name="img_url[]" value="{$vo.img_url}" /></li>
+                            {/volist}
+                            {/notempty}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.title"} value="{$data.title}"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">租金</label>
+            <div class="layui-input-inline">
+                <input name="goods_name" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.rent"} value="{$data.rent}元/晚"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="border-bottom: 1px solid black;">
+            <label class="layui-form-label"><font style="font-weight: bold">租房人信息</font></label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系人</label>
+            <div class="layui-input-inline">
+                <input name="title" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.username"} value="{$data.username}"{/notempty}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-inline">
+                <input name="goods_name" disabled style="width: 500px" lay-verify="required" placeholder="" autocomplete="off" class="layui-input"  type="text" {notempty name="$data.mobile"} value="{$data.mobile}"{/notempty}>
+            </div>
+        </div>
+        <div class="layui-form-item" style="border-bottom: 1px solid black;">
+            <label class="layui-form-label"><font style="font-weight: bold">入住人信息</font></label>
+        </div>
+
+        <div class="layui-form-item" style="width: 50%;padding-left: 35px">
+            <table class="layui-table" >
+                <colgroup>
+                    <col width="100">
+                    <col width="100">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th><font style="font-weight: bold">姓名</font></th>
+                    <th><font style="font-weight: bold">身份证</font></th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="occupant_info" id="vo"}
+                <tr>
+                    <td>{$vo.realname}</td>
+                    <td>{$vo.id_card}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script>
+        var message;
+        layui.config({
+            base: '__JS__/',
+            version: '1.0.1'
+        }).use(['app', 'message'], function() {
+            var app = layui.app,
+                $ = layui.jquery,
+                layer = layui.layer;
+            //将message设置为全局以便子页面调用
+            message = layui.message;
+            //主入口
+            app.set({
+                type: 'iframe'
+            }).init();
+        });
+    </script>
+
+</div>
+</body>
+</html>

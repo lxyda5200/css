@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>优惠券使用详情</title>
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+    <link rel="stylesheet" href="__CSS__/admin.css">
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body id="couponDetails">
+<div class="layui-layout layui-layout-admin" style="padding: 15px;">
+    <div class="page-title">优惠券详情</div>
+    <div class="couponbox layui-bg-red">
+        <div class="left-i coupon-status">
+            <span class="coupon-price" id="couponPrice">￥10.00</span>
+            <span class="coupon-if" id="couponIf">满200可用</span>
+        </div>
+        <div class="right-i" id="headCouponInfo">
+            <span class="coupon-title"></span>
+            <span class="coupon-time"></span>
+            <span class="coupon-status"></span>
+        </div>
+    </div>
+    <!--  -->
+    <div class="input-info-box coupon-status">
+        <form class="layui-form" action="">
+            <div class="input-box">
+                <span class="label-ipt">日核销上线：</span>
+                <input type="text" name="check_num" class="layui-input ipt">
+                <span>张</span>
+                <span class="tips" style="color: red;margin-left: 15px;">0 表示无上限</span>
+            </div>
+            <div class="input-cd">
+                <span class="label-ipt" style="margin-right: 23px;">承担比例：</span>
+                <div class="input-box">
+                    <span class="label-ipt">平台承担</span>
+                    <input type="number" name="platform_bear" class="layui-input ipt" oninput="platformInput(this)">
+                    <span>%</span>
+                </div>
+                <div class="input-box">
+                    <span class="label-ipt" style="margin-left: 20px;">商家承担</span>
+                    <input type="text" class="layui-input ipt store_bear" disabled>
+                    <span>%</span>
+                </div>
+            </div>
+<!--            <div class="layui-form-item" style="margin-top: 40px;">-->
+<!--                <div class="layui-input-block">-->
+<!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+<!--                    <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>-->
+<!--                </div>-->
+<!--            </div>-->
+        </form>
+    </div>
+    <!--  -->
+    <div class="rule-box">
+        <div>使用规则</div>
+        <ul class="rule-info" id="ruleUl">
+            <!--<li>此优惠券仅可在线下指定门店使用;</li>
+            <li>使用此优惠券必须用ID编号/二维码核销，点击“立即使用”查看ID编号/二维码;</li>
+            <li>本优惠券仅限5.18日之前使用;</li>-->
+        </ul>
+    </div>
+    <!--  -->
+    <div class="page-title">优惠券记录</div>
+    <div class="coupon-list-box">
+        <div class="coupon-search">
+            <form class="layui-form">
+                <div class="layui-inline">
+                    <input class="layui-input" name="staff_mobile" placeholder="请输入员工号" autocomplete="off">
+                </div>
+                <div class="layui-inline">
+                    <input class="layui-input" name="user_mobile" placeholder="请输入用户手机号" autocomplete="off">
+                </div>
+                <div class="layui-inline">
+                    <select name="status">
+                        <option value="">核销状态</option>
+                        <option value="0">全部</option>
+                        <option value="1">已核销</option>
+                        <option value="2">未核销</option>
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <input type="text" name="date" class="layui-input" id="test1" placeholder="yyyy-MM-dd">
+                </div>
+                <button class="layui-btn" lay-submit lay-filter="formSubmitSearch">搜索</button>
+            </form>
+        </div>
+        <!-- -->
+        <div class="table-header">
+            <div class="layui-inline">
+                总领取张数：<span class="" id="totalGet">20</span>张
+            </div>
+            <div class="layui-inline">
+                总核销张数：<span class="" id="totalValidate">20</span>张
+            </div>
+            <div class="layui-inline">
+                平台总补贴：<span class="" id="totalSubsidy">20</span>元
+            </div>
+        </div>
+        <div class="layui-tab-item layui-show">
+            <table class="layui-table coupon-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>领取人ID</th>
+                        <th>领取人手机号</th>
+                        <th>领取时间</th>
+                        <th>领取张数</th>
+                        <th>优惠券状态</th>
+                        <th>是否核销</th>
+                        <th>核销券码</th>
+                        <th>核销编号</th>
+                        <th>核销时间</th>
+                        <th>核销员工编号</th>
+                        <th>核销员工名称</th>
+                    </tr>
+                </thead>
+                <tbody id="couponTbody">
+
+                </tbody>
+            </table>
+            <div class="page-box">
+                <div id="page"></div>
+                <div class="page-info">
+                    共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+                    <span class="totaldata"></span>&nbsp;数据
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script src="__JS__/http.js"></script>
+<script>
+    function platformInput(_this){
+        if ($(_this).val() != '') {
+            let val = parseFloat($(_this).val());
+            if (val < 0 || val > 100) {
+                $(_this).val(0);
+                $("input.store_bear").val(100);
+            }else{
+                $("input.store_bear").val(100-val);
+            }
+        } else {
+            $("input.store_bear").val('');
+        }
+
+    }
+    function getDetails(id) {
+        ajaxPost('/admin/coupon_api/offlineCouponInfo', {id: id}).then(res => {
+            if (res.kind != 2) {
+                $(".coupon-status").hide();
+            }
+            $("#couponPrice").text('￥'+ res.coupon_money);
+            $("#couponIf").text('满'+ res.satisfy_money+'可用');
+            $("input[name=check_num]").val(res.check_num);
+            $("input[name=platform_bear]").val(res.platform_bear);
+            $("input.store_bear").val(100-parseFloat(res.platform_bear));
+            let time = '';
+            if (parseFloat(res.days) > 0) {
+                time = res.days + '天'
+            } else {
+                time = res.start_time + '-' + res.end_time
+            }
+            let couponStatus = res.is_open==1?"上架":"下架";
+            $("#headCouponInfo .coupon-title").text(res.coupon_name);
+            $("#headCouponInfo .coupon-time").text('有效期：'+time);
+            $("#headCouponInfo .coupon-status").text('状态：'+couponStatus);
+            // 使用规则
+            let rule_str = '';
+            if (res.rules.length > 0) {
+                for(let i in res.rules){
+                    rule_str += '<li>'+res.rules[i]+'</li>'
+                }
+            } else {
+                rule_str = '<li>暂无规则</li>'
+            }
+            $("#ruleUl").html(rule_str)
+        }).catch(err => {})
+    }
+    // table list
+    function getCouponList(page, id, staff_mobile, user_mobile, status, date, isPage) {
+        ajaxPost('/admin/coupon_api/couponGetList', {
+            page: page,
+            id: id,
+            staff_mobile: staff_mobile,
+            user_mobile: user_mobile,
+            status: status,
+            date: date
+        }).then(res => {
+            $("#totalGet").text(res.total_get);
+            $("#totalValidate").text(res.total_validate);
+            $("#totalSubsidy").text(res.total_subsidy);
+            let datalist = res.data;
+            let tr = '';
+            if (datalist.length > 0) {
+                for(let i in datalist) {
+                    let status = '';
+                    switch (datalist[i].status) {
+                        case '1':
+                            status = '待使用';
+                            break;
+                        case '2':
+                            status = '已使用';
+                            break;
+                        case '3':
+                            status = '已过期';
+                            break;
+                        default:
+                            status = '无状态';
+                    }
+                    let isValidate = datalist[i].validate_no?"已核销":"未核销";
+                    tr += '<tr>' +
+                             '<td>'+(i+1)+'</td>' +
+                             '<td>'+datalist[i].user_id+'</td>' +
+                             '<td>'+datalist[i].user_mobile+'</td>' +
+                             '<td>'+datalist[i].create_time+'</td>' +
+                             '<td>1</td>' +
+                             '<td>'+status+'</td>' +
+                             '<td>'+isValidate+'</td>' +
+                             '<td>'+datalist[i].validate_code+'</td>' +
+                             '<td>'+(datalist[i].validate_no?datalist[i].validate_no:"")+'</td>' +
+                             '<td>'+(datalist[i].validate_time?datalist[i].validate_time:"")+'</td>' +
+                             '<td>'+(datalist[i].staff_id?datalist[i].staff_id:"")+'</td>' +
+                             '<td>'+(datalist[i].staff_name?datalist[i].staff_name:"")+'</td>' +
+                          '</tr>'
+                }
+                $(".page-box").show();
+                $(".totalpage").html(Math.ceil((res.total)/15));
+                $(".totaldata").html(res.total);
+                // 点击分页时，不在实例化分页page
+                if(isPage){
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: res.total //数据总数，从服务端得到
+                            ,groups: 8
+                            ,limit: 15
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    now_page = obj.curr;
+                                    getCouponList(obj.curr, id, staff_mobile, user_mobile, status, date, isPage, false);
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                tr = '<tr><td colspan="11" class="no-data">暂无数据</td></tr>';
+                $(".page-box").hide()
+            }
+            $("#couponTbody").html(tr);
+            let lastTr = '<tr class="last-row">\n' +
+                '               <td>总计</td>\n' +
+                '               <td class="total-data" colspan="5">领取张数：'+res.cur_get+'张</td>\n' +
+                '               <td class="total-data" colspan="3">核销张数：'+res.cur_validate+'张</td>\n' +
+                '               <td class="total-data" colspan="3">平台补贴：'+res.cur_subsidy+'元</td>\n' +
+                '           </tr>';
+            $("#couponTbody").append(lastTr);
+        }).catch(err => {})
+    }
+    $(function(){
+        let details_id = getUrlParams('id'); // 详情id
+        getDetails(details_id);
+        getCouponList(1, details_id, '', '', '0', '', true);
+        layui.use(['form'], function() {
+            //
+            let form = layui.form;
+            //监听提交 修改满减券信息
+            form.on('submit(formSubmit)', function(data){
+                let param = data.field;
+                param.id = details_id;
+                ajaxPost('/admin/coupon_api/editOfflineCoupon', param).then((res) => {
+                    layer.msg('修改成功', {time: 1500}, function(){
+
+                    })
+                }).catch((err) => {
+                    console.log(err);
+                });
+                return false
+            });
+            //监听提交 搜索
+            form.on('submit(formSubmitSearch)', function(data){
+                // console.log(data.field);
+                getCouponList(1, details_id, data.field.staff_mobile, data.field.user_mobile, data.field.status, data.field.date, true);
+                return false;
+            })
+
+        });
+        //
+        layui.use('laydate', function(){
+            let laydate = layui.laydate;
+
+            //常规用法
+            laydate.render({
+                elem: '#test1'
+            });
+        });
+
+
+    });
+</script>
+</html>

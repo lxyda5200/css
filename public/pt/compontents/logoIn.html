@@ -1,0 +1,83 @@
+<div class="model"><div class="model-box"><div class="pose"><img src="./images/del.png" class="del-model-icon hover" id="delModelIcon"><div class="logo-title">超神宿商家平台登录</div><div class="logo-cont"><form><div class="public-box"><img src="./images/username.png" class="usernameImg"> <input type="text" id="username" placeholder="用户名/手机号/邮箱" autocomplete="off"></div><div class="public-box"><img src="./images/password.png" class="passwordImg"> <input type="password" id="password" placeholder="请输入登录密码" autocomplete="off"> <img src="./images/show_password.png" class="show-password"></div><div class="public-box"><img src="./images/code.png" class="codeImg"> <input type="text" id="code" placeholder="请输入验证码" autocomplete="off"> <img src="" class="code getCodeImg"></div></form></div><div class="remind"></div><div class="btn-box"><div class="submit">登录</div><div class="others fr"><a href="./resetPassword.html">忘记密码</a> <b></b> <a href="./regster.html">立即注册</a></div></div></div></div></div><script>$(function () {
+        $("#delModelIcon").click(function(){
+            $("#loginLayer").hide();
+        });
+        $(".getCodeImg").attr('src', base+'/store_v1/index/captcha_code?random=0.362315166578439');
+        $(".getCodeImg").click(function() {
+            $("img.getCodeImg").attr('src',base + '/store_v1/index/captcha_code?random=' + Math.random());
+        });
+
+        var type = ''; //用于标识点登陆按钮的时候，提示的是是哪一个输入框
+        $('input').placeholder();
+        $('.submit').click(function () {
+            var usernameVel = $('#username').val();
+            var passwordVel = $('#password').val();
+            var codeVel = $('#code').val();
+            if (usernameVel.replace(/^\s+|\s+$/g, "").length == 0) {
+                $('.remind').html('*请输入用户名/手机号/邮箱');
+                type = 1;
+                return
+            }
+            if (passwordVel.replace(/^\s+|\s+$/g, "").length == 0) {
+                $('.remind').html('*请输入登录密码');
+                type = 2;
+                return
+            }
+            if (codeVel.replace(/^\s+|\s+$/g, "").length == 0) {
+                $('.remind').html('*请输入验证码');
+                type = 3;
+                return
+            }
+            var loadIndex = layer.load();
+            ajaxPost('/store_v1/Shop/login', {
+                mobile: usernameVel,
+                password: passwordVel,
+                code: codeVel
+            }, function(res) {
+                // 1 正常登录
+                // 0 正常登录失败或报错
+                // 101 账号未完成店铺申请
+                // 102 店铺正在审核中,请耐心等待
+                // 103 店铺审核未通过
+                // 104 店铺已被下架
+                layer.close(loadIndex);
+                // return false;
+                if (res.status == 1) {
+                    sessionStorage.setItem('token', res.data.token);
+                    window.location.href = './checkResult.html?type=2';
+                    // setTimeout(function(){
+                    //     window.location.href = '/businessType.html';
+                    // }, 1500);
+                } else if(res.status == 101) {
+                    window.location.href = './businessType.html';
+                    sessionStorage.setItem('token', res.data.token);
+                    sessionStorage.setItem('loginInfo', JSON.stringify(res.data));
+                } else if(res.status == 102) {
+                    window.location.href = './checkResult.html?type=1';
+                    // sessionStorage.setItem('token', res.data.token);
+                    // sessionStorage.setItem('loginInfo', JSON.stringify(res.data));
+                } else if(res.status == 103) {
+                    window.location.href = './checkResult.html?type=3';
+                    sessionStorage.setItem('token', res.data.token);
+                    sessionStorage.setItem('loginInfo', JSON.stringify(res.data));
+                    sessionStorage.setItem('isEditStatus', true);
+                    sessionStorage.setItem('enterType', res.data.type);
+                } else {
+                    $(".getCodeImg").click();
+                    layer.msg(res.msg)
+                }
+            }, function(err) {
+                layer.close(loadIndex);
+                layer.msg('接口报错')
+            });
+
+        });
+        $('.show-password').mousedown(function(){
+            $(this).attr('src','./images/ic_zhengyan.png');
+            $('#password')[0].type = "text";  
+        });
+        $('.show-password').mouseup(function(){
+            $(this).attr('src','./images/show_password.png');
+            $('#password')[0].type = "password";  
+        });
+    })</script>

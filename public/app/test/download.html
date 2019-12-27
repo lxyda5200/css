@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超神宿APP 爱生活 爱实体</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body,
+        .box {
+            height: 100%;
+            position: relative;
+            background-size: 100% 100%
+        }
+
+        .box .btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .btn div {
+            width: 5.02rem;
+            height: 0.8rem;
+            text-align: center;
+            line-height: 0.8rem;
+            font-size: 0.32rem;
+        }
+
+        .btn #downLoad {
+            background: #E84363;
+            color: #fff;
+            margin-bottom: 0.26rem;
+            box-sizing: border-box;
+        }
+
+        .btn #copyBtn {
+            color: #E84363;
+            border: 0.02rem solid rgba(232, 67, 99, 1);
+            opacity: 0.9;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box" id="box">
+        <div class="btn" id='btnBox'>
+            <div onclick="open_app()" id="downLoad">直接下载</div>
+            <div id='copyBtn' data-clipboard-text='' onclick="copy_w()">复制链接</div>
+        </div>
+    </div>
+</body>
+<script src="./clipboard.min.js"></script>
+<script>
+    // 自适应 b
+    resize()
+    window.onresize = function () {
+        resize()
+    }
+
+    function resize() {
+        var docEl = document.documentElement
+        var clientWidth = window.innerWidth
+        if (clientWidth >= 750) {
+            docEl.style.fontSize = '100px'
+        } else {
+            docEl.style.fontSize = 100 * (clientWidth / 750) + 'px'
+        }
+    }
+    // 自适应 e
+    // 设置动态样式 b
+    let system = window.navigator.userAgent
+    let btn = document.getElementById('copyBtn')
+    let box = document.getElementById('box')
+    let btnBox = document.getElementById('btnBox')
+    if (system.indexOf('Android') > -1 || system.indexOf('Linux') > -1) {
+        box.style.backgroundImage = "url('./tu.jpg')"
+        box.style.backgroundRepeat = "no-repeat"
+        btn.style.display = 'block'
+        btnBox.style.bottom = '25%'
+    } else if (!!system.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+        box.style.backgroundImage = "url('./tu.jpg')"
+        box.style.backgroundRepeat = "no-repeat"
+        btn.style.display = 'none'
+        btnBox.style.bottom = '25%'
+    }
+    // 设置动态样式 e
+    var isOpen = true
+    // 复制功能 b
+    btn.setAttribute('data-clipboard-text', window.location.href)
+    var clipboard = new ClipboardJS('#copyBtn')
+    // 复制功能 e
+    function copy_w() {
+        btn.style.background = '#E84363'
+        btn.style.color = '#fff'
+        setTimeout(() => {
+            btn.style.background = ''
+            btn.style.color = '#E84363'
+        }, 200)
+    }
+
+    function open_app() {
+        if (isOpen == true) {
+            isOpen = false
+            setTimeout(() => {
+                isOpen = true
+            }, 1000)
+            let downLoad = document.getElementById('downLoad')
+            downLoad.style.background = 'transparent'
+            downLoad.style.border = '0.02rem solid rgba(232, 67, 99, 1)'
+            downLoad.style.color = '#E84363'
+            setTimeout(() => {
+                downLoad.style.background = '#E84363'
+                downLoad.style.color = '#fff'
+                downLoad.style.border = 'none'
+            }, 200)
+            let system = window.navigator.userAgent
+            if (system.indexOf('Android') > -1 || system.indexOf('Linux') > -1) {
+                // 安卓
+                if (system.match(/Chrome/)) { //chrome
+                    setTimeout(function () {
+                        if (!document.webkitHidden) {
+                            window.location.href = 'http://appwx.supersg.cn/static/test/css.apk'
+                        }
+                    }, 1000);
+                    window.location = "chaoshensu://sgkj.css.com"; //打开自己的应用
+                } else {
+                    // 通用的方式
+                    var iframe = document.createElement("iframe");
+                    iframe.style.border = "none";
+                    iframe.style.width = "1px";
+                    iframe.style.height = "1px";
+                    var t = setTimeout(function () {
+                           window.location = "http://appwx.supersg.cn/static/test/css.apk"; //打开市场
+                    }, 1000);
+                    iframe.onload = function () {
+                        clearTimeout(t)
+                    };
+                    iframe.src = "chaoshensu://sgkj.css.com"; //打开自己的应用
+                    document.body.appendChild(iframe);
+                }
+            } else if (!!system.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+                // 苹果
+                setTimeout(function () {
+                    //判断是不是可见
+                    if (!document.webkitHidden) {
+                        window.location ="https://apps.apple.com/cn/app/%E8%B6%85%E7%A5%9E%E5%AE%BF-%E6%96%B0%E9%9B%B6%E5%94%AE%E8%B4%AD%E7%89%A9%E5%B9%B3%E5%8F%B0/id1440450216?from=singlemessage&isappinstalled=0"; //到苹果的商店...
+                    }
+                }, 1000);
+                window.location = "chaoshensu://sgkj.css.com"; //打开自己的应用
+            } else {
+                alert("请在手机端打开")
+            }
+        }
+    }
+</script>
+
+</html>

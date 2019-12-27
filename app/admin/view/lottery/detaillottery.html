@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<style>
+    #no_gift{
+        display: none;
+    }
+    #open{
+        display: none;
+    }
+</style>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div style="margin-top: 20px;">
+    </div>
+    <form class="layui-form" id="admin" method="post" action="">
+
+        <div class="layui-form-item">
+            <label style="font-size: 20px;" class="layui-form-item">基础信息</label>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动名称：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="title" autocomplete="off" placeholder="请输入活动名称" class="layui-input" type="text"
+                       value="{$info.title}">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">说明：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <textarea name="description" placeholder="请输入活动说明" class="layui-textarea">{$info.description}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">活动时间：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input style="width: 45%;" name="start_time" type="text" class="layui-input" id="start_time" value="{$info.start_time}"> —— <input
+                    style="width: 45%;" name="end_time" type="text" class="layui-input" id="end_time" value="{$info.end_time}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动规则：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="rule" autocomplete="off" placeholder="请输入活动规则， 多个规则用 | 隔开" class="layui-input" type="text"
+                       value="{$info.rule}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动平台</label>
+            <div class="layui-input-block">
+                <input type="radio" name="client" value="1" title="App" {if $info.client==1}checked{/if}>
+                <input type="radio" name="client" value="2" title="小程序" {if $info.client==2}checked{/if}>
+                <input type="radio" name="client" value="3" title="App&小程序" {if $info.client==3}checked{/if}>
+            </div>
+            <p style="color: #999;">显示活动展示平台</p>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户筛选</label>
+            <div class="layui-input-block">
+                <input type="radio" name="user_type" value="全部用户" title="全部用户" checked>
+                <input type="radio" name="user_type" value="部分用户" title="部分用户" disabled>
+            </div>
+            <p style="color: #999;">选择参与活动的用户</p>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label style="font-size: 20px;" class="layui-form-item">奖品设置</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">预期抽奖次数：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="number" autocomplete="off" placeholder="请输入预期抽奖人数" class="layui-input" type="text"
+                       value="{$info.number}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">虚拟中奖人数：</label>
+            <div class="layui-input-block" style="max-width:600px;">
+                <input name="fake_user" autocomplete="off" placeholder="请输入虚拟中奖人数" class="layui-input" type="text"
+                       value="{$info.fake_user}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">中奖模式</label>
+            <div class="layui-input-block">
+                <input type="radio" name="type" value="1" title="随机模式" {if $info.type==1}checked{/if}>
+                <input type="radio" name="type" value="2" title="概率模式" {if $info.type==2}checked{/if}>
+            </div>
+        </div>
+
+        <table class="layui-table" lay-size="sm">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>奖品名称(外)</th>
+                <th>奖品图标</th>
+                <th>奖品名称(优惠券名称)</th>
+                <th>奖品数量</th>
+                <th>实际奖池数量</th>
+                <th>已中/剩余</th>
+                {if $info.type==1}<th>实际中奖率%</th>{/if}
+                {if $info.type==2}<th>中奖概率%</th>{/if}
+                <th>排序</th>
+            </tr>
+            </thead>
+            <tbody id="view1">
+                {volist name="gift_list" id="vo"}
+                <tr>
+                    <td>{$key+1}</td>
+                    <td><input class="cgift_name" type="text" data-key="gift_name" value="{$vo.gift_name}"></td>
+                    <td>
+                        <div class="layui-form-item">
+                            <img class="img-cover" style="max-width:300px;max-height:135px;" src="{$vo.icon}" />
+                        </div>
+                    </td>
+                    <td>{$vo.coupon_name==null?'-':$vo.coupon_name}</td>
+                    <td><input class="cgift_count" type="number" data-key="gift_count" value="{$vo.gift_count}"></td>
+                    <td><input class="cactual_gift_count" type="number" data-key="actual_gift_count" value="{$vo.actual_gift_count}"></td>
+                    <td>{$vo.actual_gift_count-$vo.remain}/{$vo.remain}</td>
+                    {if $info.type==1}<td>{$vo.gl}</td>{/if}
+                    {if $info.type==2}<td>{$vo.manic}</td>{/if}
+                    <td><input class="csort" type="number" data-key="sort" value="{$vo.sort}"></td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+
+
+        <script id="tpl1" type="text/html">
+            {{# layui.each(d, function(index, item) { }}
+            <tr>
+                <td>{{index+1}}</td>
+                <td><input class="cgift_name" type="text" data-key="gift_name" value="{$vo.gift_name}"></td>
+                <td>
+                    <div class="layui-form-item">
+                        <img class="img-cover" style="max-width:300px;max-height:135px;" src="{$vo.icon}" />
+                    </div>
+                </td>
+                <td>{{item.coupon_name==null?'-':item.coupon_name}}</td>
+                <td><input class="cgift_count" type="number" data-key="gift_count" value="{$vo.gift_count}"></td>
+                <td><input class="cactual_gift_count" type="number" data-key="actual_gift_count" value="{$vo.actual_gift_count}"></td>
+                <td>0/{$vo.actual_gift_count}</td>
+                <td>{$vo.gl}</td>
+                <td><input class="csort" type="number" data-key="sort" value="{$vo.sort}"></td>
+            </tr>
+            {{#  }); }}
+        </script>
+
+
+        <p style="color: #999;">注：奖品图标最佳尺寸 240*240</p>
+
+
+
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label style="font-size: 20px;" class="layui-form-item">活动策略</label>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="tactics">
+                {volist name="tactics_list" id="vo"}
+                <div class="layui-input-block" style="max-width:600px;">
+                    活动每满 <input style="width: 70px;" name="conditions" autocomplete="off" placeholder="" class="layui-input" type="text"
+                                value="{$vo.conditions}"> 元，抽奖一次，以此类推
+                </div>
+                {/volist}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="max-width:600px;">
+                每人活动期内最多抽 <input style="width: 70px;" name="per_user_max_number" autocomplete="off" placeholder="" class="layui-input" type="text"
+                                 value="{$info.per_user_max_number}"> 次(-1为不限制)
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label style="font-size: 20px;" class="layui-form-item">其它设置</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动背景：</label>
+            <img class="img-cover" style="max-width:300px;max-height:135px;" src="{$info.bg_img}" />
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">活动icon：</label>
+            <img class="img-cover" style="max-width:300px;max-height:135px;" src="{$info.icon}" />
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>
+<script src="__PUBLIC__/layui/layui.js"></script>
+<script src="__PUBLIC__/jquery/jquery.min.js"></script>
+
+<script>
+    layui.use(['form'], function () {
+
+    })
+</script>

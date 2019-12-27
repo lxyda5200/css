@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商圈列表</title>
+    <link rel="stylesheet" href="__WZH__/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__WZH__/js/layui/css/layui.css">
+    <link rel="stylesheet" href="__WZH__/css/admin.css">
+    <script src="__WZH__/js/jquery.min.js"></script>
+    <script src="__WZH__/js/layui/layui.js"></script>
+    <script src="__JS__/config.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin" id="brandList" style="padding: 15px;">
+    <div class="today-table-header">
+        <form class="layui-form layui-inline" lay-filter="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 70px;">商圈名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="keywords" class="layui-input" placeholder="请输入商圈名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 50px;">商圈ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="circle_id" class="layui-input" placeholder="请输入商圈ID">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 50px;">地域</label>
+                <input type="hidden" name="s_pid">
+                <input type="hidden" name="s_cid">
+                <input type="hidden" name="s_aid">
+                <div class="layui-input-inline" style="width: 120px;">
+                    <select name="province" lay-filter="provinceFilter">
+
+                    </select>
+                </div>
+                <div class="layui-input-inline layui-form" lay-filter="cFilter" style="width: 120px;">
+                    <select name="city" lay-filter="cityFilter">
+
+                    </select>
+                </div>
+                <div class="layui-input-inline layui-form" lay-filter="aFilter" style="width: 120px;">
+                    <select name="area" lay-filter="areaFilter">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline" style="margin-left: 15px;">
+                <button class="layui-btn" lay-submit lay-filter="formSearchList">搜索</button>
+            </div>
+        </form>
+        <div class="layui-inline">
+            <button class="layui-btn" onclick="addCircleLayer()">
+                <i class="layui-icon">&#xe654;</i>新增
+            </button>
+        </div>
+    </div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>商圈ID</th>
+            <th>商圈名称</th>
+            <th>所属城市</th>
+            <th>所属区域</th>
+            <th>商圈封面</th>
+            <th>商圈中心坐标</th>
+            <th>人气值</th>
+            <th>创建时间</th>
+            <th>是否开启</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="dataListTbody">
+        <!--<tr>
+            <td>84908034</td>
+            <td>春熙路太古里商业圈</td>
+            <td>成都</td>
+            <td>武侯区</td>
+            <td>
+                <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" style="width: 120px;height: 60px;">
+            </td>
+            <td>环球中心</td>
+            <td>456721</td>
+            <td>2019-10-01 12:23:21</td>
+            <td>
+                <form class="layui-form" action="" lay-filter="checkboxForm">
+                    <div class="layui-input-block" style="margin-left: 0;">
+                        <input type="checkbox" name="switch" lay-filter="showHide" value="" lay-skin="switch" checked>
+                    </div>
+                </form>
+            </td>
+            <td style="width: 250px;">
+                <button type="button" class="layui-btn layui-btn-sm magleft" onclick="seeDetails(this)">
+                    <i class="layui-icon">&#xe60e;</i>查看
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm magleft">
+                    <i class="layui-icon">&#xe642;</i>编辑
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft" onclick="delDatalist(this)">
+                    <i class="layui-icon">&#xe640;</i>删除
+                </button>
+            </td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="page-box">
+        <div id="page"></div>
+        <div class="page-info">
+            共&nbsp;<span class="totalpage"></span>&nbsp;页&nbsp;
+            <span class="totaldata"></span>&nbsp;条数据
+        </div>
+    </div>
+</div>
+<!-- 查看详情 -->
+<div class="layer-box-page" id="circleDetails">
+    <table class="layui-table">
+        <tr>
+            <th>商圈ID</th>
+            <th>商圈名称</th>
+            <th>所属城市</th>
+            <th>所属区域</th>
+            <th>地理位置坐标</th>
+            <th>商圈封面图</th>
+            <th>商圈描述</th>
+            <th>商圈人气（人次）</th>
+        </tr>
+        <tbody id="detailsTbody"></tbody>
+    </table>
+    <div class="table-header" style="padding: 10px 0 5px;">关联的店铺</div>
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>店铺ID</th>
+            <th>店铺名称</th>
+            <th>行业类别</th>
+            <th>店铺详细地址</th>
+            <th>主营品牌</th>
+            <th>店铺描述</th>
+            <th>店铺联系电话</th>
+            <th>入驻时间</th>
+        </tr>
+        <thead>
+        <tbody id="connectStoreTbody">
+        <!--<tr>
+            <td>A4567</td>
+            <td>滔博体育（春熙路店</td>
+            <td>体育运动</td>
+            <td>四川省成都市锦江区春熙路太古里（1101号）</td>
+            <td>Adidas、Nike、New balance、锐步</td>
+            <td>国际体育潮牌专营店</td>
+            <td>028-66688863</td>
+            <td>2019-04-10</td>
+        </tr>-->
+        </tbody>
+    </table>
+    <div class="store-page-box">
+        <div id="storePage"></div>
+    </div>
+</div>
+<!-- 添加、编辑商圈 -->
+<div class="layer-box-page" id="addEditCircleLayer">
+    <form class="layui-form" lay-filter="circleForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商圈名称</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="circleId">
+                <input type="text" name="circle_name" class="layui-input" lay-verify="required" placeholder="请输入商圈名称">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地域</label>
+            <input type="hidden" name="pid">
+            <input type="hidden" name="cid">
+            <input type="hidden" name="aid">
+            <div class="layui-input-inline layui-form" lay-filter="pFormFilter">
+                <select name="pname" lay-filter="pselect">
+
+                </select>
+            </div>
+            <div class="layui-input-inline layui-form" lay-filter="cFormFilter">
+                <select name="cname" lay-filter="cselect">
+
+                </select>
+            </div>
+            <div class="layui-input-inline layui-form" lay-filter="aFormFilter">
+                <select name="aname" lay-filter="aselect">
+
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">详细地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" class="layui-input" lay-verify="required" placeholder="请输入详细地址">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择商圈坐标中心点</label>
+            <div class="layui-input-block">
+                <div id="containerMap" style="width: 100%; height: 350px;"></div>
+                <input type="hidden" name="lng">
+                <input type="hidden" name="lat">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商圈封面图</label>
+            <div class="layui-input-block">
+                <div class="sub-tips" style="padding-top: 10px;">商圈封面图最多支持上传6张，不能为空；尺寸为750*500px,,单张图片的大小不能超过500KB。</div>
+                <ul class="circle-cover-ul" id="circleCoverUl">
+                   <!-- <li>
+                        <input type="hidden" name="circleCover">
+                        <div class="img">
+                            <img src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=142028263,3047435408&fm=11&gp=0.jpg" >
+                        </div>
+                        <div class="close-cover" onclick="delCircleCover(this)"><i class="layui-icon">&#x1006;</i></div>
+                    </li>-->
+                    <div class="layui-btn layui-btn-primary add-div add-div-btn " id="addCircleCoverBtn">
+                        <i class="layui-icon add-logon-i">&#xe608;</i>
+                    </div>
+                </ul>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商圈描述</label>
+            <div class="layui-input-block">
+                <textarea name="description" class="layui-textarea" lay-verify="required" placeholder="请输入商圈介绍"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">关联店铺</label>
+            <div class="layui-input-block">
+                <div style="padding-top: 5px;">
+                    <div class="layui-btn layui-btn-sm" onclick="addConnectStoreLayer()">
+                        <i class="layui-icon">&#xe654;</i>
+                        添加关联店铺
+                    </div>
+                </div>
+                <ul class="connect-store-id" id="connectStoreIdUl">
+                    <!--<li>
+                        <span>A01252</span>
+                        <div class="close-store-id" onclick="delStoreId(this)"><i class="layui-icon">&#x1006;</i></div>
+                    </li>-->
+                </ul>
+                <input type="hidden" name="del_store_ids">
+                <input type="hidden" name="add_store_ids">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开启</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" checked>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 60px;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formAddCircleSubmit">确认</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 添加关联店铺 -->
+<div class="layer-box-page" id="addConnectStoreId">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">店铺ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="addStoreId" class="layui-input" placeholder="请输入店铺ID,ID之间以英文逗号隔开。">
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script src="__WZH__/js/http.js"></script>
+<!--<script src="__WZH__/js/area.js"></script>-->
+<!--<script src="__WZH__/js/selectArea.js"></script>-->
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=b015eba8ba28d34de5abbc7d5160a436&plugin=AMap.Geocoder"></script>
+<script>
+    let form = null;
+    let upload = null;
+    let now_page = 1;
+    let storePay = {
+        getDatalist: function(page, keywords, circle_id, province, city, area, isPage) {
+            ajaxPost('/admin/business_circle_api/businessCircleList', {
+                page: page,
+                keywords: keywords,
+                circle_id: circle_id,
+                province: province,
+                city: city,
+                area: area,
+            }).then(res => {
+                let datalist = res.data;
+                let tr = "";
+                if (datalist.length > 0) {
+                    for(let i in datalist) {
+                        let isChecked = datalist[i].status==1?"checked":"";
+                        let covers = '';
+                        if (datalist[i].cover.length > 0) {
+                            for(let j in datalist[i].cover){
+                                covers += '<img src="'+httpUrl+datalist[i].cover[j].img_url+'" style="width: 120px;margin-right: 10px;"/>'
+                            }
+                        }
+                        tr += '<tr>\n' +
+                            '            <td>'+datalist[i].id+'</td>\n' +
+                            '            <td>'+datalist[i].circle_name+'</td>\n' +
+                            '            <td>'+datalist[i].city_name+'</td>\n' +
+                            '            <td>'+datalist[i].area_name+'</td>\n' +
+                            '            <td>\n' +
+                            '                '+covers+'\n' +
+                            '            </td>\n' +
+                            '            <td>'+datalist[i].address+'</td>\n' +
+                            '            <td>'+datalist[i].visit_number+'</td>\n' +
+                            '            <td>'+datalist[i].create_time+'</td>\n' +
+                            '            <td>\n' +
+                            '                <form class="layui-form" lay-filter="checkboxForm">\n' +
+                            '                    <div class="layui-input-block" style="margin-left: 0;">\n' +
+                            '                        <input type="checkbox" name="switch" lay-filter="showHide" value="'+datalist[i].id+'" lay-skin="switch" '+isChecked+'>\n' +
+                            '                    </div>\n' +
+                            '                </form>\n' +
+                            '            </td>\n' +
+                            '            <td style="width: 250px;">\n' +
+                            '                <button type="button" class="layui-btn layui-btn-sm magleft" id="'+datalist[i].id+'" onclick="seeDetails(this)">\n' +
+                            '                    <i class="layui-icon">&#xe60e;</i>查看\n' +
+                            '                </button>\n' +
+                            '                <button type="button" class="layui-btn layui-btn-sm magleft" id="'+datalist[i].id+'" onclick="layerDetails(this)">\n' +
+                            '                    <i class="layui-icon">&#xe642;</i>编辑\n' +
+                            '                </button>\n' +
+                            '                <button type="button" class="layui-btn layui-btn-sm layui-btn-danger magleft" id="'+datalist[i].id+'" onclick="delDatalist(this)">\n' +
+                            '                    <i class="layui-icon">&#xe640;</i>删除\n' +
+                            '                </button>\n' +
+                            '            </td>\n' +
+                            '        </tr>';
+                    }
+                    $(".page-box").show();
+                    $(".totalpage").html(Math.ceil((res.total)/15));
+                    $(".totaldata").html(res.total);
+                    if (isPage) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            //执行一个laypage实例
+                            laypage.render({
+                                elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+                                ,count: res.total //数据总数，从服务端得到
+                                ,groups: 8
+                                ,limit: 15
+                                ,theme: '#FF5722'
+                                ,jump: function(obj, first) {
+                                    //首次不执行
+                                    if(!first){
+                                        now_page = obj.curr;
+                                        getDataList(obj.curr, keywords, circle_id, province, city, area, false)
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    tr = '<tr><td colspan="10" class="no-data">暂无数据</td></tr>';
+                    $(".page-box").hide();
+                }
+                $("#dataListTbody").html(tr);
+                // checkbox
+                form.render('checkbox', 'checkboxForm');
+                form.on('switch(showHide)', function(data){
+                    // let load = layer.load()
+                    ajaxPost('/admin/business_circle_api/editBusinessCircleStatus', {
+                        id: data.value,
+                        status: data.elem.checked ? 1 : -1
+                    }).then((res) => {
+                        // layer.close(load);
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                });
+            }).catch(err => {});
+
+        },
+        // 获取 列表省市区
+        getRegionList: function(id, level, update) {
+            ajaxPost('/admin/business_circle_api/regionList', {
+                id: id,
+                level: level
+            }).then(res => {
+                // console.log(res);
+                let provinceList = res.province_list;
+                let cityList = res.city_list;
+                let areaList = res.county_list;
+                let pStr = '<option value="">请选择省</option>', cStr = '<option value="">请选择市</option>', aStr = '<option value="">请选择区</option>';
+                for(let i in provinceList) {
+                    pStr += '<option value="'+provinceList[i].id+'">'+provinceList[i].name+'</option>'
+                }
+                for(let i in cityList) {
+                    cStr += '<option value="'+cityList[i].id+'">'+cityList[i].name+'</option>'
+                }
+                for(let i in areaList) {
+                    aStr += '<option value="'+areaList[i].id+'">'+areaList[i].name+'</option>'
+                }
+                $("select[name=province]").html(pStr);
+                $("select[name=city]").html(cStr);
+                $("select[name=area]").html(aStr);
+                switch (update) {
+                    case 'all':
+                        // $("input[name=s_pid]").val(provinceList[0].id);
+                        // $("input[name=s_cid]").val(cityList[0].id);
+                        // $("input[name=s_aid]").val(areaList[0].id);
+                        form.render('select', 'searchForm');
+                        break;
+                    case 'cityArea':
+                        // $("input[name=s_cid]").val(cityList[0].id);
+                        // $("input[name=s_aid]").val(areaList[0].id);
+                        form.render('select', 'cFilter');
+                        form.render('select', 'aFilter');
+                        break;
+                    case 'area':
+                        // $("input[name=s_aid]").val(areaList[0].id);
+                        form.render('select', 'aFilter');
+                        break;
+                }
+
+            }).catch(err => {})
+        },
+        // 获取 商圈省市区
+        getLayerRegionList: function(id, level, update) {
+            ajaxPost('/admin/business_circle_api/regionList', {
+                id: id,
+                level: level
+            }).then(res => {
+                // console.log(res);
+                let provinceList = res.province_list;
+                let cityList = res.city_list;
+                let areaList = res.county_list;
+                let pStr = '', cStr = '', aStr = '';
+                for(let i in provinceList) {
+                    pStr += '<option value="'+provinceList[i].id+'">'+provinceList[i].name+'</option>'
+                }
+                for(let i in cityList) {
+                    cStr += '<option value="'+cityList[i].id+'">'+cityList[i].name+'</option>'
+                }
+                for(let i in areaList) {
+                    aStr += '<option value="'+areaList[i].id+'">'+areaList[i].name+'</option>'
+                }
+                $("select[name=pname]").html(pStr);
+                $("select[name=cname]").html(cStr);
+                $("select[name=aname]").html(aStr);
+                switch (update) {
+                    case 'all':
+                        $("input[name=pid]").val(provinceList[0].id);
+                        $("input[name=cid]").val(cityList[0].id);
+                        $("input[name=aid]").val(areaList[0].id);
+                        form.render('select', 'circleForm');
+                        break;
+                    case 'cityArea':
+                        $("input[name=cid]").val(cityList[0].id);
+                        $("input[name=aid]").val(areaList[0].id);
+                        form.render('select', 'cFormFilter');
+                        form.render('select', 'aFormFilter');
+                        break;
+                    case 'area':
+                        $("input[name=aid]").val(areaList[0].id);
+                        form.render('select', 'aFormFilter');
+                        break;
+                }
+
+            }).catch(err => {})
+        },
+        // 编辑商圈 省市区 赋值
+        editRegionList: function(provinceList, cityList, areaList, pid, cid ,aid) {
+            let pStr = '', cStr = '', aStr = '';
+            for (let i in provinceList) {
+                pStr += '<option value="' + provinceList[i].id + '">' + provinceList[i].name + '</option>'
+            }
+            for (let i in cityList) {
+                cStr += '<option value="' + cityList[i].id + '">' + cityList[i].name + '</option>'
+            }
+            for (let i in areaList) {
+                aStr += '<option value="' + areaList[i].id + '">' + areaList[i].name + '</option>'
+            }
+            $("select[name=pname]").html(pStr);
+            $("select[name=cname]").html(cStr);
+            $("select[name=aname]").html(aStr);
+
+            $("select[name=pname]").val(pid);
+            $("select[name=cname]").val(cid);
+            $("select[name=aname]").val(aid);
+
+            $("input[name=pid]").val(pid);
+            $("input[name=cid]").val(cid);
+            $("input[name=aid]").val(aid);
+
+            form.render('select', 'circleForm');
+        }
+    };
+    // 添加商圈 layer
+    let circleLayerOpen = null;
+    function addCircleLayer() {
+        storePay.getLayerRegionList(0, 1, 'all');
+        circleLayerOpen = layer.open({
+            type: 1,
+            content: $('#addEditCircleLayer'),
+            title: '添加商圈',
+            area: ['1000px', '90%'],
+            cancel: function () {
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+                clearCircleFormData()
+            }
+        })
+    }
+    // 编辑商圈 layer
+    function layerDetails(_this) {
+        let id = $(_this).attr("id");
+        ajaxPost('/admin/business_circle_api/BusinessCircleInfo', {
+            id: id
+        }).then(res => {
+            // console.log(res);
+            $("input[name=circleId]").val(res.id);
+            $("input[name=circle_name]").val(res.circle_name);
+            $("input[name=address]").val(res.address);
+            $("textarea[name=description]").val(res.description);
+            // 省市区
+            storePay.editRegionList(res.province_list, res.city_list, res.area_list, res.province, res.city, res.area);
+            // 是否开启
+            if (res.status == 1) {
+                $("input[name=status]").prop("checked", true);
+            } else {
+                $("input[name=status]").prop("checked", false);
+            }
+            // 标点
+            regeoCode([res.lng, res.lat]);
+            // 封面图
+            if (res.cover.length > 0) {
+                for(let i in res.cover){
+                    let li = ' <li>\n' +
+                        '           <input type="hidden" name="circleCover" value="'+res.cover[i].img_url+'">\n' +
+                        '           <div class="img">\n' +
+                        '               <img src="'+httpUrl+res.cover[i].img_url+'" >\n' +
+                        '           </div>\n' +
+                        '           <div class="close-cover" onclick="delCircleCover(this)"><i class="layui-icon">&#x1006;</i></div>\n' +
+                        '       </li>';
+                    $("#circleCoverUl").prepend(li);
+                }
+                if (res.cover.length >= 6){
+                    $("#addCircleCoverBtn").hide()
+                } else {
+                    $("#addCircleCoverBtn").show()
+                }
+            } else {
+                $("#addCircleCoverBtn").show()
+            }
+            // 关联店铺
+            if (res.stores.length > 0) {
+                let str = '';
+                for(let i = 0 ; i < res.stores.length ; i++){
+                    str += '<li>\n' +
+                        '         <input type="hidden" name="storeId" value="'+res.stores[i].store_id+'"/>\n' +
+                        '         <span>'+res.stores[i].store_id+'</span>\n' +
+                        '         <div class="close-store-id" onclick="delStoreId(this)"><i class="layui-icon">&#x1006;</i></div>\n' +
+                        '     </li>';
+                }
+                $("#connectStoreIdUl").html(str);
+            }
+
+            form.render('checkbox', 'circleForm');
+            circleLayerOpen = layer.open({
+                type: 1,
+                content: $('#addEditCircleLayer'),
+                title: '编辑商圈',
+                area: ['1000px', '90%'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    clearCircleFormData()
+                }
+            })
+        }).catch(err => {})
+    }
+    // 删除当前上传的商圈封面图
+    function delCircleCover(_this) {
+        $("#addCircleCoverBtn").show();
+        $(_this).parents('li').remove();
+    }
+    // 添加关联店铺
+    function addConnectStoreLayer() {
+        let open = layer.open({
+            type: 1,
+            content: $('#addConnectStoreId'),
+            title: '添加关联店铺',
+            btn: ["确认", "取消"],
+            area: ['700px', '200px'],
+            yes: function() {
+                let idStr = $("input[name=addStoreId]").val();
+                if (!idStr) {
+                    layer.msg('请输入关联店铺ID');
+                    return
+                }
+                let idArr = idStr.split(",");
+                if (idArr.length > 20) {
+                    layer.msg('一次最多输入20个店铺ID');
+                    return
+                }
+                // 添加的店铺 id
+                $("input[name=add_store_ids]").val(idStr);
+                //
+                let str = '';
+                for(let i = 0 ; i < idArr.length ; i++){
+                    str += '<li>\n' +
+                        '         <input type="hidden" name="storeId" value="'+idArr[i]+'"/>\n' +
+                        '         <span>'+idArr[i]+'</span>\n' +
+                        '         <div class="close-store-id" onclick="delStoreId(this)"><i class="layui-icon">&#x1006;</i></div>\n' +
+                        '     </li>';
+                }
+                $("#connectStoreIdUl").append(str);
+                layer.close(open);
+                $("input[name=addStoreId]").val("")
+            },
+            btn2: function() {
+                $("input[name=addStoreId]").val("")
+            },
+            cancel: function () {
+                $("input[name=addStoreId]").val("")
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        })
+    }
+    // 关联标签del
+    function delStoreId(_this) {
+        $(_this).parents('li').remove();
+        let id = $(_this).parents('li').find('input[name=storeId]').val(); // 当前删除id
+        let del_id = $("input[name=del_store_ids]").val(); // 之前删除的id
+        let add_id = $("input[name=add_store_ids]").val(); // 添加的id
+        let add_id_arr = add_id.split(',');
+        for (let i = 0 ; i < add_id_arr.length ; i++) {
+            if (add_id_arr[i] == id) {
+                // 如果 添加的id中 有 当前删除的id
+                add_id_arr.splice(i, 1);
+            }
+        }
+        let del_str = '';
+        if (del_id) {
+            del_str = del_id+','+id;
+        } else {
+            del_str = id
+        }
+        $("input[name=del_store_ids]").val(del_str);
+        $("input[name=add_store_ids]").val(add_id_arr.join(','));
+    }
+    // 删除 data
+    function delDatalist(_this) {
+        let id = $(_this).attr("id");
+        layer.confirm('确定要删除该动态数据吗？', {title: '提示'}, function(){
+            // 确认
+            ajaxPost('/admin/business_circle_api/delBusinessCircle', {
+                id: id
+            }).then((res) => {
+                layer.msg('删除成功', {time: 1500}, function(){
+                    let keywords = $("input[name=keywords]").val();
+                    let circle_id = $("input[name=circle_id]").val();
+                    let province = $("input[name=s_pid]").val();
+                    let city = $("input[name=s_cid]").val();
+                    let area = $("input[name=s_aid]").val();
+                    storePay.getDatalist(now_page, keywords, circle_id, province, city, area, false); // 获取list
+                })
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        },function(){
+            // 取消
+        })
+    }
+    // 清空商圈 form data
+    function clearCircleFormData() {
+        $("input[name=circleId]").val("");
+        $("input[name=circle_name]").val("");
+        $("input[name=address]").val("");
+        $("input[name=lng]").val("");
+        $("input[name=lat]").val("");
+        $("#circleCoverUl>li").each(function(){
+            $(this).remove();
+        });
+        $("textarea[name=description]").val("");
+        $("#connectStoreIdUl").html("");
+        $("input[name=status]").prop("checked", true);
+        //
+        map.remove(marker);
+        //
+        $("input[name=add_store_ids]").val("");
+        $("input[name=del_store_ids]").val("");
+    }
+    // 高德地图
+    let map = null;
+    let marker = null;
+    function gaodeMap() {
+        // 高德地图
+        map = new AMap.Map('containerMap', {
+            zoom: 14,// 级别
+            resizeEnable: true // 定位在当前城市
+        });
+        marker = new AMap.Marker();
+        //为地图注册click事件获取鼠标点击出的经纬度坐标
+        map.on('click', function(e) {
+            // console.log(e.lnglat.getLng(), e.lnglat.getLat());
+            regeoCode([e.lnglat.getLng(), e.lnglat.getLat()])
+        });
+        let geocoder = new AMap.Geocoder({
+            city: "", //城市设为北京，默认：“全国”
+        });
+    }
+    // 标点
+    function regeoCode(lnglat) {
+        $("input[name=lng]").val(lnglat[0]);
+        $("input[name=lat]").val(lnglat[1]);
+        map.add(marker);
+        marker.setPosition(lnglat); // 标点
+        // 传入经纬度，设置地图中心点
+        let position = new AMap.LngLat(lnglat[0], lnglat[1]);  // 标准写法
+        // 简写 var position = [116, 39];
+        map.setCenter(position);
+        // 根据经纬度查询地址
+        // geocoder.getAddress(lnglat, function(status, result) {
+        //     if (status === 'complete'&&result.regeocode) {
+        //         var address = result.regeocode.formattedAddress;
+        //         // console.log(address)
+        //     }else{
+        //         layer.msg('根据经纬度查询地址失败');
+        //     }
+        // });
+    }
+    $(function() {
+        gaodeMap();
+        // layui
+        layui.use(["form", "upload"], function(){
+            form = layui.form;
+            upload = layui.upload;
+            storePay.getDatalist(1, '', '', '', '', '', true); // 获取list
+            storePay.getRegionList(0, 1, 'all'); // 获取省市区
+            // 列表搜索
+            form.on("submit(formSearchList)", function(data){
+                // console.log(data);
+                let keywords = $("input[name=keywords]").val();
+                let circle_id = $("input[name=circle_id]").val();
+                let province = $("input[name=s_pid]").val();
+                let city = $("input[name=s_cid]").val();
+                let area = $("input[name=s_aid]").val();
+                now_page = 1;
+                storePay.getDatalist(1, keywords, circle_id, province, city, area, true); // 获取list
+                return false
+            });
+            // 确认 添加、编辑商圈
+            form.on("submit(formAddCircleSubmit)", function(data){
+                console.log(data);
+                let param = data.field;
+                let imgs = [];
+                $("#circleCoverUl>li").each(function(){
+                    let src = $(this).find("input[name=circleCover]").val();
+                    imgs.push({
+                        img_url: src
+                    })
+                });
+                let store_ids = [];
+                $("#connectStoreIdUl>li").each(function(){
+                    let storeId = $(this).find("input[name=storeId]").val();
+                    store_ids.push(storeId)
+                });
+                if (param.lng == '' || param.lat == '' ) {
+                    layer.msg('请标记商圈中心点');
+                    return false
+                }
+                if (imgs.length <= 0) {
+                    layer.msg('请上传商圈封面图');
+                    return false
+                }
+                if (imgs.length > 6) {
+                    layer.msg('商圈封面图最多支持上传6张');
+                    return false
+                }
+                let subParam = {
+                    circle_name: param.circle_name,
+                    province: param.pid,
+                    city: param.cid,
+                    area: param.aid,
+                    address: param.address,
+                    lng: param.lng,
+                    lat: param.lat,
+                    status: data.field.status ? 1 : -1,
+                    description: param.description,
+                    imgs: imgs
+                };
+                let circleId = $("input[name=circleId]").val();
+                let http_url = '';
+                if(!circleId){
+                    http_url = '/admin/business_circle_api/addBusinessCircle';
+                    subParam.store_ids = store_ids.join(',')
+                } else {
+                    http_url = '/admin/business_circle_api/editBusinessCircle';
+                    subParam.id = circleId;
+                    subParam.del_store_ids = param.del_store_ids;
+                    subParam.add_store_ids = param.add_store_ids;
+                }
+                ajaxPost(http_url, JSON.stringify(subParam)).then(res => {
+                    if(!circleId){
+                        layer.msg('添加成功', {time: 1500}, function(){
+                            now_page = 1;
+                            $("input[name=keywords]").val("");
+                            $("input[name=circle_id]").val("");
+                            storePay.getRegionList(0, 1, 'all'); // 获取省市区
+                            storePay.getDatalist(1, '', '', '', '', '', true); // 获取list
+                            layer.close(circleLayerOpen);
+                            clearCircleFormData();
+                        })
+                    } else {
+                        layer.msg('编辑成功', {time: 1500}, function(){
+                            let keywords = $("input[name=keywords]").val();
+                            let circle_id = $("input[name=circle_id]").val();
+                            let province = $("input[name=s_pid]").val();
+                            let city = $("input[name=s_cid]").val();
+                            let area = $("input[name=s_aid]").val();
+
+                            storePay.getDatalist(now_page, keywords, circle_id, province, city, area, false); // 获取list
+                            layer.close(circleLayerOpen);
+                            clearCircleFormData();
+                        })
+                    }
+                }).catch(err => {});
+                return false
+            });
+            // 上传商圈封面图
+            let addCoverLeng = 0;
+            upload.render({
+                elem: '#addCircleCoverBtn' //绑定元素
+                ,url: httpUrl + '/admin/api_base/upload' //上传接口
+                ,data: {module:'pop_pro', use:'bg'}
+                ,accept: 'images'
+                ,size: 1024
+                ,multiple: true // 可多传
+                ,number: 6 // 最多上传6张
+                ,done: function(res){
+                    if(res.status == 1){
+                        addCoverLeng++;
+                        let li = ' <li>\n' +
+                            '           <input type="hidden" name="circleCover" value="'+res.data.src+'">\n' +
+                            '           <div class="img">\n' +
+                            '               <img src="'+httpUrl+res.data.src+'" >\n' +
+                            '           </div>\n' +
+                            '           <div class="close-cover" onclick="delCircleCover(this)"><i class="layui-icon">&#x1006;</i></div>\n' +
+                            '       </li>';
+                        $("#circleCoverUl").prepend(li);
+                        if (addCoverLeng >= 6){
+                            $("#addCircleCoverBtn").hide()
+                        } else {
+                            $("#addCircleCoverBtn").show()
+                        }
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
+            // 列表搜索 省市区选择 select
+            form.on('select(provinceFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=s_pid]").val(data.value);
+                $("input[name=s_cid]").val("");
+                $("input[name=s_aid]").val("");
+                storePay.getRegionList(data.value, 2, 'cityArea')
+            });
+            form.on('select(cityFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=s_cid]").val(data.value);
+                $("input[name=s_aid]").val("");
+                storePay.getRegionList(data.value, 3, 'area')
+            });
+            form.on('select(areaFilter)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=s_aid]").val(data.value);
+            });
+            // 商圈layer  省市区选择 select
+            form.on('select(pselect)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=pid]").val(data.value);
+                storePay.getLayerRegionList(data.value, 2, 'cityArea')
+            });
+            form.on('select(cselect)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=cid]").val(data.value);
+                storePay.getLayerRegionList(data.value, 3, 'area')
+            });
+            form.on('select(aselect)', function(data){
+                // console.log(data.value); //得到被选中的值
+                $("input[name=aid]").val(data.value);
+            });
+        })
+    });
+    // 关联的店铺
+    function storeListFn(page, circle_id, isPage) {
+        ajaxPost('/admin/business_circle_api/businessCircleStoreList', {
+            page: page,
+            circle_id: circle_id
+        }).then(res => {
+            let list = res.data;
+            let tr = "";
+            if (list.length > 0) {
+                for(let i in list) {
+                    tr += '<tr>\n' +
+                        '       <td>'+list[i].store_id+'</td>\n' +
+                        '       <td>'+list[i].store_name+'</td>\n' +
+                        '       <td>'+list[i].category_name+'</td>\n' +
+                        '       <td>'+list[i].address+'</td>\n' +
+                        '       <td>'+list[i].brand_name+'</td>\n' +
+                        '       <td style="max-width: 300px;">'+list[i].description+'</td>\n' +
+                        '       <td>'+list[i].mobile+'</td>\n' +
+                        '       <td>'+list[i].create_time+'</td>\n' +
+                        '   </tr>';
+                }
+                $(".store-page-box").show();
+                if (isPage) {
+                    layui.use('laypage', function(){
+                        var laypage = layui.laypage;
+                        //执行一个laypage实例
+                        laypage.render({
+                            elem: 'storePage' //注意，这里的 test1 是 ID，不用加 # 号
+                            ,count: res.total //数据总数，从服务端得到
+                            ,groups: 8
+                            ,limit: 15
+                            ,theme: '#FF5722'
+                            ,jump: function(obj, first) {
+                                //首次不执行
+                                if(!first){
+                                    storeListFn(obj.curr, circle_id, false)
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                $(".store-page-box").hide();
+                tr = '<tr><td colspan="8" class="no-data">暂无数据</td></tr>'
+            }
+            $("#connectStoreTbody").html(tr);
+        }).catch(err => {});
+
+    }
+    //    ==========================详情
+    function seeDetails(_this) {
+        let id = $(_this).attr("id");
+        ajaxPost('/admin/business_circle_api/businessCircleDetail', {
+            id: id
+        }).then(res => {
+            // console.log(res);
+            let covers = '';
+            if (res.cover.length > 0) {
+                for(let i in res.cover) {
+                    covers += '<img src="'+httpUrl+res.cover[i].img_url+'" class="img" style="margin-right: 10px;"/>'
+                }
+            }
+            let details_str = '<tr>\n' +
+                        '            <td>'+res.id+'</td>\n' +
+                        '            <td>'+res.circle_name+'</td>\n' +
+                        '            <td>'+res.city_name+'</td>\n' +
+                        '            <td>'+res.area_name+'</td>\n' +
+                        '            <td>'+res.address+'</td>\n' +
+                        '            <td>\n' +
+                        '                '+covers+'\n' +
+                        '            </td>\n' +
+                        '            <td style="max-width: 300px;">'+res.description+'</td>\n' +
+                        '            <td>'+res.visit_number+'</td>\n' +
+                        '        </tr>';
+            $("#detailsTbody").html(details_str);
+
+            let open = layer.open({
+                type: 1,
+                content: $('#circleDetails'),
+                title: '商圈详情',
+                area: ['95%', '90%'],
+                cancel: function () {
+                    //右上角关闭回调
+                    //return false 开启该代码可禁止点击该按钮关闭
+                }
+            })
+        }).catch(err => {});
+
+        storeListFn(1, id, true);
+
+    }
+</script>
+</html>

@@ -1,0 +1,87 @@
+html,body{
+    height: 100%;
+}
+.w-model{
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,.7);
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+}
+.w-model-box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%,0);
+    width: 6.2rem;
+    height: 6.2rem;
+    background-color: #fff;
+    padding: 0 0.25rem;
+    box-sizing: border-box;
+}
+.w-model-box img{
+    width: 0.32rem;
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+}
+.w-model-title{
+    height: 1.33rem;
+    padding-top: 0.8rem;
+    box-sizing: border-box;
+    font-size: 0.34rem;
+    font-weight: bold;
+    color: #222;
+    text-align: center;
+}
+.w-public-inp{
+    height: 1.28rem;
+    border-bottom: 0.02rem solid #eee;
+    display: flex;
+}
+.w-public-inp input{
+    padding-left: 0.13rem;
+    font-size: 0.28rem;
+}
+.w-inpOne input{
+    width: 100%;
+}
+.w-inpTwo input{
+    width: 2.8rem;
+}
+.w-inpTwo{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.w-inpTwo .w-code{
+    padding: 0 0.17rem;
+    height: 0.48rem;
+    line-height: 0.48rem;
+    text-align: center;
+    border: 0.02rem solid #FF5A5F;
+    border-radius: 0.24rem;
+    font-size: 0.24rem;
+    color: #FF5A5F;
+}
+.w-hint{
+    height: 0.7rem;
+    line-height: 0.7rem;
+    text-align: center;
+    color: red;
+    font-size: 0.2rem;
+}
+.w-logoIn-btn{
+    width: 5rem;
+    height: 0.98rem;
+    line-height: 0.98rem;
+    text-align: center;
+    background-color: #eee;
+    font-size: 0.34rem;
+    color: #999;
+    margin: 0 auto;
+    border-radius: 0.06rem;
+}

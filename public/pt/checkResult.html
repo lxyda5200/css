@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><meta name="keywords" content="服饰,美妆,引流,电商,流量,购物,潮流,资讯"><meta name="viewport" content="user-scalable=yes"><link rel="shortcut icon" href="./images/bitbug_favicon.ico"><link rel="stylesheet" href="./css/brandInfo.css"><link rel="stylesheet" href="./css/checkResult.css"><meta name="description" content="四川神龟科技有限公司成立于2017年05月，旗下平台“超神宿APP”，着力于服饰与美妆领域，通过互联网连接实体门店与消费者，为品牌和用户提供优质服务。超神宿对用户进行精准分析，通过线上商品的展示和销售，有效地为实体商家实现线上至线下引流，以及品牌线上新品发布、活动促销和推广宣传等。旗下项目“流量小店”，有效整合各经销商、生产商的资源，以便利店的形式在全国范围内开设直营与加盟店。依托线上平台的庞大流量，将线上平台与线下门店相互结合，为用户提供更加便捷的购物体验。"><title>四川神龟科技-商家平台-审核结果</title><script src="./libs/jquery.min.js"></script><script src="./js/http.js"></script><!--[if lte IE 9]>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js'></script>
+    <![endif]--></head><body><div class="w-header"></div><div class="center-box" style="padding-bottom: 50px;"><div class="cont"><div class="w-cont-header"></div><div class="h-box-center"><!-- 资料提交成功，待审核 1--><div class="box yes-pass-box none"><img src="./images/ic-cg.png" class="img-icon"><p class="tips">恭喜，您已完成入驻申请！</p><p class="sub-tips">我们将在两个工作日内完成资质审核。审核结果会以短信和邮件形式通知。</p><a class="btn hover kaiqi" href="http://www.supersg.cn/">前往超神宿首页</a></div><!-- 审核成功 2  --><div class="box pass-box none"><img src="./images/ic-cg.png" class="img-icon"><p class="tips">恭喜，您提交的资质信息已经审核通过！</p><a class="btn hover kaiqi" href="javascript: void(0)" id="gotoAdminPage">立即开启</a><!-- 进入商家后台 --></div><!-- 审核失败 3 --><div class="box no-pass-box none"><img src="./images/ic-weitongguo.png" class="img-icon"><p class="tips">很抱歉，您提交的资质信息未审核通过！</p><div class="no-pass-info over-hide"><div class="fl left">审核未通过原因：</div><div class="fl right" id="reviewNote"></div></div><a class="btn hover kaiqi" href="./entityBusiness.html">返回修改</a></div></div></div></div><div class="w-footer"></div></body><script>var types = getUrlParams('type');
+    var token = sessionStorage.getItem('token');
+    var loginInfo = JSON.parse(sessionStorage.getItem('loginInfo'));
+    $(function(){
+        $('.w-header').load('./compontents/header.html');
+        $('.w-footer').load('./compontents/footer.html');
+        $('.w-cont-header').load('./compontents/firstFoot.html',function(){
+            $('.mark .mark-item dt').removeClass('avtive-dt');
+            $('.mark .mark-item dd').removeClass('avtive-dd');
+            $('.itemOne,.itemTwo').find('dt').addClass('avtive-dt');
+            $('.itemOne,.itemTwo').find('dd').addClass('avtive-dd');
+            $('.itemOne,.itemThree').find('dt').addClass('avtive-dt');
+            $('.itemOne,.itemThree').find('dd').addClass('avtive-dd');
+            $('.itemOne,.itemFour').find('dt').addClass('avtive-dt');
+            $('.itemOne,.itemFour').find('dd').addClass('avtive-dd');
+        });
+        if(types == 1){
+            $(".yes-pass-box").show()
+        } else if (types == 2) {
+            $(".pass-box").show()
+        } else if (types == 3) {
+            $(".no-pass-box").show();
+            getViewStatus()
+        }
+        // 进入商家后台
+        $("#gotoAdminPage").click(function(){
+            window.location.href = base+'/new_store/index.html#/storeIndex?token='+token;
+        })
+    });
+    // 查看审核状态(未审核通过的原因)
+    function getViewStatus() {
+        ajaxPost('/store_v1/enter/viewStatus', {
+            token: token,
+            store_id: loginInfo.store_id
+        }, function(res){
+            if(res.status == 1) {
+                if(res.data.status == 0){
+                    var str = res.data.brand.msg+'<br/>'+res.data.brand.review_note+'<br />'+res.data.company.msg+'<br/>'+res.data.company.review_note+'<br />';
+                    $("#reviewNote").html(str)
+                }
+            }
+        })
+    }</script></html>

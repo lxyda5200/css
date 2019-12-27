@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+    <style type="text/css">
+
+        /* tooltip */
+        #tooltip{
+            position:absolute;
+            border:1px solid #ccc;
+            background:#333;
+            padding:2px;
+            display:none;
+            color:#fff;
+        }
+    </style>
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <!--<li><a href="{:url('admin/store/index')}" class="a_menu">商家列表</a></li>-->
+            <li class="layui-this">商品列表</li>
+        </ul>
+    </div>
+    <form class="layui-form serch" action="{:url('admin/product/product_list')}" method="post" id="myform">
+        <div class="layui-form-item" style="float: left;">
+            <div class="layui-input-inline">
+                <input type="text" name="product_name" lay-verify="title" value="{$param.product_name}" autocomplete="off" placeholder="请输入商品名称" class="layui-input layui-btn-sm">
+            </div>
+            <div class="layui-input-inline">
+                <div class="layui-inline">
+                    <select name="sh_status" onchange="submitForm()" lay-search="">
+                        <option value="">审核状态</option>
+                        <option value="0" {heq name="$param.sh_status" value="0"} selected{/heq} >待审核</option>
+                        <option value="1" {if condition="$param.sh_status eq 1"} selected{/if} >审核通过</option>
+                        <option value="-1" {if condition="$param.sh_status eq -1"} selected{/if} >审核未通过</option>
+                    </select>
+                </div>
+            </div>
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit="" lay-filter="serch">立即提交</button>
+        </div>
+    </form>
+    <table class="layui-table" lay-size="sm">
+        <colgroup>
+            <col width="50">
+            <col width="80">
+            <col width="170">
+            <col width="120">
+            <col width="70">
+            <col width="100">
+            <col width="80">
+            <col width="70">
+            <col width="80">
+            <col width="110">
+            <col width="150">
+            <col width="150">
+            <col width="150">
+            <col width="200">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>商品图片</th>
+            <th>商品名称</th>
+            <th>所属商家</th>
+            <th>商品分类</th>
+            <th>商品价格</th>
+            <th>销售量</th>
+            <th>状态</th>
+            <th>审核状态</th>
+            <th>是否推荐商品</th>
+            <th>创建时间</th>
+            <th>审核时间</th>
+            <th>店铺排序</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form class="layui-form" id="admin">
+            {volist name="list" id="vo"}
+            <tr>
+                <td>{$vo.id}</td>
+                <td><a href="{$vo.product_img}" class="tooltip"><img src="{$vo.product_img}" width="20" height="20"></a></td>
+                <td>{$vo.product_name}</td>
+                <td>{$vo.store_name}</td>
+                <td>{$vo.category_name}</td>
+                <td>{$vo.price} 元</td>
+                <td>{$vo.sales}</td>
+                <td>{if condition="$vo.status eq 1"}上架{else/}下架{/if}</td>
+                <td>{if condition="$vo.sh_status eq 1"}<span style="color: green">审核通过</span>{elseif condition="$vo.sh_status eq -1"/}<span style="color: red">审核未通过</span>{else/}<span style="color: blue">待审核</span>{/if}</td>
+                <td><a href="javascript:;" style="font-size:18px;" class="is_recommend" data-id="{$vo.id}" data-val="{$vo.is_recommend}">{eq name="vo.is_recommend" value="1"}<i class="fa fa-toggle-on"></i>{else /}<i class="fa fa-toggle-off"></i>{/eq}</a></td>
+                <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                <td>{if condition="$vo.sh_time eq 0"}{else/}{$vo.sh_time|date="Y-m-d H:i:s",###}{/if}</td>
+                <td><input style="width:40px;" value="{$vo.score_meddle}" type="number" class="ipt-score" data-id="{$vo.id}" /></td>
+                <td class="operation-menu">
+                    <div class="layui-btn-group">
+                        <a href="{:url('admin/product/product_publish',['id'=>$vo.id])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-eye" aria-hidden="true"></i>查看详情</a>
+                        {if condition="$vo.sh_status eq 0"}
+                        <a href="{:url('admin/product/dsh_product',['id'=>$vo.id,'product_name'=>$param.product_name,'sh_status'=>$param.sh_status])}" class="layui-btn layui-btn-xs a_menu layui-btn-primary" style="margin-right: 0;font-size:12px;"><i class="fa fa-edit" aria-hidden="true">进入审核</i></a>
+                        {/if}
+                        {if condition="$vo.sh_status eq 1"}
+                        <a class="layui-btn layui-btn-xs layui-btn-primary status" {if condition="$vo.status eq 1"}data-id="0"{else /}data-id="1"{/if} id="{$vo.id}" style="margin-right: 0;font-size:12px;" ><i class="fa {if condition="$vo.status eq 1"}fa-toggle-on{else /}fa-toggle-off{/if}"></i>上架/下架</a>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+        </tbody>
+    </table>
+    </form>
+    <div style="padding:0 20px;">{$lists->render()}</div>
+    {include file="public/foot"}
+    <script type="text/javascript">
+        layui.use('layer', function(){
+            var layer = layui.layer;
+
+
+            $('.status').click(function(){
+                var id = $(this).attr('id');
+                var status = $(this).attr('data-id');
+                layer.confirm('确定要设置?', function(index) {
+                    $.ajax({
+                        url:"{:url('admin/product/product_status')}",
+                        type:'post',
+                        data:{id:id,status:status},
+                        success:function(res) {
+                            layer.msg(res.msg);
+                            if(res.code == 1) {
+                                setTimeout(function(){
+                                    location.href = res.url;
+                                },1500)
+                            }
+                        }
+                    })
+                })
+            })
+
+            $('.ipt-score').on('change', function(){
+                let score = $(this).val();
+                let id = $(this).data('id');
+                if(score < 0){
+                    layer.msg('排序不能小于零')
+                    return false;
+                }
+                $.post("{:url('Product/editScoreMeddle')}", {score, id}, function(res){
+                    layer.msg(res.msg);
+                }, 'json')
+            })
+
+        });
+        $('.is_recommend').click(function(){
+            var val = $(this).attr('data-val');
+            var id = $(this).attr('data-id');
+            var i = $(this).find('i');
+            var the = $(this);
+            if(val == 1){
+                var is_recommend = 0;
+            } else {
+                var is_recommend = 1;
+            }
+            $.ajax({
+                type:"post",
+                url:"{:url('admin/product/is_recommend')}",
+                data:{is_recommend:is_recommend,id:id},
+                success:function(res){
+
+                    if(res.code == 1) {
+                        tostatus();
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+
+            function tostatus(){
+                if(val == 1){
+                    i.attr("class","fa fa-toggle-off");
+                    the.attr('data-val',0);
+                } else {
+                    i.attr("class","fa fa-toggle-on");
+                    the.attr('data-val',1);
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

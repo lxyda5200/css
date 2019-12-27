@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css" media="all" />
+    <link rel="stylesheet" href="__CSS__/admin.css"  media="all">
+</head>
+<body style="padding:10px;">
+<div class="tplay-body-div">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li><a href="{:url('admin/area/index2')}" class="a_menu">二级区域</a></li>
+            <li class="layui-this">{$title}</li>
+        </ul>
+    </div>
+    <form class="layui-form" id="admin">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属城市</label>
+            <div class="layui-input-inline">
+                <select name="city_id" lay-search="" lay-filter="test" {notempty name="$area"}disabled{/notempty}>
+                    {empty name="$area"}
+                    <option value="">请选择</option>
+                    {/empty}
+                    {volist name="$citys" id="vo"}
+                    <option value="{$vo.id}" {notempty name="$area.city_id"}{eq name="$area.city_id" value="$vo.id"} selected=""{/eq}{/notempty}>{$vo.city_name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">上级区域</label>
+            <div class="layui-input-inline">
+                <select name="pid" lay-search="" lay-filter="aihao" id="next_type" {notempty name="$area"}disabled{/notempty}>
+
+                    {notempty name="$areas1"}
+                    {volist name="areas1" id="vo"}
+                    <option value="{$vo.id}" {if condition="$area.pid eq $vo.id"} selected{/if}>{$vo.area_name1}</option>
+                    {/volist}
+                    {/notempty}
+
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">区域名称</label>
+            <div class="layui-input-inline">
+                <input name="area_name2" lay-verify="required" placeholder="请输入区域名称" autocomplete="off" class="layui-input" type="text" {notempty name="$area.area_name2"}value="{$area.area_name2}"{/notempty}>
+            </div>
+        </div>
+
+
+        {notempty name="$area"}
+        <input type="hidden" name="id" value="{$area.id}">
+        {/notempty}
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="admin">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+
+    <script src="__PUBLIC__/layui/layui.js"></script>
+    <script src="__PUBLIC__/jquery/jquery.min.js"></script>
+    <script>
+        var message;
+        layui.config({
+            base: '__JS__/',
+            version: '1.0.1'
+        }).use(['app', 'message'], function() {
+            var app = layui.app,
+                $ = layui.jquery,
+                layer = layui.layer;
+            //将message设置为全局以便子页面调用
+            message = layui.message;
+            //主入口
+            app.set({
+                type: 'iframe'
+            }).init();
+        });
+    </script>
+    <script>
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form;
+
+            $(window).on('load', function() {
+                form.on('select(test)', function(data){
+                    var id = data.value;
+
+                    $.ajax({
+                        url:"{:url('admin/area/get_area')}",
+                        data:{
+                            'id':id,
+                        },
+                        type:'post',
+                        async: false,
+                        success:function(res) {
+                            console.log(res);
+                            //  alert(res.length);
+                            $('#next_type').html('');
+                            for (var i=0;i<res.length;i++){
+                                $('#next_type').append('<option value="'+ res[i].id +'">'+ res[i].area_name1 +'</option>');
+                            }
+                            form.render(); //重新加载
+
+                        }
+                    })
+                });
+                form.on('submit(admin)', function(data) {
+                    $.ajax({
+                        url:"{:url('admin/area/publish2')}",
+                        data:$('#admin').serialize(),
+                        type:'post',
+                        async: false,
+                        success:function(res) {
+                            if(res.code == 1) {
+                                layer.alert(res.msg, function(index){
+                                    location.href = res.url;
+                                })
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    })
+                    return false;
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

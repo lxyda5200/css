@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>品牌故事</title>
+    <link href="https://cdn.bootcss.com/Swiper/4.5.0/css/swiper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./brandStory.css">
+    <script src="../config/config.js"></script>
+</head>
+
+<body>
+    <div class="carousel">
+        <div class="swiper-container">
+            <div class="swiper-wrapper"></div>
+            <p>
+                <span id="currentPage">1</span>/<span id="totalPage"></span>
+            </p>
+        </div>
+    </div>
+    <div class="content-box">
+        <div class="public">
+            <h4>品牌历史</h4>
+            <p id="history"></p>
+        </div>
+        <div class="public">
+            <h4>品牌理念</h4>
+            <p id="idea"></p>
+        </div>
+        <div class="classic-box">
+            <h4>经典款</h4>
+            <div class="classic-cont"></div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.10.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/Swiper/4.5.0/js/swiper.min.js"></script>
+<script>
+    //域名
+    // const base = 'http://wx.supersg.cn'
+    //设置自适应 b
+    resize()
+    window.onresize = function () {
+        resize()
+    }
+
+    function resize() {
+        var docEl = document.documentElement
+        var clientWidth = window.innerWidth
+        if (clientWidth >= 750) {
+            docEl.style.fontSize = '100px'
+        } else {
+            docEl.style.fontSize = 100 * (clientWidth / 750) + 'px'
+        }
+    }
+    //设置自适应 e
+    //设置swiper b
+    const mySwiper = new Swiper('.swiper-container', {
+        loop: false,
+        on: {
+            slideChangeTransitionEnd: function () {
+                $('#currentPage').html(this.activeIndex + 1)
+            }
+        }
+    })
+    //设置swiper e
+
+    let bannerHtml = ''
+    let goodsHtml = ''
+    //获取参数
+    function getQueryString(name) {
+        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        let r = decodeURI(window.location.search).substr(1).match(reg);
+        if (r != null)
+            return unescape(r[2]);
+        return null;
+    }
+    let _id = getQueryString("id")
+    $.post(base + "/user_v6/dynamic/BrandStory", {
+        id: _id
+    }, function (resp) {
+        if (resp.status == 1) {
+            let res = resp.data
+            let banners = res.ads
+            let totalPage = banners.length
+            $('#totalPage').text(totalPage)
+            let goods = res.brand_pro
+            for (let i = 0, j = banners.length; i < j; i++) {
+                if (banners[i].type == 1) {
+          bannerHtml += `<div class="swiper-slide">
+                                <img src="${base}/${banners[i].url}">
+                            </div>`
+        } else {
+          bannerHtml += `<div class="swiper-slide">
+                        <div class="swiper-slideVideo">
+								<video src="${banners[i].url}" id="slideVideo" webkit-playsinline="true" playsinline="true" width="100%" height="100%" type="video/mp4" preload="" x-webkit-airplay="true" x5-playsinline="true" poster="img/t4.jpg" x-webkit-airplay="true">
+									<source type="video/mp4" src="${banners[i].url}">
+								</video>
+								<div class="video_btn">
+									<img src="playerBtn.png" />
+								</div>
+							</div>
+                            </div>`
+        }
+            }
+            $('.swiper-wrapper').html(bannerHtml)
+            mySwiper.update();
+            $('#history').text(res.history)
+            $('#idea').text(res.notion)
+            for (let i = 0, j = goods.length; i < j; i++) {
+                goodsHtml += `<div class="classic-item">
+                    <div class="w-img">
+                        <div class='clickdiv' id='${goods[i].product_id}'>
+                            <img src="${base}/${goods[i].cover}">
+                        </div>
+                    </div>
+                    <p class="w-dec">${goods[i].product_name}</p>
+                    <div class="w-money">
+                        <span>专柜价</span>
+                        <span>￥</span>
+                        <span>${goods[i].price}</span>
+                    </div>
+                </div>`
+            }
+            $('.classic-cont').html(goodsHtml)
+        }
+    })
+    //点击经典，跳转app
+    $('.classic-cont').on('click', '.clickdiv', function () {
+        let id = $(this).attr('id')
+        window.location.href = 'chaoshensu://chao.shen.com/productDetail.html?productId=' + id
+    })
+    //swiper的设置
+    function load() {
+		$(".video_btn").hide();
+		$("#slideVideo").trigger('play');
+	}
+
+	$(".swiper-wrapper").on("click",'.video_btn', function () {
+		$("#slideVideo").trigger('play');
+		$(".video_btn").hide();
+		return false;
+	})
+	$(".swiper-wrapper").on("click",'.swiper-slideVideo', function () {
+		$("#slideVideo").trigger('pause');
+		$(".video_btn").show();
+	})
+	$(".swiper-slideVideo").on("ended",'#slideVideo', function () {
+		$(".video_btn").show();
+	})
+	$(".vAndi").show();
+</script>
+
+</html>

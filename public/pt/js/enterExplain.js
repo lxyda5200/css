@@ -1,0 +1,1 @@
+"use strict";$(".w-header").load("./compontents/header.html"),$(".w-footer").load("./compontents/footer.html"),$(".w-logoIn").load("./compontents/logoIn.html");

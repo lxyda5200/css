@@ -1,0 +1,149 @@
+.textSplit1{
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.textSplit2{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+}
+.layer-box-page{
+    padding: 15px;
+    display: none;
+}
+.w-row{
+    display: flex;
+    flex-wrap: wrap;
+}
+.w-col{
+    display: flex;;
+    flex-direction: column;
+}
+.w-flex-center{
+    display: flex;
+    align-items: center;
+}
+.w-font-bold{
+    font-weight: bold;
+}
+.w-ml10{
+    margin-left: 10px;
+}
+.w-hover{
+    -webkit-transition: all .2s;
+    -moz-transition: all .2s;
+    -ms-transition: all .2s;
+    -o-transition: all .2s;
+    transition: all .2s;
+    cursor: pointer;
+}
+.w-hover:hover{
+    opacity: .8;
+}
+.w-mr10{
+    margin-right: 10px;
+}
+.w-img120{
+    max-width: 120px;
+}
+.w-mb30{
+    margin-bottom: 30px;
+}
+.w-mb15{
+    margin-bottom: 15px;
+}
+.w-mb10{
+    margin-bottom: 10px;
+}
+.w-mt10{
+    margin-top: 10px;
+}
+.w-box{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 15px;
+}
+.no-data{
+    text-align: center;
+}
+.display-none{
+    display: none;
+}
+.layer-texttit{
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+#detailsLayer .store_pu{
+    display: none;
+}
+.w-row-sb{
+    display: flex;
+    justify-content: space-between;
+}
+/* */
+.page-box{
+    width: 100%;
+    display: flex;
+}
+.page-box .page-info{
+    margin-left: 20px;
+    padding-top: 15px;
+}
+.page-box .totalpage,
+.page-box .totaldata
+{
+    color: red;
+}
+.add-leimu{
+    height: 38px;
+    line-height: 38px;
+    margin-left: 15px;
+}
+.cate-ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+.cate-ul>li{
+    display: flex;
+    border: 1px #ccc solid;
+    padding: 4px 15px;
+    position: relative;
+    margin-bottom: 15px;
+    margin-right: 15px;
+}
+.cate-ul>li .close{
+    display: flex;
+    position: absolute;
+    right: -10px;
+    top: -7px;
+    cursor: pointer;
+    z-index: 2;
+}
+.cate-ul>li .close i{
+    color: red;
+}
+.elementShowNone{
+    display: none;
+}
+.add-logo-box{
+    margin-bottom: 10px;
+}
+.add-brand-logoimg-btn{
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+}
+.replace-logo{
+    width: 120px;
+}
+.add-logon-i{
+    font-size: 30px;
+}
